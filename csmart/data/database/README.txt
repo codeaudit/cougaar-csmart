@@ -23,8 +23,8 @@ Zip file:
 "Domain-MySQL.ZIP" contains a datafile called "1ad_domain_data_dump.sql"
 which is the sql script to be run to load all domain data tables into 
 the CSMART configuration database. If you are upgrading from version
-9.0 of Cougaar, you do not need to re-load this data (but it will
-not hurt).
+9.2 or below of Cougaar, you should re-load this data as an additional
+table has been added.
 
 Sub-directories:
 
@@ -34,12 +34,28 @@ Sub-directories:
         MySQL database 'as is' or may be modified (eg, in excel) as necessary
         before loading.
 
+   db_src/:
+        Contains the database schema souce files that are produced from ERStudio.
+        Perl scripts can be run against the csmart-db.sql to generate either 
+        oracle or mysql specific versions of sql for database loading.
+
+   doc/:
+        Contains jpg representations of the entity-relationship diagrams produced
+        in ERStudio.  Pictoral representations are provided for the 'cfw' as well
+        as 'assembly' tables in the database.
+
    headers/:
         Contains a '.csv' file for each corresponding table/'.csv' file 
         with a single row containing the column headers for each table in
         the database.  These headers are used by the database dump script
         'dump_1ad_mysql.sh' to properly generate 'csv' files containing
         headers.
+
+   perl/:
+        Contains the perl scripts which are run against the single sql
+        file produced from ERStudio to generate either oracle or mysql
+        specific sql files as well as to split the original file into components
+        for dropping and creating indexes, foreign keys (oracle) and tables.
 
    scripts/:
         Contains Dos-version GNU sed v3.02
