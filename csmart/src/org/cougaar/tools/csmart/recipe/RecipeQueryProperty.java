@@ -27,11 +27,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
-import org.cougaar.tools.csmart.ui.component.RecipeComponent;
-import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
-import org.cougaar.tools.csmart.ui.component.ConfigurableComponentProperty;
-import org.cougaar.tools.csmart.ui.component.PDbBase;
-import org.cougaar.tools.csmart.ui.component.StringRange;
+import org.cougaar.tools.csmart.recipe.RecipeComponent;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponentProperty;
+import org.cougaar.tools.csmart.core.db.PDbBase;
+import org.cougaar.tools.csmart.core.property.range.StringRange;
 import org.cougaar.util.DBProperties;
 
 /**

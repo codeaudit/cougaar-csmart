@@ -26,12 +26,12 @@ import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
-import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
-import org.cougaar.tools.csmart.ui.component.ConfigurableComponentProperty;
-import org.cougaar.tools.csmart.ui.component.PDbBase;
-import org.cougaar.tools.csmart.ui.component.StringRange;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponentProperty;
+import org.cougaar.tools.csmart.core.db.PDbBase;
+import org.cougaar.tools.csmart.core.property.range.StringRange;
 import org.cougaar.util.DBProperties;
-import org.cougaar.tools.csmart.societies.database.DBUtils;
+import org.cougaar.tools.csmart.core.db.DBUtils;
 
 /**
  * Extends ConfigurableComponentProperty in order to override the
