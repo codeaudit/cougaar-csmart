@@ -82,10 +82,15 @@ import org.cougaar.util.log.LoggerFactory;
 
 /**
  * Top level CSMART user interface.
- * Allows user to:
- * build, test, control, monitor and analyze
- * a society.
+ * Allows user to: build, test, control, monitor and analyze a society. For installation and
+ * basic usage, see csmart/doc/InstallAndTest.html.<br>
  * @property org.cougaar.tools.csmart.doWorkspace if false do NOT read/write from Default Worksapce file.
+ * @property org.cougaar.configuration.database should be specified in cougaar.rc as the URL to find the CSMART database. See CSMART InstallAndTest.html
+ * @property csmart.PopulateDb.log.enable if true enables the logging
+ * of some executed database queries to a file named PopulateDb<datetime>.log.
+ * @property org.cougaar.install.path Used to default results directory, find workspace file, saved graphs, etc
+ * @property org.cougaar.config.path has standard meaning, and is used to find some CSMART UI properties among other things.
+ * @property org.cougaar.useBootstrapper has meaning specified by Bootstrapper
  *
  */
 public class CSMART extends JFrame {

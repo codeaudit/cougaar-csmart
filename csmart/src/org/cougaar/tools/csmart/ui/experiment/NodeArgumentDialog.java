@@ -35,6 +35,10 @@ import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
+/**
+ * Set and edit Command line arguments for the Node.
+ * @property org.cougaar.install.path is used as to find a file of Node -D arguments
+ */
 public class NodeArgumentDialog extends JDialog {
   Properties props;
   JTable argTable;

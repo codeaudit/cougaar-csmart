@@ -56,6 +56,7 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  * Show a rough graph of Task completion
+ * @property org.cougaar.install.path used to find place to save metrics file
  */
 public class CSMARTMetrics extends JPanel {
 

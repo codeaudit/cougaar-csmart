@@ -37,8 +37,8 @@ import org.cougaar.tools.csmart.util.FileParseUtil;
  * Most of this was taken from ConfigFinder.  ConfigFinder is used
  * to find the society file that the user chooses, so we want to open
  * a file chooser on the first path that ConfigFinder will use.
+ * @see org.cougaar.util.ConfigFinder
  */
-
 public final class SocietyFinder {
   private static final String defaultConfigPath = 
     "$CWD;$HOME/.alp;$INSTALL/configs/$CONFIG;$INSTALL/configs/common";

@@ -74,8 +74,9 @@ import java.io.IOException;
  * The user interface for the CSMART Society.
  * Displays a tool panel with buttons for invoking various graph and
  * chart views.
+ * @property org.cougaar.install.path Used to find saved graphs to read
+ * @property org.cougaar.useBootstrapper See the Bootstrapper for usage
  */
-
 public class CSMARTUL extends JFrame implements ActionListener, Observer {
   private static final String FILE_MENU = "File";
   private static final String NEW_MENU_ITEM = "New";

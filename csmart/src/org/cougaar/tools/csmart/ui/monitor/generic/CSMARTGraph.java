@@ -37,8 +37,10 @@ import org.cougaar.util.log.Logger;
 
 /**
  * Display graph representing arbitrary objects.
+ * @property os.arch used to find correct version of dot.exe
+ * @property os.name also used in finding dot.exe
+ * @property org.cougaar.install.path Used to locate the executable, and to locate a place to save graphs
  */
-
 public class CSMARTGraph extends Graph
 {
   public static final String GRAPH_TYPE = "Graph_Type";

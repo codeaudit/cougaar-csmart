@@ -77,6 +77,8 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 /**
  * The Organizer holds all the component a user creates
  * and manipulates in CSMART
+ * @property org.cougaar.tools.csmart.doWorkspace if false do NOT read / write from the 
+ * workspace file, nor set listeners to support doing so.
  */
 public class Organizer extends JScrollPane {
   private static final String DEFAULT_FILE_NAME = "Default Workspace.bin";
