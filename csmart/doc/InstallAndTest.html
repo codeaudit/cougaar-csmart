@@ -239,13 +239,25 @@ very similar for WinNT) and a MYSQL database.
       </pre>
 
     To dump a snapshot of the CSMART configuration database (excludes domain data tables), 
-    run the script "$CIP/csmart/data/database/scripts/mysql/dump_1ad_mysql.sh".
+    run the script "$CIP/csmart/data/database/scripts/mysql/dump_1ad_mysql.sh".  
 
       <pre>
         $./dump_1ad_mysql.sh [db username] [db password] [database name]
       </pre>
 
-    This will generate a set of '.csv' files for all configuration tables and place 
+    To run this script, the database user MUST have the 'File' privilege for the MySQL database.
+    By default the root user has this privilege however newly created users (see below) may not.
+    Once a user has been created, the following will alter the user's privileges to give the 
+    'File' privilege.    
+      <pre>
+        $ mysql -u root -p
+	[supply root password set during installation]
+        mysql&gt; update mysql.user set File_priv = 'Y' where User = '<i>supply_user_name</i>';
+        mysql&gt; flush privileges;
+        mysql&gt; exit;
+      </pre>
+
+    The script will generate a set of '.csv' files for all configuration tables and place 
     them in the directory "$CIP/csmart/data/database/csv".  The database tables can 
     then be modified via the '.csv' files and reloaded as desired using the 
     load_1ad_mysql.sh script.
