@@ -31,8 +31,10 @@ import org.cougaar.tools.csmart.ui.console.ExperimentDB;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
+import org.cougaar.tools.csmart.ui.component.ModificationListener;
+import org.cougaar.tools.csmart.ui.component.ModificationEvent;
 
-public class ExperimentBuilder extends JFrame {
+public class ExperimentBuilder extends JFrame implements ModificationListener {
   private static final String FILE_MENU = "File";
   private static final String SAVE_MENU_ITEM = "Save";
   private static final String EXIT_MENU_ITEM = "Close";
@@ -88,7 +90,7 @@ public class ExperimentBuilder extends JFrame {
 
   public ExperimentBuilder(CSMART csmart, Experiment experiment) {
     this.csmart = csmart;
-    this.experiment = experiment;
+    setExperiment(experiment);
     isEditable = experiment.isEditable();
     isRunnable = experiment.isRunnable();
     JMenuBar menuBar = new JMenuBar();
@@ -132,6 +134,20 @@ public class ExperimentBuilder extends JFrame {
       }
     });
     show();
+  }
+
+  private void setExperiment(Experiment newExperiment) {
+    if (experiment != null) {
+      experiment.removeModificationListener(this);
+    }
+    experiment = newExperiment;
+    if (experiment != null) {
+      experiment.addModificationListener(this);
+    }
+  }
+
+  public void modified(ModificationEvent e) {
+    setModified(true);
   }
 
   private void exit() {
@@ -212,10 +228,20 @@ public class ExperimentBuilder extends JFrame {
   private void save() {
     if (!experiment.isInDatabase())
       return;
-    if (modified)
-      saveHelper();
-    else
-      JOptionPane.showMessageDialog(this, "No modifications were made.");
+    if (!modified) {
+      String[] msg = {
+        "No modifications were made.",
+        "Do you want to save this experiment anyway?"
+      };
+      int answer =
+        JOptionPane.showConfirmDialog(this, msg,
+                                      "No Modifications",
+                                      JOptionPane.OK_CANCEL_OPTION,
+                                      JOptionPane.WARNING_MESSAGE);
+      if (answer != JOptionPane.OK_OPTION) return;
+      setModified(true);
+    }
+    saveHelper();
   }
 
   /**
