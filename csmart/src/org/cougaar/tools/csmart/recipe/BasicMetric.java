@@ -315,7 +315,7 @@ public class BasicMetric extends RecipeBase
       if (metricRelate == null) {
 	metricRelate = new RelationshipData();
 	metricRelate.setRole(MetricControl_Role);
-	metricRelate.setItem(data.getName()); // name
+	metricRelate.setItemId(data.getName()); // name
 	metricRelate.setType(data.getName().substring(data.getName().lastIndexOf(".") + 1));
 	metricRelate.setSupported(data.getName()); // name
 	// and to the first, add the MetricsInitializerPlugin
