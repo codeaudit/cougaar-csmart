@@ -97,6 +97,7 @@ public abstract class AgentBase
     addBinders();
     addPlugins();
     // FIXME: Add misc components
+    addComponents();
     addAssetData();
   }
 
@@ -166,6 +167,18 @@ public abstract class AgentBase
     }
    
     // FIXME: Process misc components
+    iter = 
+      ((Collection)getDescendentsOfClass(ContainerBase.class)).iterator();
+    while(iter.hasNext()) {
+      ContainerBase container = (ContainerBase)iter.next();
+      if(container.getShortName().equals("Other Components")) {
+        for(int i=0; i < container.getChildCount(); i++) {
+	  ComponentBase plugin = (ComponentBase) container.getChild(i);
+	  plugin.addComponentData(data);
+        }
+      }
+    }
+   
    
     return data;
   }
@@ -187,6 +200,8 @@ public abstract class AgentBase
    */
   protected abstract void addBinders();
 
+  protected abstract void addComponents();
+  
   /**
    * Gets the classname for this binder
    *
