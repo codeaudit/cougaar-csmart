@@ -20,21 +20,23 @@
  */
 package org.cougaar.tools.csmart.util;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.nio.CharBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharacterCodingException;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+
 import org.cougaar.util.ConfigFinder;
-import java.nio.charset.CharacterCodingException;
-import java.io.IOException;
-import java.io.FileNotFoundException;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
 
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * FileParseUtil.java
@@ -45,10 +47,9 @@ import org.cougaar.util.log.Logger;
  * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
  * @version 1.0
  */
-
 public class FileParseUtil {
 
-  public FileParseUtil (){
+  public FileParseUtil () {
   }
 
   /**
@@ -69,7 +70,23 @@ public class FileParseUtil {
     // Create the CharBuffer for the file.
     FileInputStream iStream = null;
     try {
-      iStream = new FileInputStream(ConfigFinder.getInstance().locateFile(filename));
+      File input = new File(filename);
+      if (! input.exists()) {
+	// Try the ConfigFinder
+	input = ConfigFinder.getInstance().locateFile(filename);
+      }
+      if (input != null && input.exists()) {
+	if (log.isDebugEnabled()) {
+	  log.debug("Found file: " + input.getPath());
+	}
+	iStream = new FileInputStream(input);
+      } else {
+	// Couldn't find the file at all. Return false;
+	if (log.isDebugEnabled()) {
+	  log.debug("Couldn't find file: " + filename);
+	}
+	return false;
+      }
     } catch(IOException e) {
       if(log.isErrorEnabled()) {
         log.error("Exception finding file", e);
