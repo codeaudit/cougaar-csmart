@@ -30,6 +30,7 @@ public class PopulateDb {
     public static final String INSERT_AGENT_ORG = "insertAgentOrg";
     public static final String INSERT_ATTRIBUTE = "insertAttribute";
     public static final String INSERT_RELATIONSHIP = "insertRelationship";
+    public static final String CHECK_RELATIONSHIP = "checkRelationship";
     public static final String QUERY_LIB_PG_ATTRIBUTE = "queryLibPGAttribute";
     public static final String QUERY_MAX_ASSEMBLY_ID = "queryMaxAssemblyId";
     public static final String QUERY_MAX_TRIAL_ID = "queryMaxTrialId";
@@ -472,7 +473,7 @@ public class PopulateDb {
         }
         if (isAgent) {
             // Must be a metric or impact agent because that's all that gets added
-            populateAgent(data);
+            populateAgent(data, isAdded);
             result = true;
             force = true;   // Force writing of all plugins, too
         }
@@ -510,12 +511,46 @@ public class PopulateDb {
      * Special processing for an agent component because agents
      * represent organizations have relationships and property groups.
      **/
-    private void populateAgent(ComponentData data) throws SQLException {
+    private void populateAgent(ComponentData data, boolean isAdded) throws SQLException {
         AgentAssetData assetData = data.getAgentAssetData();
         if (assetData == null) return;
         substitutions.put(":component_lib_id:", getComponentLibId(data));
         substitutions.put(":agent_org_prototype:", sqlQuote(assetData.getAssetClass()));
-        executeUpdate(stmt, dbp.getQuery(INSERT_AGENT_ORG, substitutions));
+        if (isAdded) {
+            executeUpdate(stmt, dbp.getQuery(INSERT_AGENT_ORG, substitutions));
+            PropGroupData[] pgs = assetData.getPropGroups();
+            for (int i = 0; i < pgs.length; i++) {
+                PropGroupData pg = pgs[i];
+                String pgName = pg.getName();
+                PGPropData[] props = pg.getProperties();
+                for (int j = 0; j < props.length; j++) {
+                    PGPropData prop = props[i];
+                    PropertyInfo propInfo = getPropertyInfo(pgName, prop.getName());
+                    substitutions.put(":component_alib_id:", getComponentAlibId(data));
+                    substitutions.put(":pg_attribute_lib_id:", propInfo.getAttributeLibId());
+                    substitutions.put(":start_date:", sqlQuote("2000-01-01 00:00:00"));
+                    substitutions.put(":end_date:", sqlQuote(null));
+                    if (propInfo.isCollection()) {
+                        if (!prop.isListType())
+                            throw new RuntimeException("Property is not a collection: "
+                                                       + propInfo.toString());
+                        String[] values = ((PGPropMultiVal) prop.getValue()).getValuesStringArray();
+                        for (int k = 0; k < values.length; k++) {
+                            substitutions.put(":attribute_value:", sqlQuote(values[k]));
+                            substitutions.put(":attribute_order:", String.valueOf(k + 1));
+                            executeUpdate(stmt, dbp.getQuery(INSERT_ATTRIBUTE, substitutions));
+                        }
+                    } else {
+                        if (prop.isListType())
+                            throw new RuntimeException("Property is not a single value: "
+                                                       + propInfo.toString());
+                        substitutions.put(":attribute_value:", sqlQuote(prop.getValue().toString()));
+                        substitutions.put(":attribute_order:", "1");
+                        executeUpdate(stmt, dbp.getQuery(INSERT_ATTRIBUTE, substitutions));
+                    }
+                }
+            }
+        }
         RelationshipData[] relationships = assetData.getRelationshipData();
         for (int i = 0; i < relationships.length; i++) {
             RelationshipData r = relationships[i];
@@ -528,39 +563,9 @@ public class PopulateDb {
             substitutions.put(":supported:", getAgentAlibId(r.getCluster()));
             substitutions.put(":start_date:", sqlQuote(r.getStartTime()));
             substitutions.put(":stop_date:", sqlQuote(r.getStopTime()));
-            executeUpdate(stmt, dbp.getQuery(INSERT_RELATIONSHIP, substitutions));
-        }
-        PropGroupData[] pgs = assetData.getPropGroups();
-        for (int i = 0; i < pgs.length; i++) {
-            PropGroupData pg = pgs[i];
-            String pgName = pg.getName();
-            PGPropData[] props = pg.getProperties();
-            for (int j = 0; j < props.length; j++) {
-                PGPropData prop = props[i];
-                PropertyInfo propInfo = getPropertyInfo(pgName, prop.getName());
-                substitutions.put(":component_alib_id:", getComponentAlibId(data));
-                substitutions.put(":pg_attribute_lib_id:", propInfo.getAttributeLibId());
-                substitutions.put(":start_date:", sqlQuote("2000-01-01 00:00:00"));
-                substitutions.put(":end_date:", sqlQuote(null));
-                if (propInfo.isCollection()) {
-                    if (!prop.isListType())
-                        throw new RuntimeException("Property is not a collection: "
-                                               + propInfo.toString());
-                    String[] values = ((PGPropMultiVal) prop.getValue()).getValuesStringArray();
-                    for (int k = 0; k < values.length; k++) {
-                        substitutions.put(":attribute_value:", sqlQuote(values[k]));
-                        substitutions.put(":attribute_order:", String.valueOf(k + 1));
-                        executeUpdate(stmt, dbp.getQuery(INSERT_ATTRIBUTE, substitutions));
-                    }
-                } else {
-                    if (prop.isListType())
-                        throw new RuntimeException("Property is not a single value: "
-                                               + propInfo.toString());
-                    substitutions.put(":attribute_value:", sqlQuote(prop.getValue().toString()));
-                    substitutions.put(":attribute_order:", "1");
-                    executeUpdate(stmt, dbp.getQuery(INSERT_ATTRIBUTE, substitutions));
-                }
-            }
+            ResultSet rs = executeQuery(stmt, dbp.getQuery(CHECK_RELATIONSHIP, substitutions));
+            if (!rs.next())
+                executeUpdate(stmt, dbp.getQuery(INSERT_RELATIONSHIP, substitutions));
         }
     }
 
