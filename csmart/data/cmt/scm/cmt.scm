@@ -1545,12 +1545,12 @@
 		       "   from "
 		       "   " asb-prefix "ASB_COMPONENT_HIERARCHY b,"
 		       "   " asb-prefix "ALIB_COMPONENT node,"
-		       "   " asb-prefix "ALIB_COMPONENT agent,"
+		       "   " asb-prefix "ALIB_COMPONENT agent"
 		       "   where"
 		       "   node.COMPONENT_NAME="(sqlQuote nodeName)
 		       "   and agent.COMPONENT_NAME="(sqlQuote agentName)
-		       "   b.component_alib_id=agent.component_alib_id"
-		       "   b.parent_component_alib_id=node.component_alib_id"
+		       "   and b.component_alib_id=agent.component_alib_id"
+		       "   and b.parent_component_alib_id=node.component_alib_id"
 		       ")")))
 	    (dbu (string-append 
 		  "insert into " asb-prefix "update " asb-prefix "ASB_COMPONENT_HIERARCHY"
@@ -1558,13 +1558,13 @@
 		  "   from "
 		  "   " asb-prefix "ASB_COMPONENT_HIERARCHY b,"
 		  "   " asb-prefix "ALIB_COMPONENT node,"
-		  "   " asb-prefix "ALIB_COMPONENT agent,"
+		  "   " asb-prefix "ALIB_COMPONENT agent"
 		  "   where"
 		  "   node.COMPONENT_NAME="(sqlQuote nodeName)
 		  "   and agent.COMPONENT_NAME="(sqlQuote agentName)
-		  "   b.component_alib_id=agent.component_alib_id"
-		  "   b.parent_component_alib_id=node.component_alib_id"
-		  ")"))
+		  "   and b.component_alib_id=agent.component_alib_id"
+		  "   and b.parent_component_alib_id=node.component_alib_id"
+		  ))
 	    ))
 	  )
 	(.get nodeTable nodeName)))
@@ -1588,12 +1588,12 @@
 		       "   from "
 		       "   " asb-prefix "ASB_COMPONENT_HIERARCHY b,"
 		       "   " asb-prefix "ALIB_COMPONENT machine,"
-		       "   " asb-prefix "ALIB_COMPONENT node,"
+		       "   " asb-prefix "ALIB_COMPONENT node"
 		       "   where"
 		       "   machine.COMPONENT_NAME="(sqlQuote machineName)
 		       "   and node.COMPONENT_NAME="(sqlQuote nodeName)
-		       "   b.component_alib_id=node.component_alib_id"
-		       "   b.parent_component_alib_id=machine.component_alib_id"
+		       "   and b.component_alib_id=node.component_alib_id"
+		       "   and b.parent_component_alib_id=machine.component_alib_id"
 		       ")")))
 	    (dbu (string-append 
 		  "insert into " asb-prefix "update " asb-prefix "ASB_COMPONENT_HIERARCHY"
@@ -1601,13 +1601,13 @@
 		  "   from "
 		  "   " asb-prefix "ASB_COMPONENT_HIERARCHY b,"
 		  "   " asb-prefix "ALIB_COMPONENT machine,"
-		  "   " asb-prefix "ALIB_COMPONENT node,"
+		  "   " asb-prefix "ALIB_COMPONENT node"
 		  "   where"
 		  "   machine.COMPONENT_NAME="(sqlQuote machineName)
 		  "   and node.COMPONENT_NAME="(sqlQuote nodeName)
-		  "   b.component_alib_id=node.component_alib_id"
-		  "   b.parent_component_alib_id=machine.component_alib_id"
-		  ")"))
+		  "   and b.component_alib_id=node.component_alib_id"
+		  "   and b.parent_component_alib_id=machine.component_alib_id"
+		  ))
 	    ))
 	  )
 	(.get machineTable machineName)))
