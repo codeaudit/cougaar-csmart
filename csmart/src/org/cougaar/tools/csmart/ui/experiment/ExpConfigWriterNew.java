@@ -54,6 +54,9 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
   transient List components;
   ComponentData theSoc;
 
+  // Remove when prototypes are fixed.
+  private String metricsInitializer = null;
+
   public ExpConfigWriterNew(List components, NodeComponent[] nodesToWrite, Experiment exp) {
     this.nodesToWrite = nodesToWrite;
     this.components = components;
@@ -152,7 +155,7 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
 	System.err.println("Got unknown LeafComponent type: " + leaf.getType());
 	continue;
       }
-      System.err.println("Writing leaf data file: " + leaf.getName());
+//       System.err.println("Writing leaf data file: " + leaf.getName());
       PrintWriter writer = new PrintWriter(new FileWriter(new File(configDir, leaf.getName())));
       try {
 	writer.println(leaf.getValue().toString());
@@ -193,6 +196,22 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
       } // end of loop over children
       writer.println("[ Clusters ]");
       children = nc.getChildren();
+
+      // Get the name if the initializer plugin.
+      for(int i=0; i < nc.childCount(); i++) {
+	if(children[i] instanceof AgentComponentData) {
+	  AgentComponentData agent = (AgentComponentData)children[i];
+	  ComponentData[] plugins = agent.getChildren();
+	  for(int j=0; j < plugins.length; j++) {
+	    ComponentData aa = plugins[j];
+	    if(aa.getName().equals("org.cougaar.tools.csmart.plugin.MetricsInitializerPlugin")) {
+	      metricsInitializer = agent.getName().toString();
+	      break;
+	    }
+	  }
+	}
+      }
+
       for (int i = 0; i < nc.childCount(); i++) {
 	if (children[i] instanceof AgentComponentData) {
 	  writer.print("cluster = ");
@@ -272,6 +291,7 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
     PrintWriter writer = new PrintWriter(new FileWriter(new File(configDir, agent.getName() + "-prototype-ini.dat")));
 
     if(agent.getOwner() instanceof ABCSociety) {
+      
       ABCSociety soc = (ABCSociety)agent.getOwner();
 
       Iterator iter = ((Collection)soc.getDescendentsOfClass(ABCAgent.class)).iterator();
@@ -279,7 +299,7 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
 	ABCAgent ag = (ABCAgent)iter.next();
 	String name = ag.getFullName().toString();
 	if(name.equals(agent.getName())) {
-	  ag.writePrototypeIniFile(writer);
+	  ag.writePrototypeIniFile(writer, metricsInitializer);
 	}
       }
     } else if(agent.getOwner() instanceof ScalabilityXSociety) {
