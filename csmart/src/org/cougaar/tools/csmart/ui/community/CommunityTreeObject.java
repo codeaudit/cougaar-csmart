@@ -95,9 +95,9 @@ public class CommunityTreeObject implements Cloneable {
       } else {
 	allowsChildren = false;
 	isAgent = true;
-        if(log.isWarnEnabled()) {
-          log.warn("CommunityTreeObject " + label + " created with unknown type: " +
-                    type + " in community " + communityName);
+        if(log.isInfoEnabled()) {
+          log.info("CommunityTreeObject " + label + " created with unknown type: " +
+                    type + " in community " + communityName + ". Treating as agent.");
         }
       }
     }
