@@ -72,6 +72,7 @@ public class PrototypeParser {
   private Logger log;
   private String clusterId;
   private DateFormat myDateFormat = DateFormat.getInstance(); 
+  private boolean haveItemId = false;
 
   private static TrivialTimeSpan ETERNITY = 
     new TrivialTimeSpan(TimeSpan.MIN_VALUE,
@@ -220,6 +221,12 @@ public class PrototypeParser {
         log.error("Exception", e);
       }
     }
+    if(haveItemId == false) {
+      String uic = aad.getUIC();
+      aad.addPropertyGroup(setItemIdentificationPG(uic, uic.substring(uic.indexOf("/")+1), "")); 
+
+   }
+
     return aad;
   } 
 
@@ -297,6 +304,9 @@ public class PrototypeParser {
     String propertyName = prop.substring(1, prop.length()-1).trim();
     if(log.isDebugEnabled()) {
       log.debug("Creating PropGroupData: " + propertyName);
+    }
+    if(propertyName.indexOf("ItemIdentification") != -1) {
+      haveItemId = true;
     }
     PropGroupData pgData = new PropGroupData(propertyName);
     PGPropData propData = null;
