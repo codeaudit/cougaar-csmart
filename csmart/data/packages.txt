@@ -78,8 +78,6 @@ The document outlines the current CSMART package structure:
           Society View classes
       -- viewer
           Gif files and the CSMART UI
-    -- psp
-	All PSP's used by CSMART
     -- servlet
        Servlets to replace the above PSPs
     -- tree
