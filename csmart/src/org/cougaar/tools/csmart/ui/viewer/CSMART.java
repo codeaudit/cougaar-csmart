@@ -96,11 +96,10 @@ import java.io.ObjectInputStream;
 public class CSMART extends JFrame implements ActionListener, Observer, TreeSelectionListener {
   private static Organizer organizer;
   private static JFileChooser workspaceFileChooser;
+  private static ArrayList runningExperiments = new ArrayList();
   private static Hashtable titleToMenuItem = new Hashtable();
   private static JToolBar toolBar;
   private static JMenu windowMenu;
-  // the running experiment; set by the console
-  private static Experiment runningExperiment;
   private static CSMARTConsole console;
   private static File resultDir;
   // the entries in the file menu; conditionally enabled
@@ -395,26 +394,16 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
         }
       }; // end of listener
 
-  // TODO: the following only keep track of the most
-  // recently started experiment; we need a better way to
-  // allow the monitor to monitor a single experiment
-  // or query the user if there are multiple experiments running
-
-  /**
-   * Set which experiment is running.  Called with null when experiment
-   * terminates or is terminated.
-   */
-
-  public void setRunningExperiment(Experiment experiment) {
-    runningExperiment = experiment;
+  public void addRunningExperiment(Experiment experiment) {
+    runningExperiments.add(experiment);
   }
 
-  /**
-   * Get the running experiment.  Used by tools that monitor experiments.
-   */
+  public void removeRunningExperiment(Experiment experiment) {
+    runningExperiments.remove(experiment);
+  }
 
-  public Experiment getRunningExperiment() {
-    return runningExperiment;
+  public static Experiment[] getRunningExperiments() {
+    return (Experiment[])runningExperiments.toArray(new Experiment[runningExperiments.size()]);
   }
 
   private void enableConfigurationTool(boolean enable) {
@@ -547,30 +536,31 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   // within CSMART
   public void runBuilder(ModifiableComponent cc, 
                          boolean alwaysNew) {
-    if (!cc.isEditable()) {
-      Object[] options = { "Edit", "View", "Copy", "Cancel" };
-      int result = 
-        JOptionPane.showOptionDialog(this,
-                                     cc.getShortName() + " is not editable",
-                                     "Not Editable",
-                                     JOptionPane.DEFAULT_OPTION,
-                                     JOptionPane.WARNING_MESSAGE,
-                                     null,
-                                     options,
-                                     options[0]);
-      if (result == 0) {
-        // edit it anyway
-        cc.setEditable(true);
-      } else if (result == 2) {
-        // copy it
-        if (cc instanceof RecipeComponent)
-          cc = organizer.copyRecipe((RecipeComponent)cc);
-        else if (cc instanceof SocietyComponent)
-          cc = organizer.copySociety((SocietyComponent)cc);
-      } else if (result != 1)
-        // user cancelled
-        return;
-    }
+    // components are always editable
+//      if (!cc.isEditable()) {
+//        Object[] options = { "Edit", "View", "Copy", "Cancel" };
+//        int result = 
+//          JOptionPane.showOptionDialog(this,
+//                                       cc.getShortName() + " is not editable",
+//                                       "Not Editable",
+//                                       JOptionPane.DEFAULT_OPTION,
+//                                       JOptionPane.WARNING_MESSAGE,
+//                                       null,
+//                                       options,
+//                                       options[0]);
+//        if (result == 0) {
+//          // edit it anyway
+//          cc.setEditable(true);
+//        } else if (result == 2) {
+//          // copy it
+//          if (cc instanceof RecipeComponent)
+//            cc = organizer.copyRecipe((RecipeComponent)cc);
+//          else if (cc instanceof SocietyComponent)
+//            cc = organizer.copySociety((SocietyComponent)cc);
+//        } else if (result != 1)
+//          // user cancelled
+//          return;
+//      }
     // note that cc is guaranteed non-null when this is called
     Class[] paramClasses = { ModifiableComponent.class };
     Object[] params = new Object[1];
@@ -610,10 +600,11 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     if (isExperimentInEditor(experiment))
       return;
     // if the experiment is being run, it can't be edited
-    if (experiment.isRunInProgress()) {
-      Object[] options = { "View", "Copy", "Cancel" };
-      experiment = queryUser(experiment, options);
-    } else if (!experiment.isEditable()) {
+    //    if (experiment.isRunInProgress()) {
+    //      Object[] options = { "View", "Copy", "Cancel" };
+    //      experiment = queryUser(experiment, options);
+    //    } else if (!experiment.isEditable()) {
+    if (!experiment.isEditable()) {
       // otherwise editability can be overwritten
       Object[] options = { "Edit", "View", "Copy", "Cancel" };
       experiment = queryUser(experiment, options);
@@ -700,9 +691,18 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   }
 
   public void runMonitor() {
-    HostComponent[] hosts = getRunningExperiment().getHosts();
-    String name = hosts[0].getShortName();
-    createTool(SOCIETY_MONITOR, CSMARTUL.class, name, null, null, null);
+    Experiment runningExperiment = null;
+    String name = "";
+    if (runningExperiments.size() > 0) {
+      runningExperiment = (Experiment)runningExperiments.get(0);
+      name = runningExperiment.getExperimentName();
+    }
+    Class[] paramClasses = { CSMART.class, Experiment.class };
+    Object[] params = new Object[2];
+    params[0] = this;
+    params[1] = runningExperiment;
+    createTool(SOCIETY_MONITOR, CSMARTUL.class, name, null,
+               paramClasses, params);
   }
 
   public void runAnalyzer(Experiment experiment) {
@@ -862,7 +862,8 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
           }
       }
     } else if (s.indexOf(SOCIETY_MONITOR) != -1) {
-      runMonitor();
+      if (NamedFrame.getNamedFrame().getToolFrame(SOCIETY_MONITOR) == null)
+        runMonitor();
     } else if (s.indexOf(PERFORMANCE_ANALYZER) != -1) {
       Experiment[] experiments = organizer.getSelectedExperiments();
       if (experiments != null && experiments.length > 0)
