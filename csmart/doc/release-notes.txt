@@ -26,6 +26,10 @@ reloaded, in particular to reflect the obsolesence of ClusterIdentifier.
 - Updated AdaptivitySupport recipe to reflect core/planning split, and
   new fact that AEViewerServlet does not use
   BlackboardServletComponent.
+- Removed the old and obsolete Agent Insertion recipe. Use the
+  Complete Agent recipe instead.
+- Removed the old and obsolete Component Insertion Recipe. Use the
+  Specific Insertion Recipe instead.
 - Code cleanup .... FIXME!!
 - Remove misleading "idleness" graphs in Console.
 - Remove unused multi-trial and property experimental-values code.
