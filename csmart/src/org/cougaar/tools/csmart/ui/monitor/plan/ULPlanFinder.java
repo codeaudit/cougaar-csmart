@@ -40,7 +40,7 @@ import org.cougaar.tools.csmart.ui.monitor.generic.CSMARTGraph;
  */
 
 public class ULPlanFinder extends JDialog {
-  private static final String ALL = "All";
+  private static final String ALL = "ALL";
   private CSMARTGraph graph;
   private CSMARTFrame frame;
   private JPanel findPanel;
@@ -53,32 +53,100 @@ public class ULPlanFinder extends JDialog {
   private Vector selectedObjects;
   private Hashtable communityToAgents;
   Box box = new Box(BoxLayout.Y_AXIS);
-  JPanel loadedPanel =  null;
-  private boolean allTimeFilter;
-  private long startTime;
-  private long endTime;
-  private JTextField startTimeField;
-  private JTextField endTimeField;
+  private Vector loadedPanels = new Vector();
   private Vector planObjects;
   private Vector planElements;
+  // Time panel
+  private JPanel timePanel;
+  private JLabel fromLabel;
+  private JLabel toLabel;
+  private boolean allTimeFilter;
+  private double startTime;
+  private double endTime;
+  private JTextField startTimeField;
+  private JTextField endTimeField;
+  // TASK Panel 
   private JPanel taskPanel;
   private JComboBox verbCB;
+  private JComboBox directObjUIDCB;
+  private JComboBox prepPhraseCB;
+  private JPanel taskRangePanel;
+  private boolean allTaskFilter;
+  private JTextField taskStartField;
+  private JLabel taskStartLabel;
+  private JTextField taskEndField;
+  private JLabel taskEndLabel;
+  private double taskStart;
+  private double taskEnd;
+  // ASSET Panel 
   private JPanel assetPanel;
-  private JComboBox nameCB;
-  private JPanel timePanel;
+  private JComboBox assetClusterCB;
+  private JComboBox assetGroupNameCB;
+  private JComboBox assetNameCB;
+  // asset transfer panel
+  private JPanel assetTransferPanel;
+  private JComboBox assetTransUIDCB;
+  private JComboBox assignUIDCB;
+  private JComboBox assignorCB;
+  // Happiness Panel 
+  private JPanel happinessPanel;
+  private JPanel happinessRangePanel;
+  private JComboBox regardingCB;
+  private JComboBox publisherCB;
+  private JComboBox sourceCB;
+  private JComboBox descriptionCB;
+  private boolean allRatingFilter;
+  private float ratingStart;
+  private float ratingEnd;
+  private JTextField ratingStartField;
+  private JLabel ratingStartLabel;
+  private JTextField ratingEndField;
+  private JLabel ratingEndLabel;
+  private boolean allDeltaFilter;
+  private float deltaStart;
+  private float deltaEnd;
+  private JTextField deltaStartField;
+  private JLabel deltaStartLabel;
+  private JTextField deltaEndField;
+  private JLabel deltaEndLabel;
+  private boolean allCumulFilter;
+  private double eventCumulStart;
+  private double eventCumulEnd;
+  private JLabel eventCumulStartLabel;
+  private JTextField eventCumulStartField;
+  private JLabel eventCumulEndLabel;
+  private JTextField eventCumulEndField;
+  private boolean allComplFilter;
+  private long timeComplStart;
+  private long timeComplEnd;
+  private JLabel timeComplStartLabel;
+  private JTextField timeComplStartField;
+  private JLabel timeComplEndLabel;
+  private JTextField timeComplEndField;
+  // allocation panel
+  private JPanel allocationPanel;
+  private JComboBox allocToClusterCB;
+  private JComboBox allocTaskUIDCB;
+  private JComboBox allocAssetUIDCB;
+  private JComboBox allocRemoteClusterUIDCB;
+  private JComboBox allocLocalOrgUIDCB;
   private ActionListener disableFindNext;
+  private JPanel successPanel;
   private JCheckBox successCBox;
-  private ButtonGroup statusButtonGroup;
-  private String status;
+  // status panel
+  private JPanel statusPanel;
   private JRadioButton estimatedButton;
   private JRadioButton reportedButton;
   private JRadioButton observedButton;
-  private JLabel fromLabel;
-  private JLabel toLabel;
+  private ButtonGroup statusButtonGroup;
+  private String status;
+
 
   public ULPlanFinder(CSMARTFrame frame, 
                       CSMARTGraph graph, 
                       Hashtable communityToAgents) {
+
+    super(frame, "Finder");
 
     this.communityToAgents = communityToAgents;
     this.graph = graph;
@@ -97,7 +165,7 @@ public class ULPlanFinder extends JDialog {
 
     communityCB = new JComboBox();
     Enumeration keys = communityToAgents.keys();
-    communityCB.addItem("Select One");
+    communityCB.addItem(ALL);
     while (keys.hasMoreElements()) {
       communityCB.addItem((String)keys.nextElement());
     }
@@ -147,7 +215,7 @@ public class ULPlanFinder extends JDialog {
     JLabel planObjectTypeLabel = new JLabel("PlanObject Types: ");
 
     planObjectTypeCB = new JComboBox();
-    planObjectTypeCB.addItem("Select One");
+    planObjectTypeCB.addItem(ALL);
     planObjects = graph.getValuesOfAttribute(PropertyNames.OBJECT_TYPE);
     planElements = graph.getValuesOfAttribute(PropertyNames.PLAN_ELEMENT_TYPE);
     for (int i = 0; i < planObjects.size(); i++ ) {
@@ -176,13 +244,6 @@ public class ULPlanFinder extends JDialog {
 					  GridBagConstraints.HORIZONTAL,
 					  new Insets(0, 0, 0, 0), 0, 0));
     box.add(planObjectPanel);
-
-    // if only one community, select it and fill in the agent list
-    //    if (communityNames.size() == 1)
-    //      communityCB.setSelectedIndex(0);
-
-    // select the "Select One" item
-    //    communityCB.setSelectedIndex(communityNames.size()-1);
 
     findPanel.add(box, BorderLayout.CENTER);
 
@@ -266,12 +327,10 @@ public class ULPlanFinder extends JDialog {
     if (agentCB.getItemCount() != 0)
       agentCB.removeAllItems();
     Object selection = cb.getSelectedItem();
-    if (((String)selection).equals("Select One"))
+    if (((String)selection).equals(ALL))
       return; // do nothing
 
-    //agentCB.addItem(ALL);  
-    // MEK - ALL is not working yet so we'll use select one
-    agentCB.addItem("Select One");
+    agentCB.addItem(ALL);
     Vector agentNames = ((Vector)communityToAgents.get(cb.getSelectedItem()));
       for (int i = 0; i < agentNames.size(); i++)
         agentCB.addItem(agentNames.elementAt(i));
@@ -284,27 +343,47 @@ public class ULPlanFinder extends JDialog {
   private void planObjectTypeActionPerformed(ActionEvent e) {
     JComboBox cb = (JComboBox)e.getSource();
     String s = (String)cb.getSelectedItem();
-    if (s.equals("Select One"))
+    if (s.equals(ALL)){
+      if (!loadedPanels.isEmpty()) {
+        for (int i=0; i<loadedPanels.size(); i++) 
+          box.remove((JPanel)loadedPanels.elementAt(i));
+        pack();
+      }
       return; // do nothing
-
-    if (s.equals("Task")) {
-      if (loadedPanel != null) 
-        box.remove(loadedPanel);
+    }
+    if (s.equals(PropertyNames.TASK_OBJECT)) {
+    // handle TASK_OBJECT
+      if (!loadedPanels.isEmpty()) {
+        for (int i=0; i<loadedPanels.size(); i++) {
+          box.remove((JPanel)loadedPanels.elementAt(i));
+          pack();
+        }
+      }
       taskPanel = new JPanel();
       taskPanel.setLayout(new GridBagLayout());
-      TitledBorder timeTitledBorder = new TitledBorder("Task");
-      taskPanel.setBorder(timeTitledBorder);
-      verbCB = new JComboBox(graph.getValuesOfAttribute(PropertyNames.TASK_VERB));
-      JLabel verbLabel = new JLabel ("Verb");
+      TitledBorder taskTitledBorder = new TitledBorder("Task");
+      taskPanel.setBorder(taskTitledBorder);
+      verbCB = new JComboBox();
+      verbCB.addItem(ALL);
+      Vector verbs = graph.getValuesOfAttribute(PropertyNames.TASK_VERB);
+      for (int i = 0; i < verbs.size(); i++) 
+        verbCB.addItem(verbs.elementAt(i));
+      JLabel verbLabel = new JLabel ("Verb :");
       verbCB.addActionListener(disableFindNext);
-
-
-      JComboBox prepCB = new JComboBox(graph.getValuesOfAttribute(PropertyNames.TASK_PREP_PHRASE));
-      JLabel prepLabel = new JLabel ("Preposition");
-      prepCB.setEnabled(false);
-      JComboBox indObjCB = new JComboBox();
-      JLabel indObjLabel = new JLabel ("Indirect Object");
-      indObjCB.setEnabled(false);
+      JLabel directObjUIDLabel = new JLabel ("Direct Object UID :");
+      directObjUIDCB = new JComboBox();
+      directObjUIDCB.addItem(ALL);
+      Vector dirObjs = graph.getValuesOfAttribute(PropertyNames.TASK_DIRECT_OBJECT_UID);
+      for (int i = 0; i < dirObjs.size(); i++ )
+        directObjUIDCB.addItem(dirObjs.elementAt(i));
+      directObjUIDCB.addActionListener(disableFindNext);
+      JLabel prepPhraseLabel = new JLabel ("Prep Phrase :");
+      prepPhraseCB = new JComboBox();
+      prepPhraseCB.addItem(ALL);
+      Vector prepPhrases = graph.getValuesOfAttribute(PropertyNames.TASK_PREP_PHRASE);
+      for (int i=0; i<prepPhrases.size(); i++)
+        prepPhraseCB.addItem(prepPhrases.elementAt(i));
+      prepPhraseCB.addActionListener(disableFindNext);
       int x = 0;
       int y = 0;
       taskPanel.add(verbLabel,
@@ -319,87 +398,629 @@ public class ULPlanFinder extends JDialog {
                                            new Insets(0, 0, 0, 0), 0, 0));
       y = 1;
       x = 0;
-      taskPanel.add(prepLabel,
+      taskPanel.add(directObjUIDLabel,
                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
                                            GridBagConstraints.WEST,
                                            GridBagConstraints.HORIZONTAL,
                                            new Insets(0, 0, 0, 0), 0, 0));
-      taskPanel.add(prepCB,
+      taskPanel.add(directObjUIDCB,
                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
                                            GridBagConstraints.WEST,
                                            GridBagConstraints.HORIZONTAL,
                                            new Insets(0, 0, 0, 0), 0, 0));
       y = 2;
       x = 0;
-      taskPanel.add(indObjLabel,
+      taskPanel.add(prepPhraseLabel,
                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
                                            GridBagConstraints.WEST,
                                            GridBagConstraints.HORIZONTAL,
                                            new Insets(0, 0, 0, 0), 0, 0));
-      taskPanel.add(indObjCB,
+      taskPanel.add(prepPhraseCB,
                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
                                            GridBagConstraints.WEST,
                                            GridBagConstraints.HORIZONTAL,
                                            new Insets(0, 0, 0, 0), 0, 0));
 
       box.add(taskPanel);
-      pack();
-      loadedPanel = taskPanel;
+      // task end time panel
+      taskRangePanel = new JPanel();
+      taskRangePanel.setLayout(new GridBagLayout());
+      taskStartLabel = new JLabel("Task Start :");
+      taskStartLabel.setEnabled(false);
+      taskStartField = new JTextField(10);
+      taskStartField.setEnabled(false);
+      taskEndLabel = new JLabel("Task End :");
+      taskEndLabel.setEnabled(false);
+      taskEndField = new JTextField(10);
+      taskEndField.setEnabled(false);
+      JRadioButton allTaskButton = new JRadioButton("All");
+      allTaskFilter = true;
+      allTaskButton.setFocusPainted(false);
+      allTaskButton.setSelected(true);
+      allTaskButton.addActionListener(disableFindNext);
+      allTaskButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          allTaskFilter = true;
+          taskStartLabel.setEnabled(false);
+          taskStartField.setEnabled(false);
+          taskEndLabel.setEnabled(false);
+          taskEndField.setEnabled(false);
+        }
+      });
+      JRadioButton specificTaskButton = new JRadioButton();
+      specificTaskButton.setFocusPainted(false);
+      specificTaskButton.addActionListener(disableFindNext);
+      specificTaskButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          allTaskFilter = false;
+          taskStartLabel.setEnabled(true);
+          taskStartField.setEnabled(true);
+          taskEndLabel.setEnabled(true);
+          taskEndField.setEnabled(true);
+        }
+      });
+      ButtonGroup taskButtonGroup = new ButtonGroup();
+      taskButtonGroup.add(allTaskButton);
+      taskButtonGroup.add(specificTaskButton);
+      x=0;
+      y=0;
+      taskRangePanel.add(allTaskButton,
+                    new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                           GridBagConstraints.WEST,
+                                           GridBagConstraints.HORIZONTAL,
+                                           new Insets(0, 0, 0, 0), 0, 0));
+      taskRangePanel.add(specificTaskButton,
+                    new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                           GridBagConstraints.WEST,
+                                           GridBagConstraints.HORIZONTAL,
+                                           new Insets(0, 0, 0, 0), 0, 0));
+      taskRangePanel.add(taskStartLabel,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      taskRangePanel.add(taskStartField,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      taskRangePanel.add(taskEndLabel,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      taskRangePanel.add(taskEndField,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
 
-    }else if ((s.equals("Allocation")) || (s.equals("Aggregation")) || (s.equals("Expansion")) || (s.equals("Disposition"))) {
-      if (loadedPanel != null) 
-        box.remove(loadedPanel);
-      timePanel = new JPanel();
-      timePanel.setLayout(new GridBagLayout());
-      TitledBorder timeTitledBorder = new TitledBorder("Time");
-      timePanel.setBorder(timeTitledBorder);
-      successCBox = new JCheckBox("Success");
-      successCBox.addActionListener(disableFindNext);
+      box.add(taskRangePanel);
+      pack();
+      if (!loadedPanels.isEmpty())
+        loadedPanels.clear();
+      loadedPanels.addElement(taskPanel);
+      loadedPanels.addElement(taskRangePanel);
+    }else if (s.equals(PropertyNames.ASSET_OBJECT))  {
+      // handle ASSET_OBJECT
+      if (!loadedPanels.isEmpty()) {
+        for (int i=0; i<loadedPanels.size(); i++) {
+          box.remove((JPanel)loadedPanels.elementAt(i));
+          pack();
+        }
+      }
+      assetPanel = new JPanel();
+      assetPanel.setLayout(new GridBagLayout());
+      TitledBorder assetTitledBorder = new TitledBorder("Asset");
+      assetPanel.setBorder(assetTitledBorder);
+      JLabel assetClusterLabel = new JLabel("Asset Cluster :");
+      assetClusterCB = new JComboBox();
+      assetClusterCB.addItem(ALL);
+      Vector assetClusters = graph.getValuesOfAttribute(PropertyNames.ASSET_CLUSTER);
+      for (int i=0; i<assetClusters.size(); i++) 
+        assetClusterCB.addItem(assetClusters.elementAt(i));
+      assetClusterCB.addActionListener(disableFindNext);
+
+      JLabel assetGroupNameLabel = new JLabel("Asset Group Name :");
+      assetGroupNameCB = new JComboBox();
+      assetGroupNameCB.addItem(ALL);
+      Vector assetGroupNames = graph.getValuesOfAttribute(PropertyNames.ASSET_GROUP_NAME);
+      for (int i=0; i<assetGroupNames.size(); i++) 
+        assetGroupNameCB.addItem(assetGroupNames.elementAt(i));
+      assetGroupNameCB.addActionListener(disableFindNext);
+
+      JLabel assetNameLabel = new JLabel("Name :");
+      assetNameCB = new JComboBox();
+      assetNameCB.addItem(ALL);
+      Vector assetNames = graph.getValuesOfAttribute(PropertyNames.ASSET_NAME);
+      for (int i=0; i<assetNames.size(); i++) 
+        assetNameCB.addItem(assetNames.elementAt(i));
+      assetNameCB.addActionListener(disableFindNext);
+
+      int x = 0;
+      int y = 0;
+      assetPanel.add(assetClusterLabel,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      assetPanel.add(assetClusterCB,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      y = 1;
+      x = 0;
+      assetPanel.add(assetGroupNameLabel,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      assetPanel.add(assetGroupNameCB,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      y = 2;
+      x = 0;
+      assetPanel.add(assetNameLabel,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      assetPanel.add(assetNameCB,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+
+      box.add(assetPanel);
+      pack();
+      if (!loadedPanels.isEmpty())
+        loadedPanels.clear();
+      loadedPanels.addElement(assetPanel);
+    }else if (s.equals(PropertyNames.EVENT_HAPPINESS_CHANGE))  {
+      if (!loadedPanels.isEmpty()) {
+        for (int i=0; i<loadedPanels.size(); i++) {
+          box.remove((JPanel)loadedPanels.elementAt(i));
+          pack();
+        }
+      }
+      happinessPanel = new JPanel();
+      happinessPanel.setLayout(new GridBagLayout());
+      TitledBorder happinessTitledBorder = new TitledBorder("Happiness");
+      happinessPanel.setBorder(happinessTitledBorder);
+
+      JLabel regardingLabel = new JLabel("Event Regarding :");
+      Vector regards = graph.getValuesOfAttribute(PropertyNames.EVENT_REGARDING);
+      regardingCB = new JComboBox();
+      regardingCB.addItem(ALL);
+      for (int i=0; i<regards.size(); i++) {
+        regardingCB.addItem(regards.elementAt(i));
+      }
+      regardingCB.addActionListener(disableFindNext);
+      JLabel publisherLabel = new JLabel("Publisher :");
+      Vector publishers = graph.getValuesOfAttribute(PropertyNames.EVENT_PUBLISHER);
+      publisherCB = new JComboBox();
+      publisherCB.addItem(ALL);
+      for (int i=0; i<publishers.size(); i++) {
+        publisherCB.addItem(publishers.elementAt(i));
+      }
+      publisherCB.addActionListener(disableFindNext);
+      JLabel sourceLabel = new JLabel("Source :");
+      Vector sources = graph.getValuesOfAttribute(PropertyNames.EVENT_SOURCE);
+      sourceCB = new JComboBox();
+      sourceCB.addItem(ALL);
+      for (int i=0; i<sources.size(); i++) {
+        sourceCB.addItem(sources.elementAt(i));
+      }
+      sourceCB.addActionListener(disableFindNext);
+      JLabel descriptionLabel = new JLabel("Description :");
+      descriptionCB = new JComboBox();
+      descriptionCB.addItem(ALL);
+      Vector descriptions = graph.getValuesOfAttribute(PropertyNames.EVENT_DESCRIPTION);
+      for (int i=0; i<descriptions.size(); i++)
+        descriptionCB.addItem(descriptions.elementAt(i));
+      descriptionCB.addActionListener(disableFindNext);
+      int x = 0;
+      int y = 0;
+
+      y++;
+      happinessPanel.add(regardingLabel,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      happinessPanel.add(regardingCB,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      y++;
+      x = 0;
+      happinessPanel.add(publisherLabel,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      happinessPanel.add(publisherCB,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+
+      y++;
+      x = 0;
+      happinessPanel.add(sourceLabel,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      happinessPanel.add(sourceCB,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      y++;
+      x = 0;
+      happinessPanel.add(descriptionLabel,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      happinessPanel.add(descriptionCB,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      // Happiness range panel
+      happinessRangePanel = new JPanel();
+      happinessRangePanel.setLayout(new GridBagLayout());
+      JRadioButton allRatingButton = new JRadioButton("All");
+      allRatingFilter = true;
+      allRatingButton.setFocusPainted(false);
+      allRatingButton.setSelected(true);
+      allRatingButton.addActionListener(disableFindNext);
+      allRatingButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          allRatingFilter = true;
+          ratingStartLabel.setEnabled(false);
+          ratingStartField.setEnabled(false);
+          ratingEndLabel.setEnabled(false);
+          ratingEndField.setEnabled(false);
+        }
+      });
+      JRadioButton specificRangeButton = new JRadioButton();
+      specificRangeButton.setFocusPainted(false);
+      specificRangeButton.addActionListener(disableFindNext);
+      specificRangeButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          allRatingFilter = false;
+          ratingStartLabel.setEnabled(true);
+          ratingStartField.setEnabled(true);
+          ratingEndLabel.setEnabled(true);
+          ratingEndField.setEnabled(true);
+        }
+      });
+      ButtonGroup rangeButtonGroup = new ButtonGroup();
+      rangeButtonGroup.add(allRatingButton);
+      rangeButtonGroup.add(specificRangeButton);
+      ratingStartLabel = new JLabel("Rating Start :");
+      ratingStartLabel.setEnabled(false);
+      ratingStartField = new JTextField(10);
+      ratingStartField.setEnabled(false);
+      ratingEndLabel = new JLabel("Rating End :");
+      ratingEndLabel.setEnabled(false);
+      ratingEndField = new JTextField(10);
+      ratingEndField.setEnabled(false);
+      JRadioButton allDeltaButton = new JRadioButton("All");
+      allDeltaFilter = true;
+      allDeltaButton.setFocusPainted(false);
+      allDeltaButton.setSelected(true);
+      allDeltaButton.addActionListener(disableFindNext);
+      allDeltaButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          allDeltaFilter = true;
+          deltaStartLabel.setEnabled(false);
+          deltaStartField.setEnabled(false);
+          deltaEndLabel.setEnabled(false);
+          deltaEndField.setEnabled(false);
+        }
+      });
+      JRadioButton specificDeltaButton = new JRadioButton();
+      specificDeltaButton.setFocusPainted(false);
+      specificDeltaButton.addActionListener(disableFindNext);
+      specificDeltaButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          allDeltaFilter = false;
+          deltaStartLabel.setEnabled(true);
+          deltaStartField.setEnabled(true);
+          deltaEndLabel.setEnabled(true);
+          deltaEndField.setEnabled(true);
+        }
+      });
+      ButtonGroup deltaButtonGroup = new ButtonGroup();
+      deltaButtonGroup.add(allDeltaButton);
+      deltaButtonGroup.add(specificDeltaButton);
+      deltaStartLabel = new JLabel("Delta Start :");
+      deltaStartLabel.setEnabled(false);
+      deltaStartField = new JTextField(10);
+      deltaStartField.setEnabled(false);
+      deltaEndLabel = new JLabel("Delta End :");
+      deltaEndLabel.setEnabled(false);
+      deltaEndField = new JTextField(10);
+      deltaEndField.setEnabled(false);
+
+      eventCumulStartLabel = new JLabel("Event Cumulative Start :");
+      eventCumulStartLabel.setEnabled(false);
+      eventCumulStartField = new JTextField(10);
+      eventCumulEndLabel = new JLabel("Event Cumulative End :");
+      eventCumulEndLabel.setEnabled(false);
+      eventCumulEndField = new JTextField(10);
+      JRadioButton allCumulButton = new JRadioButton("All");
+      allCumulFilter = true;
+      allCumulButton.setFocusPainted(false);
+      allCumulButton.setSelected(true);
+      allCumulButton.addActionListener(disableFindNext);
+      allCumulButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          allCumulFilter = true;
+          eventCumulStartLabel.setEnabled(false);
+          eventCumulStartField.setEnabled(false);
+          eventCumulEndLabel.setEnabled(false);
+          eventCumulEndField.setEnabled(false);
+        }
+      });
+      JRadioButton specificCumulButton = new JRadioButton();
+      specificCumulButton.setFocusPainted(false);
+      specificCumulButton.addActionListener(disableFindNext);
+      specificCumulButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          allCumulFilter = false;
+          eventCumulStartLabel.setEnabled(true);
+          eventCumulStartField.setEnabled(true);
+          eventCumulEndLabel.setEnabled(true);
+          eventCumulEndField.setEnabled(true);
+        }
+      });
+      ButtonGroup cumulButtonGroup = new ButtonGroup();
+      cumulButtonGroup.add(allCumulButton);
+      cumulButtonGroup.add(specificCumulButton);
+
+
+
+
+      timeComplStartLabel = new JLabel("Time Completed Start :");
+      timeComplStartField = new JTextField(10);
+      timeComplStartLabel.setEnabled(false);
+      timeComplStartField.setEnabled(false);
+      timeComplEndLabel = new JLabel("Time Completed End :");
+      timeComplEndField = new JTextField(10);
+      timeComplEndLabel.setEnabled(false);
+      timeComplEndField.setEnabled(false);
+      JRadioButton allComplButton = new JRadioButton("All");
+      allComplFilter = true;
+      allComplButton.setFocusPainted(false);
+      allComplButton.setSelected(true);
+      allComplButton.addActionListener(disableFindNext);
+      allComplButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          allComplFilter = true;
+          timeComplStartLabel.setEnabled(false);
+          timeComplStartField.setEnabled(false);
+          timeComplEndLabel.setEnabled(false);
+          timeComplEndField.setEnabled(false);
+        }
+      });
+      JRadioButton specificComplButton = new JRadioButton();
+      specificComplButton.setFocusPainted(false);
+      specificComplButton.addActionListener(disableFindNext);
+      specificComplButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          allComplFilter = false;
+          timeComplStartLabel.setEnabled(true);
+          timeComplStartField.setEnabled(true);
+          timeComplEndLabel.setEnabled(true);
+          timeComplEndField.setEnabled(true);
+        }
+      });
+      ButtonGroup complButtonGroup = new ButtonGroup();
+      complButtonGroup.add(allComplButton);
+      complButtonGroup.add(specificComplButton);
+
+
+      x=0;
+      y=0;
+      happinessRangePanel.add(allRatingButton,
+                    new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                           GridBagConstraints.WEST,
+                                           GridBagConstraints.HORIZONTAL,
+                                           new Insets(0, 0, 0, 0), 0, 0));
+      happinessRangePanel.add(specificRangeButton,
+                    new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                           GridBagConstraints.WEST,
+                                           GridBagConstraints.HORIZONTAL,
+                                           new Insets(0, 0, 0, 0), 0, 0));
+      happinessRangePanel.add(ratingStartLabel,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      happinessRangePanel.add(ratingStartField,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      happinessRangePanel.add(ratingEndLabel,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      happinessRangePanel.add(ratingEndField,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      x = 0;
+      y++;
+      happinessRangePanel.add(allDeltaButton,
+                    new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                           GridBagConstraints.WEST,
+                                           GridBagConstraints.HORIZONTAL,
+                                           new Insets(0, 0, 0, 0), 0, 0));
+      happinessRangePanel.add(specificDeltaButton,
+                    new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                           GridBagConstraints.WEST,
+                                           GridBagConstraints.HORIZONTAL,
+                                           new Insets(0, 0, 0, 0), 0, 0));
+      happinessRangePanel.add(deltaStartLabel,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      happinessRangePanel.add(deltaStartField,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      happinessRangePanel.add(deltaEndLabel,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      happinessRangePanel.add(deltaEndField,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      x = 0;
+      y++;
+      happinessRangePanel.add(allCumulButton,
+                    new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                           GridBagConstraints.WEST,
+                                           GridBagConstraints.HORIZONTAL,
+                                           new Insets(0, 0, 0, 0), 0, 0));
+      happinessRangePanel.add(specificCumulButton,
+                    new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                           GridBagConstraints.WEST,
+                                           GridBagConstraints.HORIZONTAL,
+                                           new Insets(0, 0, 0, 0), 0, 0));
+      happinessRangePanel.add(eventCumulStartLabel,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      happinessRangePanel.add(eventCumulStartField,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      happinessRangePanel.add(eventCumulEndLabel,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      happinessRangePanel.add(eventCumulEndField,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      x = 0;
+      y++;
+      happinessRangePanel.add(allComplButton,
+                    new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                           GridBagConstraints.WEST,
+                                           GridBagConstraints.HORIZONTAL,
+                                           new Insets(0, 0, 0, 0), 0, 0));
+      happinessRangePanel.add(specificComplButton,
+                    new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                           GridBagConstraints.WEST,
+                                           GridBagConstraints.HORIZONTAL,
+                                           new Insets(0, 0, 0, 0), 0, 0));
+      happinessRangePanel.add(timeComplStartLabel,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      happinessRangePanel.add(timeComplStartField,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      happinessRangePanel.add(timeComplEndLabel,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+      happinessRangePanel.add(timeComplEndField,
+                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                            GridBagConstraints.WEST,
+                                            GridBagConstraints.HORIZONTAL,
+                                            new Insets(0, 0, 0, 0), 0, 0));
+
+      box.add(happinessPanel);
+      box.add(happinessRangePanel);
+      pack();
+      if (!loadedPanels.isEmpty())
+        loadedPanels.clear();
+      loadedPanels.addElement(happinessPanel);
+      loadedPanels.addElement(happinessRangePanel);
+    }else if (planElements.contains(s)) {
+      // handle plan elements
+      if (!loadedPanels.isEmpty()) {
+        for (int i=0; i<loadedPanels.size(); i++) {
+          box.remove((JPanel)loadedPanels.elementAt(i));
+          pack();
+        }
+      }
+      // Status panel - all plan elements
+      statusPanel = new JPanel();
+      statusPanel.setLayout(new GridBagLayout());
+      TitledBorder statusTitledBorder = new TitledBorder("Status");
+      statusPanel.setBorder(statusTitledBorder);
       estimatedButton = new JRadioButton("Estimated");
       // default to estimated for time ranges
       estimatedButton.setSelected(true);
       estimatedButton.addActionListener(disableFindNext);
-      estimatedButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
-          allTimeFilter = false;
-          fromLabel.setEnabled(true);
-          startTimeField.setEnabled(true);
-          toLabel.setEnabled(true);
-          endTimeField.setEnabled(true);
-        }
-      });
+
       reportedButton = new JRadioButton("Reported");
       reportedButton.addActionListener(disableFindNext);
-      reportedButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
-          allTimeFilter = false;
-          fromLabel.setEnabled(true);
-          startTimeField.setEnabled(true);
-          toLabel.setEnabled(true);
-          endTimeField.setEnabled(true);
-        }
-      });
+
       observedButton = new JRadioButton("Observed");
       observedButton.addActionListener(disableFindNext);
-      observedButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
-          allTimeFilter = false;
-          fromLabel.setEnabled(true);
-          startTimeField.setEnabled(true);
-          toLabel.setEnabled(true);
-          endTimeField.setEnabled(true);
-        }
-      });
+
       statusButtonGroup = new ButtonGroup();
       statusButtonGroup.add(estimatedButton);
       statusButtonGroup.add(reportedButton);
       statusButtonGroup.add(observedButton);
+      int x = 0;
+      int y = 0;
+      statusPanel.add(estimatedButton,
+                    new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                           GridBagConstraints.WEST,
+                                           GridBagConstraints.HORIZONTAL,
+                                           new Insets(0, 0, 0, 0), 0, 0));
+      statusPanel.add(reportedButton,
+                    new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                           GridBagConstraints.WEST,
+                                           GridBagConstraints.HORIZONTAL,
+                                           new Insets(0, 0, 0, 0), 0, 0));
+      statusPanel.add(observedButton,
+                    new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                           GridBagConstraints.WEST,
+                                           GridBagConstraints.HORIZONTAL,
+                                           new Insets(0, 0, 0, 0), 0, 0));
+      box.add(statusPanel);
+      loadedPanels.addElement(statusPanel);
+      // Time panel - all plan elements
+      timePanel = new JPanel();
+      timePanel.setLayout(new GridBagLayout());
+      TitledBorder timeTitledBorder = new TitledBorder("Time");
+      timePanel.setBorder(timeTitledBorder);
       JRadioButton allTimeButton = new JRadioButton("All");
       allTimeFilter = true;
       allTimeButton.setFocusPainted(false);
       allTimeButton.setSelected(true);
-      //      final JLabel fromLabel = new JLabel("From: ");
-      //      final JLabel toLabel = new JLabel("To: ");
       fromLabel = new JLabel("From: ");
       toLabel = new JLabel("To: ");
       allTimeButton.addActionListener(disableFindNext);
@@ -439,38 +1060,10 @@ public class ULPlanFinder extends JDialog {
       endTimeField = new JTextField(10);
       endTimeField.setText("0");
       endTimeField.setEnabled(false);
-      int x = 0;
-      int y = 0;
-      // only add succces if it's a disposition
-      if (s.equals("Disposition")) {
-        timePanel.add(successCBox,
-                      new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
-                                             GridBagConstraints.WEST,
-                                             GridBagConstraints.HORIZONTAL,
-                                             new Insets(0, 0, 0, 0), 0, 0));
-        y = 1;
-        x = 0;
-      }
-      timePanel.add(estimatedButton,
-                    new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
-                                           GridBagConstraints.WEST,
-                                           GridBagConstraints.HORIZONTAL,
-                                           new Insets(0, 0, 0, 0), 0, 0));
-      timePanel.add(reportedButton,
-                    new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
-                                           GridBagConstraints.WEST,
-                                           GridBagConstraints.HORIZONTAL,
-                                           new Insets(0, 0, 0, 0), 0, 0));
-      timePanel.add(observedButton,
-                    new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
-                                           GridBagConstraints.WEST,
-                                           GridBagConstraints.HORIZONTAL,
-                                           new Insets(0, 0, 0, 0), 0, 0));
-      y = 2;
       x = 0;
-
+      y = 0;
       timePanel.add(allTimeButton,
-                    new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
                                            GridBagConstraints.WEST,
                                            GridBagConstraints.HORIZONTAL,
                                            new Insets(0, 0, 0, 0), 0, 0));
@@ -499,87 +1092,220 @@ public class ULPlanFinder extends JDialog {
                                            GridBagConstraints.WEST,
                                            GridBagConstraints.HORIZONTAL,
                                            new Insets(0, 0, 0, 0), 0, 0));
-        
       box.add(timePanel);
-      pack();
-      loadedPanel = timePanel;
-    }else if (s.equals("Asset"))  {
-      if (loadedPanel != null) 
-        box.remove(loadedPanel);
-      assetPanel = new JPanel();
-      assetPanel.setLayout(new GridBagLayout());
-      TitledBorder timeTitledBorder = new TitledBorder("Asset");
-      assetPanel.setBorder(timeTitledBorder);
-      JLabel typeIDLabel = new JLabel("Type ID :");
-      JComboBox typeIDCB = new JComboBox();
-      typeIDCB.setEnabled(false);
-      JLabel itemIDLabel = new JLabel("Item ID :");
-      JComboBox itemIDCB = new JComboBox();
-      itemIDCB.setEnabled(false);
-      JLabel propertyGroupLabel = new JLabel("Property Groups :");
-      JComboBox propertyGroupCB = new JComboBox();
-      propertyGroupCB.setEnabled(false);
-      JLabel nameLabel = new JLabel("Name");
-      nameCB = new JComboBox(graph.getValuesOfAttribute(PropertyNames.ASSET_NAME));
-      nameCB.addActionListener(disableFindNext);
-      int x = 0;
-      int y = 0;
-      assetPanel.add(typeIDLabel,
-                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
-                                            GridBagConstraints.WEST,
-                                            GridBagConstraints.HORIZONTAL,
-                                            new Insets(0, 0, 0, 0), 0, 0));
-      assetPanel.add(typeIDCB,
-                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
-                                            GridBagConstraints.WEST,
-                                            GridBagConstraints.HORIZONTAL,
-                                            new Insets(0, 0, 0, 0), 0, 0));
-      y = 1;
-      x = 0;
-      assetPanel.add(itemIDLabel,
-                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
-                                            GridBagConstraints.WEST,
-                                            GridBagConstraints.HORIZONTAL,
-                                            new Insets(0, 0, 0, 0), 0, 0));
-      assetPanel.add(itemIDCB,
-                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
-                                            GridBagConstraints.WEST,
-                                            GridBagConstraints.HORIZONTAL,
-                                            new Insets(0, 0, 0, 0), 0, 0));
-      y = 2;
-      x = 0;
-      assetPanel.add(propertyGroupLabel,
-                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
-                                            GridBagConstraints.WEST,
-                                            GridBagConstraints.HORIZONTAL,
-                                            new Insets(0, 0, 0, 0), 0, 0));
-      assetPanel.add(propertyGroupCB,
-                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
-                                            GridBagConstraints.WEST,
-                                            GridBagConstraints.HORIZONTAL,
-                                            new Insets(0, 0, 0, 0), 0, 0));
-      y = 3;
-      x = 0;
-      assetPanel.add(nameLabel,
-                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
-                                            GridBagConstraints.WEST,
-                                            GridBagConstraints.HORIZONTAL,
-                                            new Insets(0, 0, 0, 0), 0, 0));
-      assetPanel.add(nameCB,
-                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
-                                            GridBagConstraints.WEST,
-                                            GridBagConstraints.HORIZONTAL,
-                                            new Insets(0, 0, 0, 0), 0, 0));
-
-      box.add(assetPanel);
-      pack();
-      loadedPanel = assetPanel;
-    } else {
-      if (loadedPanel != null) {
-        box.remove(loadedPanel);
+      loadedPanels.addElement(timePanel);
+      // Success Panel - disposition only
+      if (s.equals(PropertyNames.PLAN_ELEMENT_DISPOSITION)) {
+        successPanel = new JPanel();
+        successPanel.setLayout(new GridBagLayout());
+        TitledBorder successTitledBorder = new TitledBorder("Success");
+        successPanel.setBorder(successTitledBorder);
+        successCBox = new JCheckBox("Success");
+        successCBox.addActionListener(disableFindNext);
+        x = 0;
+        y = 0;
+        successPanel.add(successCBox,
+                      new GridBagConstraints(x, y, 1, 1, 1.0, 0.0,
+                                             GridBagConstraints.WEST,
+                                             GridBagConstraints.HORIZONTAL,
+                                             new Insets(0, 0, 0, 0), 0, 0));
+        box.add(successPanel);
+        loadedPanels.addElement(successPanel);
         pack();
       }
-    //    System.out.println("loaded panel is : " + loadedPanel);
+
+      // AllocationPanel - allocation only
+      if (s.equals(PropertyNames.PLAN_ELEMENT_ALLOCATION)) {
+        allocationPanel = new JPanel();
+        allocationPanel.setLayout(new GridBagLayout());
+        TitledBorder allocTitledBorder = new TitledBorder("Allocation");
+        allocationPanel.setBorder(allocTitledBorder);
+        JLabel allocToClusterLabel = new JLabel("To Cluster :");
+
+        allocToClusterCB = new JComboBox();
+        allocToClusterCB.addItem(ALL);
+        Vector allocToClusters = graph.getValuesOfAttribute(PropertyNames.ALLOCATION_TO_CLUSTER);
+        for (int i=0; i<allocToClusters.size(); i++) 
+          allocToClusterCB.addItem(allocToClusters.elementAt(i));
+        allocToClusterCB.addActionListener(disableFindNext);
+
+        JLabel allocTaskUIDLabel = new JLabel("Task UID :");
+        allocTaskUIDCB = new JComboBox();
+        allocTaskUIDCB.addItem(ALL);
+        Vector allocTaskUIDs = graph.getValuesOfAttribute(PropertyNames.ALLOCATION_TASK_UID);
+        for (int i=0; i<allocTaskUIDs.size(); i++) 
+          allocTaskUIDCB.addItem(allocTaskUIDs.elementAt(i));
+        allocTaskUIDCB.addActionListener(disableFindNext);
+
+        JLabel allocAssetUIDLabel = new JLabel("Asset UID :");
+        allocAssetUIDCB = new JComboBox();
+        allocAssetUIDCB.addItem(ALL);
+        Vector allocAssetUIDs = graph.getValuesOfAttribute(PropertyNames.ALLOCATION_ASSET_UID);
+        for (int i=0; i<allocAssetUIDs.size(); i++) 
+          allocAssetUIDCB.addItem(allocAssetUIDs.elementAt(i));
+        allocAssetUIDCB.addActionListener(disableFindNext);
+
+        JLabel allocRemoteClusterUIDLabel = new JLabel("Remote Cluster UID :");
+        allocRemoteClusterUIDCB = new JComboBox();
+        allocRemoteClusterUIDCB.addItem(ALL);
+        Vector allocRemoteClusterUIDs = graph.getValuesOfAttribute(PropertyNames.ALLOCATION_REMOTE_CLUSTER_UID);
+        for (int i=0; i<allocRemoteClusterUIDs.size(); i++) 
+          allocRemoteClusterUIDCB.addItem(allocRemoteClusterUIDs.elementAt(i));
+        allocRemoteClusterUIDCB.addActionListener(disableFindNext);
+
+        JLabel allocLocalOrgUIDLabel = new JLabel("Local Org UID :");
+        allocLocalOrgUIDCB = new JComboBox();
+        allocLocalOrgUIDCB.addItem(ALL);
+        Vector allocLocalOrgUIDs = graph.getValuesOfAttribute(PropertyNames.ALLOCATION_LOCAL_ORG_UID);
+        for (int i=0; i<allocLocalOrgUIDs.size(); i++) 
+          allocLocalOrgUIDCB.addItem(allocLocalOrgUIDs.elementAt(i));
+        allocLocalOrgUIDCB.addActionListener(disableFindNext);
+        x = 0;
+        y = 0;
+        allocationPanel.add(allocToClusterLabel,
+                      new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                             GridBagConstraints.WEST,
+                                             GridBagConstraints.HORIZONTAL,
+                                             new Insets(0, 0, 0, 0), 0, 0));
+        allocationPanel.add(allocToClusterCB,
+                      new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                             GridBagConstraints.WEST,
+                                             GridBagConstraints.HORIZONTAL,
+                                             new Insets(0, 0, 0, 0), 0, 0));
+        y++;
+        x = 0;
+        allocationPanel.add(allocTaskUIDLabel,
+                      new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                             GridBagConstraints.WEST,
+                                             GridBagConstraints.HORIZONTAL,
+                                             new Insets(0, 0, 0, 0), 0, 0));
+        allocationPanel.add(allocTaskUIDCB,
+                      new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                             GridBagConstraints.WEST,
+                                             GridBagConstraints.HORIZONTAL,
+                                             new Insets(0, 0, 0, 0), 0, 0));
+        y++;
+        x = 0;
+        allocationPanel.add(allocAssetUIDLabel,
+                      new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                             GridBagConstraints.WEST,
+                                             GridBagConstraints.HORIZONTAL,
+                                             new Insets(0, 0, 0, 0), 0, 0));
+        allocationPanel.add(allocAssetUIDCB,
+                      new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                             GridBagConstraints.WEST,
+                                             GridBagConstraints.HORIZONTAL,
+                                             new Insets(0, 0, 0, 0), 0, 0));
+        y++;
+        x = 0;
+        allocationPanel.add(allocRemoteClusterUIDLabel,
+                      new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                             GridBagConstraints.WEST,
+                                             GridBagConstraints.HORIZONTAL,
+                                             new Insets(0, 0, 0, 0), 0, 0));
+        allocationPanel.add(allocRemoteClusterUIDCB,
+                      new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                             GridBagConstraints.WEST,
+                                             GridBagConstraints.HORIZONTAL,
+                                             new Insets(0, 0, 0, 0), 0, 0));
+        y++;
+        x = 0;
+        allocationPanel.add(allocLocalOrgUIDLabel,
+                      new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                             GridBagConstraints.WEST,
+                                             GridBagConstraints.HORIZONTAL,
+                                             new Insets(0, 0, 0, 0), 0, 0));
+        allocationPanel.add(allocLocalOrgUIDCB,
+                      new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                             GridBagConstraints.WEST,
+                                             GridBagConstraints.HORIZONTAL,
+                                             new Insets(0, 0, 0, 0), 0, 0));
+        y++;
+        x = 0;
+        box.add(allocationPanel);
+        loadedPanels.addElement(allocationPanel);
+        pack();
+      }
+      if (s.equals(PropertyNames.PLAN_ELEMENT_ASSET_TRANSFER)) {
+        // asset transfer panel - asset transfer only
+        assetTransferPanel = new JPanel();
+        assetTransferPanel.setLayout(new GridBagLayout());
+        TitledBorder assetTransferTitledBorder = new TitledBorder("Asset Transfer");
+        assetTransferPanel.setBorder(assetTransferTitledBorder);
+
+        JLabel assetTransAssetUIDLabel = new JLabel("Asset UID :");
+        assetTransUIDCB = new JComboBox();
+        assetTransUIDCB.addItem(ALL);
+        Vector assetTransUIDs = graph.getValuesOfAttribute(PropertyNames.ASSET_TRANSFER_ASSET_UID);
+        for (int i=0; i<assetTransUIDs.size(); i++) 
+          assetTransUIDCB.addItem(assetTransUIDs.elementAt(i));
+        assetTransUIDCB.addActionListener(disableFindNext);
+
+        JLabel assignUIDLabel = new JLabel("Assignee UID :");
+        assignUIDCB = new JComboBox();
+        assignUIDCB.addItem(ALL);
+        Vector assignUIDs = graph.getValuesOfAttribute(PropertyNames.ASSET_TRANSFER_ASSIGNEE_UID);
+        for (int i=0; i<assignUIDs.size(); i++) 
+          assignUIDCB.addItem(assignUIDs.elementAt(i));
+        assignUIDCB.addActionListener(disableFindNext);
+
+        JLabel assignorLabel = new JLabel("Assignor :");
+        assignorCB = new JComboBox();
+        assignorCB.addItem(ALL);
+        Vector assignors = graph.getValuesOfAttribute(PropertyNames.ASSET_TRANSFER_ASSIGNOR);
+        for (int i=0; i<assignors.size(); i++) 
+          assignorCB.addItem(assignors.elementAt(i));
+        assignorCB.addActionListener(disableFindNext);
+
+
+        x = 0;
+        y = 0;
+        assetTransferPanel.add(assetTransAssetUIDLabel,
+                      new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                             GridBagConstraints.WEST,
+                                             GridBagConstraints.HORIZONTAL,
+                                             new Insets(0, 0, 0, 0), 0, 0));
+        assetTransferPanel.add(assetTransUIDCB,
+                      new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                             GridBagConstraints.WEST,
+                                             GridBagConstraints.HORIZONTAL,
+                                             new Insets(0, 0, 0, 0), 0, 0));
+        y++;
+        x = 0;
+        assetTransferPanel.add(assignUIDLabel,
+                      new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                             GridBagConstraints.WEST,
+                                             GridBagConstraints.HORIZONTAL,
+                                             new Insets(0, 0, 0, 0), 0, 0));
+        assetTransferPanel.add(assignUIDCB,
+                      new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                             GridBagConstraints.WEST,
+                                             GridBagConstraints.HORIZONTAL,
+                                             new Insets(0, 0, 0, 0), 0, 0));
+        y++;
+        x = 0;
+        assetTransferPanel.add(assignorLabel,
+                      new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                             GridBagConstraints.WEST,
+                                             GridBagConstraints.HORIZONTAL,
+                                             new Insets(0, 0, 0, 0), 0, 0));
+        assetTransferPanel.add(assignorCB,
+                      new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                             GridBagConstraints.WEST,
+                                             GridBagConstraints.HORIZONTAL,
+                                             new Insets(0, 0, 0, 0), 0, 0));
+        box.add(assetTransferPanel);
+        loadedPanels.addElement(assetTransferPanel);
+        pack();
+      }
+    } else {
+      if (!loadedPanels.isEmpty()) {
+        for (int i=0; i<loadedPanels.size(); i++) {
+          box.remove((JPanel)loadedPanels.elementAt(i));
+          pack();
+        }
+      }
+      pack();
     }
   }
 
@@ -611,80 +1337,248 @@ public class ULPlanFinder extends JDialog {
     String planObjectTypeSelected = (String)planObjectTypeCB.getSelectedItem();
  
     Vector selectedNodes = graph.vectorOfElements(GrappaConstants.NODE);
-
-//      if (agentSelected.equals("All")) {
-//        // if "All"  selected then select all for communitySelected
-//        selectedNodes = getNodesWithStringAttribute(selectedNodes,
-//                                                    PropertyNames.PLAN_OBJECT_COMMUNITY_NAME,
-//                                                    communitySelected);
-//      } else {
-      // in not "ALL" selected based on agent selected
+    if (!communitySelected.equals(ALL)) 
       selectedNodes = getNodesWithStringAttribute(selectedNodes,
-                                                PropertyNames.AGENT_ATTR,
-                                                agentSelected);
-//      }
+                                                  PropertyNames.PLAN_OBJECT_COMMUNITY_NAME,
+                                                  communitySelected);
+    if (agentCB.getItemCount() > 0 ) {
+      if (!agentSelected.equals(ALL)) 
+        selectedNodes = getNodesWithStringAttribute(selectedNodes,
+                                                    PropertyNames.AGENT_ATTR,
+                                                    agentSelected);
+      }
     // first select by object name
     String objectName = null;
     // if object selected is a plan element, then get plan objects first
-    if (planElements.contains(planObjectTypeSelected)) 
-      objectName = PropertyNames.PLAN_ELEMENT_OBJECT;
-    else
-      objectName = planObjectTypeSelected;
-    selectedNodes = getNodesWithStringAttribute(selectedNodes, 
-						PropertyNames.OBJECT_TYPE,
-						objectName);
-    // get specific plan element objects
-    if (planElements.contains(planObjectTypeSelected))
-      selectedNodes = getNodesWithStringAttribute(selectedNodes,
-						  PropertyNames.PLAN_ELEMENT_TYPE,
-						  planObjectTypeSelected);
-
-    // now refine the selected nodes based on what type of object we have
-    if (planObjectTypeSelected.equals(PropertyNames.TASK_OBJECT)) {
-      String verbSelected = (String)verbCB.getSelectedItem();
-      selectedNodes = getNodesWithStringAttribute(selectedNodes,
-						  PropertyNames.TASK_VERB,
-						  verbSelected);
-    } else if (planObjectTypeSelected.equals(PropertyNames.ASSET_OBJECT)) {
-      String nameSelected = (String)nameCB.getSelectedItem();
-      selectedNodes = getNodesWithStringAttribute(selectedNodes,
-						  PropertyNames.ASSET_NAME,
-						  nameSelected);
-    } else if (planElements.contains(planObjectTypeSelected)) {
-      // get info from time panels or any controls that are common to plan elements
-      if (successCBox.isSelected()) {
+    if (!planObjectTypeSelected.equals(ALL)) {
+      if (planElements.contains(planObjectTypeSelected)) 
+        objectName = PropertyNames.PLAN_ELEMENT_OBJECT;
+      else
+        objectName = planObjectTypeSelected;
+      selectedNodes = getNodesWithStringAttribute(selectedNodes, 
+                                                  PropertyNames.OBJECT_TYPE,
+                                                  objectName);
+      // get specific plan element objects
+      if (planElements.contains(planObjectTypeSelected))
         selectedNodes = getNodesWithStringAttribute(selectedNodes,
-                                                    PropertyNames.DISPOSITION_SUCCESS,
-                                                    "true");
-      }
-      if (!allTimeFilter) {
-        String s = startTimeField.getText();
-        startTime = getLongValue(s,
-                                 "Invalid start time: " + s + " using 0.",
-                                 0L);
-        s = endTimeField.getText();
-        endTime = getLongValue(s,
-                               "Invalid end time: " + s + " using max value.",
-                               Long.MAX_VALUE);
+                                                    PropertyNames.PLAN_ELEMENT_TYPE,
+                                                    planObjectTypeSelected);
 
-        if (estimatedButton.isSelected()) {
-          status = "PropertyNames.ESTIMATED_ALLOCATION_RESULT_ENDTIME";
-          System.out.println("Estimated selected");
+      // now refine the selected nodes based on what type of object we have
+      // TASK
+      if (planObjectTypeSelected.equals(PropertyNames.TASK_OBJECT)) {
+        String verbSelected = (String)verbCB.getSelectedItem();
+        if (!verbSelected.equals(ALL))
+            selectedNodes = getNodesWithStringAttribute(selectedNodes,
+                                                        PropertyNames.TASK_VERB,
+                                                        verbSelected);
+        String dirObjUIDSelected = (String)directObjUIDCB.getSelectedItem();
+        if (!dirObjUIDSelected.equals(ALL))
+          selectedNodes = getNodesWithStringAttribute(selectedNodes,
+                                                      PropertyNames.TASK_DIRECT_OBJECT_UID,
+                                                      dirObjUIDSelected);
+
+        String prepPhraseSelected = (String)prepPhraseCB.getSelectedItem();
+        if (!prepPhraseSelected.equals(ALL)) 
+          selectedNodes = getNodesWithStringAttribute(selectedNodes,
+                                                      PropertyNames.TASK_PREP_PHRASE,
+                                                      prepPhraseSelected);
+        if (!allTaskFilter) {
+          String s = taskStartField.getText();
+          taskStart = getDoubleValue(s,
+                                   "Invalid start time: " + s + " using 0.",
+                                   0.0);
+          s = taskEndField.getText();
+          taskEnd = getDoubleValue(s,
+                                 "Invalid end time: " + s + " using max value.",
+                                 Double.MAX_VALUE);
+          selectedNodes = getNodesInDoubleRange(selectedNodes,
+                                              PropertyNames.TASK_END_TIME,
+                                              taskStart,
+                                              taskEnd);
         }
-        if (reportedButton.isSelected()) {
-          status = "PropertyNames.REPORTED_ALLOCATION_RESULT_ENDTIME";
-          System.out.println("Reported selected");
+      } else if (planObjectTypeSelected.equals(PropertyNames.EVENT_HAPPINESS_CHANGE)) {
+        // HAPPINESS CHANGE EVENT
+        if (!allRatingFilter) {
+          String s = ratingStartField.getText();
+          ratingStart = getFloatValue(s,
+                                   "Invalid start time: " + s + " using 0.",
+                                   0F);
+          s = ratingEndField.getText();
+          ratingEnd = getFloatValue(s,
+                                 "Invalid end time: " + s + " using max value.",
+                                 Float.MAX_VALUE);
+
+          selectedNodes = getNodesInFloatRange(selectedNodes, 
+                                              PropertyNames.EVENT_RATING,
+                                              ratingStart,
+                                              ratingEnd);      
+        }  
+        if (!allDeltaFilter) {
+          String s = deltaStartField.getText();
+          deltaStart = getFloatValue(s,
+                                   "Invalid start time: " + s + " using 0.",
+                                   0F);
+          s = deltaEndField.getText();
+          deltaEnd = getFloatValue(s,
+                                 "Invalid end time: " + s + " using max value.",
+                                 Float.MAX_VALUE);
+
+          selectedNodes = getNodesInFloatRange(selectedNodes, 
+                                              PropertyNames.EVENT_DELTA,
+                                              deltaStart,
+                                              deltaEnd);      
+        }  
+        String regardingSelected = (String)regardingCB.getSelectedItem();
+        if (!regardingSelected.equals(ALL))
+            selectedNodes = getNodesWithStringAttribute(selectedNodes,
+                                                        PropertyNames.EVENT_REGARDING,
+                                                        regardingSelected);
+        String publisherSelected = (String)publisherCB.getSelectedItem();
+        if (!publisherSelected.equals(ALL))
+          selectedNodes = getNodesWithStringAttribute(selectedNodes,
+                                                      PropertyNames.EVENT_PUBLISHER,
+                                                      publisherSelected);
+
+        String sourceSelected = (String)sourceCB.getSelectedItem();
+        if (!sourceSelected.equals(ALL)) 
+          selectedNodes = getNodesWithStringAttribute(selectedNodes,
+                                                      PropertyNames.EVENT_SOURCE,
+                                                      sourceSelected);
+        String descriptionSelected = (String)descriptionCB.getSelectedItem();
+        if (!descriptionSelected.equals(ALL)) 
+          selectedNodes = getNodesWithStringAttribute(selectedNodes,
+                                                      PropertyNames.EVENT_DESCRIPTION,
+                                                      descriptionSelected);
+        if (!allCumulFilter) {
+          String s = eventCumulStartField.getText();
+          eventCumulStart = getDoubleValue(s,
+                                   "Invalid start time: " + s + " using 0.",
+                                   0D);
+          s = eventCumulEndField.getText();
+          eventCumulEnd = getDoubleValue(s,
+                                 "Invalid end time: " + s + " using max value.",
+                                 Double.MAX_VALUE);
+
+          selectedNodes = getNodesInDoubleRange(selectedNodes, 
+                                              PropertyNames.EVENT_CUMULATIVE,
+                                              eventCumulStart,
+                                              eventCumulEnd);      
+        }  
+        if (!allComplFilter) {
+          String s = timeComplStartField.getText();
+          timeComplStart = getLongValue(s,
+                                   "Invalid start time: " + s + " using 0.",
+                                   0L);
+          s = timeComplEndField.getText();
+          timeComplEnd = getLongValue(s,
+                                 "Invalid end time: " + s + " using max value.",
+                                 Long.MAX_VALUE);
+
+          selectedNodes = getNodesInLongRange(selectedNodes, 
+                                              PropertyNames.EVENT_TIME_COMPLETED,
+                                              timeComplStart,
+                                              timeComplEnd);      
+        }  
+        
+      } else if (planObjectTypeSelected.equals(PropertyNames.ASSET_OBJECT)) {
+        // ASSET
+        String assetClusterSelected = (String)assetClusterCB.getSelectedItem();
+        if (!assetClusterSelected.equals(ALL))
+          selectedNodes = getNodesWithStringAttribute(selectedNodes,
+                                                      PropertyNames.ASSET_CLUSTER,
+                                                      assetClusterSelected);
+
+        String groupSelected = (String)assetGroupNameCB.getSelectedItem();
+        if (!groupSelected.equals(ALL))
+          selectedNodes = getNodesWithStringAttribute(selectedNodes,
+                                                      PropertyNames.ASSET_GROUP_NAME,
+                                                      groupSelected);
+        String nameSelected = (String)assetNameCB.getSelectedItem();
+        if (!nameSelected.equals(ALL))
+          selectedNodes = getNodesWithStringAttribute(selectedNodes,
+                                                      PropertyNames.ASSET_NAME,
+                                                      nameSelected);
+
+      } else if (planElements.contains(planObjectTypeSelected)) {
+        // get info from time panels or any controls that are common to plan elements
+        if (!allTimeFilter) {
+          String s = startTimeField.getText();
+          startTime = getDoubleValue(s,
+                                   "Invalid start time: " + s + " using 0.",
+                                   0D);
+          s = endTimeField.getText();
+          endTime = getDoubleValue(s,
+                                 "Invalid end time: " + s + " using max value.",
+                                 Double.MAX_VALUE);
+
+          if (estimatedButton.isSelected()) {
+            status = PropertyNames.ESTIMATED_ALLOCATION_RESULT_END_TIME;
+          }
+          if (reportedButton.isSelected()) {
+            status = PropertyNames.REPORTED_ALLOCATION_RESULT_END_TIME;
+          }
+          if (observedButton.isSelected()) {
+            status = PropertyNames.OBSERVED_ALLOCATION_RESULT_END_TIME;
+          }
+          selectedNodes = getNodesInDoubleRange(selectedNodes, 
+                                              status,
+                                              startTime,
+                                              endTime);
+        } 
+        if (planObjectTypeSelected.equals(PropertyNames.PLAN_ELEMENT_DISPOSITION)) {
+          if (successCBox.isSelected()) {
+            selectedNodes = getNodesWithStringAttribute(selectedNodes,
+                                                        PropertyNames.DISPOSITION_SUCCESS,
+                                                        "true");
+          }
+        } else if (planObjectTypeSelected.equals(PropertyNames.PLAN_ELEMENT_ASSET_TRANSFER)) {
+                  String assetTransUIDSelected = (String)assetTransUIDCB.getSelectedItem();
+                  if (!assetTransUIDSelected.equals(ALL))
+                    selectedNodes = getNodesWithStringAttribute(selectedNodes,
+                                                                PropertyNames.ASSET_TRANSFER_ASSET_UID,
+                                                                assetTransUIDSelected);
+                  String assignUIDSelected = (String)assignUIDCB.getSelectedItem();
+                  if (!assignUIDSelected.equals(ALL))
+                    selectedNodes = getNodesWithStringAttribute(selectedNodes,
+                                                                PropertyNames.ASSET_TRANSFER_ASSIGNEE_UID,
+                                                                assignUIDSelected);
+
+                  String assignorSelected = (String)assignorCB.getSelectedItem();
+                  if (!assignorSelected.equals(ALL)) 
+                    selectedNodes = getNodesWithStringAttribute(selectedNodes,
+                                                                PropertyNames.ASSET_TRANSFER_ASSIGNOR,
+                                                                assignorSelected);
+        } else if (planObjectTypeSelected.equals(PropertyNames.PLAN_ELEMENT_ALLOCATION)) {
+                  String allocClusterSelected = (String)allocToClusterCB.getSelectedItem();
+                  if (!allocClusterSelected.equals(ALL))
+                    selectedNodes = getNodesWithStringAttribute(selectedNodes,
+                                                                PropertyNames.ALLOCATION_TO_CLUSTER,
+                                                                allocClusterSelected);
+                  String allocTaskUIDSelected = (String)allocTaskUIDCB.getSelectedItem();
+                  if (!allocTaskUIDSelected.equals(ALL))
+                    selectedNodes = getNodesWithStringAttribute(selectedNodes,
+                                                                PropertyNames.ALLOCATION_TASK_UID,
+                                                                allocTaskUIDSelected);
+
+                  String allocAssetUIDSelected = (String)allocAssetUIDCB.getSelectedItem();
+                  if (!allocAssetUIDSelected.equals(ALL)) 
+                    selectedNodes = getNodesWithStringAttribute(selectedNodes,
+                                                                PropertyNames.ALLOCATION_ASSET_UID,
+                                                                allocAssetUIDSelected);
+                  String allocRemoteClusterUIDSelected = (String)allocRemoteClusterUIDCB.getSelectedItem();
+                  if (!allocRemoteClusterUIDSelected.equals(ALL))
+                    selectedNodes = getNodesWithStringAttribute(selectedNodes,
+                                                                PropertyNames.ALLOCATION_REMOTE_CLUSTER_UID,
+                                                                allocRemoteClusterUIDSelected);
+
+                  String allocLocalOrgUIDSelected = (String)allocLocalOrgUIDCB.getSelectedItem();
+                  if (!allocLocalOrgUIDSelected.equals(ALL)) 
+                    selectedNodes = getNodesWithStringAttribute(selectedNodes,
+                                                                PropertyNames.ALLOCATION_LOCAL_ORG_UID,
+                                                                allocLocalOrgUIDSelected);
         }
-        if (observedButton.isSelected()) {
-          status = "PropertyNames.OBSERVED_ALLOCATION_RESULT_ENDTIME";
-          System.out.println("Observed selected");
-        }
-        selectedNodes = getNodesInLongRange(selectedNodes, 
-                                            status,
-                                            startTime,
-                                            endTime);
-        System.out.println("Looking for " + status + " between " + startTime + " and " + endTime);
-      } 
+      }
     }
     return selectedNodes;
   }
@@ -711,6 +1605,16 @@ public class ULPlanFinder extends JDialog {
     long value = defaultValue;
     try {
       value = Long.parseLong(s);
+    } catch (NumberFormatException nfe) {
+      JOptionPane.showMessageDialog(null, errorMessage);
+    }
+    return value;
+  }
+
+  private double getDoubleValue(String s, String errorMessage, double defaultValue) {
+    double value = defaultValue;
+    try {
+       value = Double.parseDouble(s);
     } catch (NumberFormatException nfe) {
       JOptionPane.showMessageDialog(null, errorMessage);
     }
@@ -751,6 +1655,28 @@ public class ULPlanFinder extends JDialog {
 	continue;
       try {
 	nodeValue = Long.parseLong(s);
+      } catch (NumberFormatException e) {
+	System.out.println("ULPlanFinder: " + e);
+	continue;
+      }
+      if (nodeValue >= startTime && nodeValue <= endTime)
+	selectedNodes.addElement(node);
+    }
+    return selectedNodes;
+  }
+
+  private Vector getNodesInDoubleRange(Vector nodes,
+				     String attributeName, 
+				     double startTime, double endTime) {
+    Vector selectedNodes = new Vector(nodes.size());
+    double nodeValue;
+    for (int i = 0; i < nodes.size(); i++) {
+      Node node = (Node)nodes.elementAt(i);
+      String s = (String)node.getAttributeValue(attributeName);
+      if (s == null)
+	continue;
+      try {
+	nodeValue = Double.parseDouble(s);
       } catch (NumberFormatException e) {
 	System.out.println("ULPlanFinder: " + e);
 	continue;
