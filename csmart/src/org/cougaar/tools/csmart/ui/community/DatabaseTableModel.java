@@ -367,7 +367,16 @@ public class DatabaseTableModel extends AbstractTableModel {
   private void updateCommunityAttributeTable(Object value, int row, int column) {
     String columnName = getColumnName(column);
     String communityId = (String)getValueAt(row, 0);
+    if (communityId == null) {
+      log.error("updateCommAtt on column " + columnName + " has null commId. CommName=" + communityName + " in row " + row);
+    }
+    if (communityName == null) {
+      log.error("updateCommAtt has null commName for community " + communityId + " and column " + columnName + " in row: " + row);
+    }
     String dbValue = dbRepresentation(column, value);
+    if (dbValue == null) {
+      log.error("updateCommAtt has null dbValue on column " + columnName + ", Comm: " + communityName + ", commId: " + communityId + " in row " + row);
+    }
     if (columnName.equalsIgnoreCase("ATTRIBUTE_ID") || columnName.equalsIgnoreCase("COMMUNITY_ATTRIBUTE_ID")) {
       CommunityDBUtils.setCommunityAttributeId(communityId, dbValue,
                                dbRepresentation(1, getValueAt(row, 1)),
@@ -392,7 +401,16 @@ public class DatabaseTableModel extends AbstractTableModel {
   private void updateCommunityEntityAttributeTable(Object value, int row, int column) {
     String columnName = getColumnName(column);
     String entityId = (String)getValueAt(row, 0);
+    if (entityId == null) {
+      log.error("updateCommEntityAtt on column " + columnName + " has null entityId. CommName=" + communityName + " in row " + row);
+    }
+    if (communityName == null) {
+      log.error("updateCommEntityAtt has null commName for entity " + entityId + " and column " + columnName + " in row: " + row);
+    }
     String dbValue = dbRepresentation(column, value);
+    if (dbValue == null) {
+      log.error("updateCommEntityAtt has null dbValue on column " + columnName + ", Comm: " + communityName + ", entity: " + entityId + " in row " + row);
+    }
     if (columnName.equalsIgnoreCase("ATTRIBUTE_ID") || columnName.equalsIgnoreCase("ENTITY_ATTRIBUTE_ID")) {
       CommunityDBUtils.setEntityAttributeId(communityName, entityId, dbValue,
                                dbRepresentation(1, getValueAt(row, 1)),
