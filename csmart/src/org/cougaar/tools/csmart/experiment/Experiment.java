@@ -1600,6 +1600,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    */
   public void saveToDb(DBConflictHandler ch) {
     try {
+      if (log.isInfoEnabled()) {
+	log.info("Saving experiment " + getExperimentName() + " to database");
+      }
       updateNameServerHostName(); // Be sure this is up-to-date
       List components = getComponents();
 
