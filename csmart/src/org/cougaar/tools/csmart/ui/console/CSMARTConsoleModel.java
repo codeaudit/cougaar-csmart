@@ -206,6 +206,7 @@ public class CSMARTConsoleModel extends Observable {
       startNodes();
       isRunning = running;
     } catch(IllegalStateException ise) {
+      setChanged();
       notifyObservers(RUN_FAILED);
       JOptionPane.showMessageDialog(null, ("Cannot start run,  " + ise.getMessage()),
                                     "Cannot start run",JOptionPane.ERROR_MESSAGE);
@@ -904,6 +905,10 @@ public class CSMARTConsoleModel extends Observable {
 
     List l = Arrays.asList(result);
     return l;
+  }
+
+  public NodeModel getNodeModel(String name) {
+    return (NodeModel) this.nodeModels.get(name);
   }
 
   // New Application Server Support
