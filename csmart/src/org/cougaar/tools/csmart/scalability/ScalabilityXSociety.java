@@ -362,6 +362,7 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
 	}
       }
     }
+    setProviderCount();
   }
 
   public void finishConfiguration() {
@@ -371,6 +372,7 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
       thisLvl.setCustomers(prevLvl.getAgents());
       prevLvl = thisLvl;
     }
+    setProviderCount();
   }
 
   protected void fireChildConfigurationChanged() {
