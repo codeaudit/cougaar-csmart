@@ -45,6 +45,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
   transient NodeComponent[] nodesToWrite;
   transient List components;
   ComponentData theSoc;
+  private String trialID = null;
   private transient Logger log;
 
   // Remove when prototypes are fixed.
@@ -63,6 +64,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
     createLogger();
     this.nodesToWrite = nodesToWrite;
     this.components = components;
+    this.trialID = exp.getTrialID();
     theSoc = new GenericComponentData();
     theSoc.setType(ComponentData.SOCIETY);
     theSoc.setName(exp.getExperimentName()); // this should be experiment: trial FIXME
@@ -212,7 +214,22 @@ public class ExperimentINIWriter implements ConfigurationWriter {
       // write out each parameter, comma separated
       writer.print(writeParam(params[i]));
     }
+
+    // HACK!!
+    boolean isGLS = false;
+    if (me.getClassName().indexOf("GLSInitServlet") != -1) {
+      isGLS = true;
+      // it looks like it could get the org.cougaar.experiment.id from
+      // its parameters list, so write out another parameter
+      // the trialid
+      String eid = trialID;
+      if (trialID != null)
+	writer.print(",exptid=" + eid);
+    }
+
     writer.println(")");
+    if (isGLS)
+      writer.println("# Extra parameter added to GLSInitServlet to pass in experiment ID for OPLAN retrieval");
     return;
   }
 
