@@ -482,6 +482,15 @@ public class ABCImpact
     return data;
   }
 
+  private ComponentData getImpactPlugIn() {
+    ComponentData data = new GenericComponentData();
+    
+    data.setType(ComponentData.PLUGIN);
+    data.setName("org.cougaar.tools.csmart.plugin.ABCImpactPlugin");
+
+    return data;
+  }
+
   public void processData(ComponentData data) {
     ComponentData[] children = data.getChildren();
     
@@ -500,7 +509,10 @@ public class ABCImpact
 	  child.setOwner(this);
 	  child = transducerAgent.getComponentData(child);
 	} else {
-	  // Add to list for Society
+	  // Add ImpactPlugin to the Agent.
+	  child.addChild(getImpactPlugIn());
+
+	  // Add agent name to list for Society data file.
 	  agentNames.add(child.getName());
 	}
       } else {
@@ -510,7 +522,30 @@ public class ABCImpact
     }
   }
 
+  public void modifyData(ComponentData data) {
+    ComponentData[] children = data.getChildren();
+    
+    for(int i=0; i < children.length; i++) {
+      ComponentData child = children[i];
+      if(child.getType() == ComponentData.AGENT) {
+
+	// Process it.
+	if(!child.getName().equals(generatorAgent.getFullName().toString()) &&
+	   !child.getName().equals(transducerAgent.getFullName().toString())) {
+
+	  // Add ImpactPlugin to the Agent.
+	  child.addChild(getImpactPlugIn());
+	}
+      } else {
+	// Process it's children.
+	modifyData(child);
+      }      
+    }
+  }
+
   public ComponentData modifyComponentData(ComponentData data) {
+    modifyData(data);
+
     return data;
   }
 
