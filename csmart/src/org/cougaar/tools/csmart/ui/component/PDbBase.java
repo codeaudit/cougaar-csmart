@@ -78,7 +78,7 @@ public class PDbBase {
     public PDbBase()
         throws SQLException, IOException
     {
-        log = new PrintWriter(new FileWriter("PopulateDbQuery.log"));
+        //        log = new PrintWriter(new FileWriter("PopulateDbQuery.log"));
         dbp = DBProperties.readQueryFile(QUERY_FILE);
         try {
             dbp.addQueryFile(RecipeComponent.RECIPE_QUERY_FILE);
