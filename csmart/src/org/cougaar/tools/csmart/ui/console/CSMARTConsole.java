@@ -1205,8 +1205,10 @@ public class CSMARTConsole extends JFrame {
       nodePanes.put(nodeName, textPane);
 
       NodeEventFilter filter = new NodeEventFilter(10);
-      ConfigurationWriter configWriter = 
-        experiment.getConfigurationWriter(nodesToRun);
+//       ConfigurationWriter configWriter = 
+//         experiment.getConfigurationWriter(nodesToRun);
+      Iterator fileIter = experiment.getConfigFiles(nodesToRun);
+
       HostServesClient hsc = null;
       try {
         hsc = communitySupport.getHost(hostName, getAppServerPort(properties));
@@ -1221,9 +1223,30 @@ public class CSMARTConsole extends JFrame {
         continue;
       }
 
+      while(fileIter.hasNext()) {
+        String filename = (String)fileIter.next();
+        OutputStream out = null;
+        try {
+          out = hsc.write(filename);
+          experiment.writeContents(filename, out);
+        } catch(Exception e) {
+          if(log.isErrorEnabled()) {
+            log.error("Caught an Exception writing leaf", e);
+          }
+        } finally {
+          try {
+            out.close();
+          } catch(Exception e) {
+            if(log.isErrorEnabled()) {
+              log.error("Caught exception closing stream", e);
+            }
+          }
+        }
+      }
+
       NodeCreationInfo nci =
         new NodeCreationInfo(hsc, uniqueNodeName, properties, args,
-                             listener, filter, configWriter, 
+                             listener, filter, null, 
                              nodeName, hostName,
                              nodeComponent, scrollPane, statusButton,
                              logFileName);
