@@ -38,6 +38,8 @@ import javax.swing.border.*;
 import javax.swing.event.*;
 
 import org.cougaar.mlm.ui.glsinit.GLSClient;
+import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.experiment.Experiment;
@@ -733,11 +735,10 @@ public class CSMARTConsole extends JFrame {
             });
         } else
           // create and display iconified GLSClient
-          // if its servlets exist
+          // if its servlet exists
           SwingUtilities.invokeLater(new Runnable() {
               public void run() {
-                //                if (!findServlets())
-                //                  return;
+                findServlet();
                 JInternalFrame jif = 
                   new JInternalFrame("GLS", true, false, true, true);
                 jif.getContentPane().add(new GLSClient(getOPlanAgentURL()));
@@ -764,39 +765,42 @@ public class CSMARTConsole extends JFrame {
   }
 
   /**
-   * Find servlets for GLSClient.
-   * Looks for servlets named glsinit and glsreply
-   * in the NCA agent.
-   * TODO: should get required servlets from GLSClient
-   * and then display GUI if the servlets exist
+   * Use experiment component data tree to find plugins which are servlets.
+   * TODO: shouldn't have to hard code servlet class names;
+   * should be able to get servlet class to use from client
    */
 
-  private boolean findServlets() {
-    String URL = getOPlanAgentURL();
-    if (URL == null)
-      return false;
-    URL = URL + "/list?text";
-    Vector data = null;
-    try {
-      data = ClientServletUtil.getDataFromURL(URL);
-    } catch (Exception e) {
-      if (log.isErrorEnabled())
-        log.error("Exception reading from: " + URL, e);
-      return false;
-    }
-    boolean foundGLSInit = false;
-    boolean foundGLSReply = false;
-    for (int i = 0; i < data.size(); i++) {
-      String s = (String)data.get(i);
-      if (s.endsWith("glsinit")) {
-        foundGLSInit = true;
-      } else if (s.endsWith("glsreply")) {
-        foundGLSReply = true;
+  private boolean findServlet() {
+    ArrayList componentData = new ArrayList();
+    ComponentData societyData = experiment.getSocietyComponentData();
+    ComponentData[] cdata = societyData.getChildren();
+    for (int i = 0; i < cdata.length; i++) 
+      componentData.add(cdata[i]);
+    for (int i = 0; i < componentData.size(); i++) {
+      Object o = componentData.get(i);
+      if (o instanceof AgentComponentData) {
+        if (hasServlet((AgentComponentData)o))
+          return true;
+      } else {
+        ComponentData[] tmp = ((ComponentData)o).getChildren();
+        for (int j = 0; j < tmp.length; j++) 
+          componentData.add(tmp[j]);
       }
     }
-    return foundGLSInit & foundGLSReply;
+    return false;
   }
 
+  /**
+   * Find the GLS servlet.
+   */
+
+  private boolean hasServlet(AgentComponentData cdata) {
+    String[] names = cdata.getPluginNames();
+    for (int i = 0; i < names.length; i++) 
+      if (names[i].endsWith("org.cougaar.mlm.plugin.organization.GLSInitServlet"))
+        return true;
+    return false;
+  }
 
   /**
    * Get the agent URL (http://host:port/$agentname)
@@ -1230,6 +1234,10 @@ public class CSMARTConsole extends JFrame {
       Properties properties = getNodeMinusD(nodeComponent);
       String[] args = getNodeArguments(nodeComponent);
 
+      // TODO: experiment.getTrialID can return null
+      // if not connected to database
+      // and properties.setProperty generates a null pointer exception
+      // when passed a null value
       properties.setProperty("org.cougaar.experiment.id", 
                              experiment.getTrialID());
 
