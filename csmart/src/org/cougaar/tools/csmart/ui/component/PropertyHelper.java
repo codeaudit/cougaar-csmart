@@ -39,16 +39,44 @@ public class PropertyHelper {
         }
     }
 
-    public static Object convertStringToArray(String s) {
-        while (s.startsWith("{")) s = s.substring(1);
-        while (s.endsWith("}")) s = s.substring(0, s.length() - 1);
-        StringTokenizer tokens = new StringTokenizer(s, ",");
-        List result = new ArrayList();
-        while (tokens.hasMoreTokens()) {
-            result.add(tokens.nextToken().trim());
-        }
-        return result.toArray(new String[result.size()]);
+//      public static Object convertStringToArray(String s) {
+//          while (s.startsWith("{")) s = s.substring(1);
+//          while (s.endsWith("}")) s = s.substring(0, s.length() - 1);
+//          StringTokenizer tokens = new StringTokenizer(s, ",");
+//          List result = new ArrayList();
+//          while (tokens.hasMoreTokens()) {
+//              result.add(tokens.nextToken().trim());
+//          }
+//          return result.toArray(new String[result.size()]);
+//      }
+
+  /**
+   * Convert string to array, allowing for nested braces, i.e.
+   * this strips off just one set of braces each time it is called.
+   */
+
+  public static Object convertStringToArray(String s) {
+    if (s.startsWith("{")) s = s.substring(1);
+    if (s.endsWith("}")) s = s.substring(0, s.length() - 1);
+    if (s.startsWith("{")) { 
+      StringTokenizer tokens = new StringTokenizer(s, "{");
+      List result = new ArrayList();
+      while (tokens.hasMoreTokens()) {
+        String tmp = tokens.nextToken();
+        if (tmp.endsWith(",")) 
+          tmp = tmp.substring(0, tmp.length() - 1);
+        result.add("{" + tmp.trim());
+      }
+      return result.toArray(new String[result.size()]);
+    } else {
+      StringTokenizer tokens = new StringTokenizer(s, ",");
+      List result = new ArrayList();
+      while (tokens.hasMoreTokens()) {
+        result.add(tokens.nextToken().trim());
+      }
+      return result.toArray(new String[result.size()]);
     }
+  }
 
     public static Object convertStringToArrayList(String s) {
         while (s.startsWith("[")) s = s.substring(1);
@@ -154,7 +182,7 @@ public class PropertyHelper {
 		}
             }
         } else {
-            throw new InvalidPropertyValueException("Unsupported value conversion");
+            throw new InvalidPropertyValueException("Unsupported value conversion, class is: " + cls);
         }
         return result;
     }

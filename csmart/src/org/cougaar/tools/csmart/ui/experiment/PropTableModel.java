@@ -49,6 +49,7 @@ public class PropTableModel extends PropTableModelBase {
 
   /**
    * Render null experiment values as "<not set>".
+   * Render nested arrays.
    */
 
     protected String render(Property prop) {
@@ -60,7 +61,17 @@ public class PropTableModel extends PropTableModelBase {
             buf.append('{');
             for (int i = 0, n = Array.getLength(o); i < n; i++) {
                 if (i > 0) buf.append(",");
-                buf.append(Array.get(o, i));
+                Object tmpValue = Array.get(o, i);
+                if (!tmpValue.getClass().isArray())
+                  buf.append(tmpValue);
+                else {
+                  buf.append("{");
+                  for (int j = 0, m = Array.getLength(tmpValue); j < m; j++) {
+                    if (j > 0) buf.append(",");
+                    buf.append(Array.get(tmpValue, j));
+                  }
+                  buf.append("}");
+                }
             }
             buf.append("}");
             return buf.toString();
@@ -72,38 +83,60 @@ public class PropTableModel extends PropTableModelBase {
   /**
    * If new value is an empty string, then delete the previous
    * experiment values (set to null).
+   * If the property class is a single value, then the experiment values
+   * must be an array; if the property class is an array, then the
+   * experiment values must be an array of arrays (represented by
+   * nested braces).
    */
 
-    public void setValue(Property prop, Object newValue) {
-      // treat empty string as null, delete previous experiment values
-      if (newValue instanceof String && ((String)newValue).length() == 0) {
-	bindings.put(prop.getName(), null);
-	prop.setExperimentValues(null);
-	// notify table model listeners
-	fireTableCellUpdated(getRowForProperty(prop), 1);
-	return;
-      }
-        Class cls = prop.getPropertyClass();
-        String[] values =
-            (String[]) PropertyHelper.convertStringToArray(newValue.toString());
-        if (cls == null) {
-            newValue = values;
-        } else {
-            newValue = Array.newInstance(cls, values.length);
-            for (int i = 0; i < values.length; i++) {
-                try {
-                    Array.set(newValue, i,
-                              PropertyHelper.validateValue(prop, values[i]));
-                } catch (InvalidPropertyValueException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-	//        System.out.println("newValue " + newValue);
-        bindings.put(prop.getName(), newValue);
-	// set new values as experiment values in property
-	prop.setExperimentValues(Arrays.asList((Object [])newValue));
-	// notify table model listeners
-	fireTableCellUpdated(getRowForProperty(prop), 1);
+  public void setValue(Property prop, Object newValue) {
+    // treat empty string as null, delete previous experiment values
+    if (newValue instanceof String && ((String)newValue).length() == 0) {
+      bindings.put(prop.getName(), null);
+      prop.setExperimentValues(null);
+      // notify table model listeners
+      fireTableCellUpdated(getRowForProperty(prop), 1);
+      return;
     }
+    Class cls = prop.getPropertyClass();
+    // strips off first level of braces
+    String[] values =
+      (String[]) PropertyHelper.convertStringToArray(newValue.toString());
+    if (cls == null) {
+      newValue = values;
+    } else if (!cls.isArray()) {
+      // if the class is a single value, then the experiment values
+      // are an array of that class
+      newValue = Array.newInstance(cls, values.length);
+      for (int i = 0; i < values.length; i++) {
+        try {
+          Array.set(newValue, i,
+                    PropertyHelper.validateValue(prop, values[i]));
+        } catch (InvalidPropertyValueException e) {
+          e.printStackTrace();
+        }
+      }
+    } else {
+      // if the class is an array, then the experiment values
+      // are an array of arrays
+      Object[] tmpValue = new Object[values.length];
+      for (int i = 0; i < values.length; i++) {
+        String[] expValues =
+          (String[]) PropertyHelper.convertStringToArray(values[i]);
+        try {
+          tmpValue[i] = PropertyHelper.validateValue(prop, expValues);
+        } catch (InvalidPropertyValueException e) {
+          e.printStackTrace();
+        }
+      }
+      newValue = tmpValue;
+    }
+    bindings.put(prop.getName(), newValue);
+    // set new values as experiment values in property
+    prop.setExperimentValues(Arrays.asList((Object [])newValue));
+    // notify table model listeners
+    fireTableCellUpdated(getRowForProperty(prop), 1);
+  }
+
 }
+

@@ -284,7 +284,12 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     isRunnable = newExperiment.isRunnable();
   }
 
-  private void update() {
+  /**
+   * Bring the display up-to-date by re-reading host/node/agent information
+   * from the experiment.
+   */
+
+  public void update() {
     if (experiment.getSocietyComponentCount() != 0)
       societyComponent = experiment.getSocietyComponent(0);
     else

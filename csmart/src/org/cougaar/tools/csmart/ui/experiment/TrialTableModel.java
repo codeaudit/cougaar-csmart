@@ -91,7 +91,18 @@ public class TrialTableModel extends AbstractTableModel {
     if (column == 0)
       return trial.getShortName();
     Object[] values = trial.getValues();
-    return values[column-1];   
+    Object value = values[column-1];
+    if (value.getClass().isArray()) {
+      StringBuffer buf = new StringBuffer();
+      buf.append('{');
+      for (int i = 0, n = Array.getLength(value); i < n; i++) {
+        if (i > 0) buf.append(",");
+        buf.append(Array.get(value, i));
+      }
+      buf.append("}");
+      return buf.toString();
+    } else
+      return value;
   }
 
   /**
