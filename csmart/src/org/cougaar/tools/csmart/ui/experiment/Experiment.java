@@ -528,6 +528,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
         String thisHost = hosts[i].getShortName();
         if (thisHost.equals(nameServerHost)) {
           newNameServer = oldNameServer;
+	  System.out.println("Keeping " + nameServerHost);
           break hostLoop;       // Use existing nameserver definition
         }
         if (dfltNameServer == null) { // First host is default
@@ -552,6 +553,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     if (newNameServer != null) {
       defaultNodeArgs.setProperty("org.cougaar.name.server", newNameServer);
     }
+    System.out.println("org.cougaar.name.server=" + newNameServer);
   }
 
   private void addNodeComponent(ExperimentNode node) {
