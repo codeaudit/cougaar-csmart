@@ -166,15 +166,42 @@ public class PropertyBuilder extends JFrame implements ActionListener {
    * what experiments will have to be updated.
    * If silently is true, display no dialog boxes (used on exit).
    */
-
   private void saveToDatabase(boolean silently) {
     if (experiment != null) {
       saveExperiment();
       return;
     }
     if (configComponent instanceof SocietyComponent) {
-      ((SocietyComponent)configComponent).saveToDatabase();
-      CSMART.getOrganizer().displayExperiments((SocietyComponent)configComponent);
+      if (((SocietyComponent)configComponent).isModified()) {
+	final PropertyBuilder propertyBuilder = this;
+	GUIUtils.timeConsumingTaskStart(this);
+	GUIUtils.timeConsumingTaskStart(csmart);
+	try {
+	  new Thread("SaveSociety") {
+	    public void run() {
+	      boolean success = ((SocietyComponent)configComponent).saveToDatabase();
+	      GUIUtils.timeConsumingTaskEnd(propertyBuilder);
+	      GUIUtils.timeConsumingTaskEnd(csmart);
+	      if (!success && propertyBuilder.log.isWarnEnabled()) {
+		propertyBuilder.log.warn("Failed to save society " + configComponent.getShortName());
+	      } else if (propertyBuilder.log.isDebugEnabled()) {
+		propetyBuilder.log.debug("Saved society " + configComponent.getShortName());
+	      }
+	    }
+	  }.start();
+	} catch (RuntimeException re) {
+	  if(log.isErrorEnabled()) {
+	    log.error("Runtime exception saving society", re);
+	  }
+	  GUIUtils.timeConsumingTaskEnd(propertyBuilder);
+	  GUIUtils.timeConsumingTaskEnd(csmart);
+	}
+	//((SocietyComponent)configComponent).saveToDatabase();
+	CSMART.getOrganizer().displayExperiments((SocietyComponent)configComponent);
+      } else {
+	// If we opened a "local" version of a society within an experiment,
+	// then we want to remove this SocietyComponent from the workspace
+      }
     } else if (configComponent instanceof RecipeComponent) {
       try {
         RecipeComponent rc = (RecipeComponent) configComponent;
