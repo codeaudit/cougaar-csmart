@@ -54,6 +54,7 @@ import org.cougaar.tools.csmart.recipe.ComponentInsertionRecipe;
 import org.cougaar.tools.csmart.recipe.SpecificInsertionRecipe;
 import org.cougaar.tools.csmart.recipe.AgentInsertionRecipe;
 import org.cougaar.tools.csmart.recipe.ParameterInsertionRecipe;
+import org.cougaar.tools.csmart.recipe.ServletGroupInsertionRecipe;
 import org.cougaar.tools.csmart.recipe.ABCImpact;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
@@ -104,6 +105,7 @@ public class Organizer extends JScrollPane {
     new NameClassItem("Specific Insertion", SpecificInsertionRecipe.class),
     new NameClassItem("Agent Insertion", AgentInsertionRecipe.class),
     new NameClassItem("Parameter Insertion", ParameterInsertionRecipe.class),
+    new NameClassItem("Servlet Group Insertion", ServletGroupInsertionRecipe.class),
     new NameClassItem("ABCImpact", ABCImpact.class),
   };
 
