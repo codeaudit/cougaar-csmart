@@ -854,7 +854,7 @@ public class CSMARTConsoleView extends JFrame implements Observer {
         removeNodeView(nc.nodeName);
     } else if (arg.equals(CSMARTConsoleModel.ADD_GLS_WINDOW)) {
       if(!haveGLS) {
-        JInternalFrame gls = GLSClientView.getGLSClientView();
+        JInternalFrame gls = GLSClientView.getGLSClientView(model.getGLSContactInfo());
         desktop.add(gls, JLayeredPane.DEFAULT_LAYER);
         try {
           gls.setIcon(true);

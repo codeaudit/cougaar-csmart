@@ -83,6 +83,9 @@ public class CSMARTConsoleModel extends Observable implements Observer {
   private String notifyCondition = "exception";
   private boolean notifyOnStdErr;
 
+  // Default contact info for the GLSInit UI
+  private String[] glsContactInfo = { "http", "localhost", "8800", "NCA" };
+
   public CSMARTConsoleModel(Experiment experiment, CSMART csmart) {
     this.csmart = csmart;
     this.runStart = new Date();
@@ -132,7 +135,13 @@ public class CSMARTConsoleModel extends Observable implements Observer {
     }
   }
 
+  // Find the Node on which the GLSInitServlet is running, if any
   private String findGLSNode() {
+    // Will have no experiment if just attached to Nodes
+    // Return empty String to avoid null pointer
+    if (experiment == null)
+      return "";
+
     HostComponent[] hosts = experiment.getHostComponents();
     for (int i = 0; i < hosts.length; i++) {
       NodeComponent[] nodes = hosts[i].getNodes();
@@ -140,13 +149,24 @@ public class CSMARTConsoleModel extends Observable implements Observer {
         AgentComponent[] agents = nodes[j].getAgents();
         for (int k = 0; k < agents.length; k++) {
           AgentComponent agent = agents[k];
-          if (agent.getShortName().equalsIgnoreCase("NCA")) {
+	  // FIXME: This assumes that if this agent exists, the servlet exists.
+	  // Mostly this is a reasonable shortcut, but not always.
+	  // Alternative is to do experiment.getSocietyComponentData
+	  // and then walk the ComponentData tree down to AgentsComponentData,
+	  // and then do getPluginNames, and look for one that ends with GLSInitServlet
+          if (agent.getShortName().equalsIgnoreCase("NCA") || agent.getShortName().equalsIgnoreCase("OSD.GOV")) {
+	    glsContactInfo[3] = agent.getShortName();
+	    glsContactInfo[1] = hosts[i].getShortName();
+
+	    // Pull out the gls servlet protocol and port here too
+	    getGLSPort(nodes[j].getArguments());
+
             return nodes[j].getShortName();
           }
         }
       }
     }
-    return null;
+    return "";
   }
 
   public boolean haveAttached() {
@@ -212,6 +232,7 @@ public class CSMARTConsoleModel extends Observable implements Observer {
    * Only act on nodes that are in the "Running" state.
    */
   public void stopNodes() {
+    // FIXME: Really should call glsClient.stop() if we have a glsClient
     Enumeration enum = this.nodeModels.elements();
     while (enum.hasMoreElements()) {
       NodeModel nodeModel = (NodeModel) enum.nextElement();
@@ -267,6 +288,8 @@ public class CSMARTConsoleModel extends Observable implements Observer {
       // TODO: is this right?
       NodeModel model = (NodeModel) nodeModels.get(glsNode);
       if (model != null) {
+	// record info from the Node model on the protocol, host, port, and agent for the GLS servlet
+	recordGLSContactInfo(model);
         setChanged();
         notifyObservers(ADD_GLS_WINDOW);
       }
@@ -749,6 +772,15 @@ public class CSMARTConsoleModel extends Observable implements Observer {
   }
 
   public void addGLSWindow() {
+    // Try to get reasonable contact info for the GLS servlet
+    NodeModel glsNode = getNodeModel(findGLSNode());
+    if (glsNode == null) {
+      ArrayList models = getNodeModels();
+      if (! models.isEmpty())
+	glsNode = (NodeModel) models.get(0);
+    }
+    recordGLSContactInfo(glsNode);
+
     setChanged();
     notifyObservers(ADD_GLS_WINDOW);
   }
@@ -831,4 +863,39 @@ public class CSMARTConsoleModel extends Observable implements Observer {
     }
   }
 
+  // Given the node that has the GLS servlet, record the contact info for it
+  private void recordGLSContactInfo (NodeModel glsNode) {
+    if (glsNode == null)
+      return;
+
+    // find the correct protocol, host, port, and agent name for the GLS servlet
+    // and set in the glsContactInfo array
+
+    String host = glsNode.getInfo().getHostName();
+    glsContactInfo[1] = host;
+
+    // Pull out the gls servlet protocol and port here too
+    getGLSPort(glsNode.getInfo().getProperties());
+  }
+
+  // Called from the ConsoleView to get the correct contact info for the GLS servlet
+  public String[] getGLSContactInfo() {
+    return glsContactInfo;
+  }
+
+  // Helper function that takes Nodes arguments
+  // and tries to find non-default protocol and port for servlets
+  private void getGLSPort(Properties arguments) {
+    if (arguments != null) {
+      String s = arguments.getProperty("org.cougaar.lib.web.https.port");
+      if (s != null) {
+	glsContactInfo[2] = s;
+	glsContactInfo[0] = "https";
+      } else {
+	s = arguments.getProperty("org.cougaar.lib.web.http.port");
+	if (s != null)
+	  glsContactInfo[2] = s;
+      }
+    }
+  }
 }

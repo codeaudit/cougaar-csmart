@@ -29,14 +29,22 @@ public class GLSClientView extends JComponent {
 
   /**
    * Create an internal frame that contains the GLSClient gui.
-   * For now, we always assume that the GLS Servlet will be on the NCA agent.
+   * @param glsContactInfo Array of 4 strings: protocol, host, port, and agent 
+   *        on which to contact the GLS Init Servlet.
    */
+  public static JInternalFrame getGLSClientView(String[] glsContactInfo) {
+    if (glsContactInfo == null || glsContactInfo.length < 4) {
+      glsContactInfo = new String[4];
+      glsContactInfo[0] = "http";
+      glsContactInfo[1] = "localhost";
+      glsContactInfo[2] = "8800";
+      glsContactInfo[3] = "NCA";
+    }
 
-  public static JInternalFrame getGLSClientView() {
     // resizable, not closeable, maximizable, iconifiable
     JInternalFrame jif =
         new JInternalFrame("GLS", true, false, true, true);
-    jif.getContentPane().add(new GLSClient("http", "localhost", "8800", "NCA"));
+    jif.getContentPane().add(new GLSClient(glsContactInfo[0], glsContactInfo[1], glsContactInfo[2], glsContactInfo[3]));
     jif.setSize(350, 400);
     jif.setLocation(0, 0);
     jif.setVisible(true);
