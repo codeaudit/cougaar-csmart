@@ -71,6 +71,12 @@ public class CSMARTConsole extends JFrame {
   private static final String[] emptyStringArray = {};
   // number of characters displayed in the node output window
   private static final int DEFAULT_VIEW_SIZE = 50000;
+
+  // CSMART only knows how to talk http for now
+  private String GLS_PROTOCOL = "http";
+
+  // Servlet to look for in initializing GLS window
+  private static final String GLS_SERVLET = "org.cougaar.mlm.plugin.organization.GLSInitServlet";
   CSMART csmart; // top level viewer, gives access to save method, etc.
   HostConfigurationBuilder hostConfiguration;
   RemoteHostRegistry remoteHostRegistry;
@@ -733,15 +739,18 @@ public class CSMARTConsole extends JFrame {
                 currentTrial--;
               }
             });
-        } else
+        } else {
           // create and display iconified GLSClient
           // if its servlet exists
-          if(findServlet()) {
+	  final String glsAgent = findServlet();
+          if(glsAgent != null) {
+	    // FIXME: If swing is too busy, is it possible
+	    // the callbacks arent heard?
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                   JInternalFrame jif = 
                     new JInternalFrame("GLS", true, false, true, true);
-                  jif.getContentPane().add(new GLSClient(getOPlanAgentURL()));
+                  jif.getContentPane().add(new GLSClient(getOPlanAgentURL(glsAgent)));
                   jif.setSize(350, 350);
                   jif.setLocation(0, 0);
                   jif.setVisible(true);
@@ -753,6 +762,7 @@ public class CSMARTConsole extends JFrame {
                 }
               });
           }
+	}
       }
     };
     starting = true;
@@ -771,7 +781,7 @@ public class CSMARTConsole extends JFrame {
    * should be able to get servlet class to use from client
    */
 
-  private boolean findServlet() {
+  private String findServlet() {
     ArrayList componentData = new ArrayList();
     ComponentData societyData = experiment.getSocietyComponentData();
     ComponentData[] cdata = societyData.getChildren();
@@ -780,15 +790,21 @@ public class CSMARTConsole extends JFrame {
     for (int i = 0; i < componentData.size(); i++) {
       Object o = componentData.get(i);
       if (o instanceof AgentComponentData) {
-        if (hasServlet((AgentComponentData)o))
-          return true;
+	AgentComponentData acd = (AgentComponentData)o;
+        if (hasServlet(acd)) {
+	  String name = acd.getName().substring(acd.getName().lastIndexOf('.') + 1);
+	  if (log.isDebugEnabled()) {
+	    log.debug("Found GLSServlet in agent " + name);
+	  }
+          return name;
+	}
       } else {
         ComponentData[] tmp = ((ComponentData)o).getChildren();
         for (int j = 0; j < tmp.length; j++) 
           componentData.add(tmp[j]);
       }
     }
-    return false;
+    return null;
   }
 
   /**
@@ -798,7 +814,9 @@ public class CSMARTConsole extends JFrame {
   private boolean hasServlet(AgentComponentData cdata) {
     String[] names = cdata.getPluginNames();
     for (int i = 0; i < names.length; i++) {
-      if (names[i].endsWith("org.cougaar.mlm.plugin.organization.GLSInitServlet"))
+      // Could the name ever add the OPLAN? In which case, we should
+      // do an indexOf != -1
+      if (names[i].endsWith(GLS_SERVLET))
         return true;
     }
     return false;
@@ -808,15 +826,16 @@ public class CSMARTConsole extends JFrame {
    * Get the agent URL (http://host:port/$agentname)
    * for the agent named "NCA" in the experiment.
    */
-
-  private String getOPlanAgentURL() {
+  private String getOPlanAgentURL(String agent) {
+    if (agent == null || agent.equals(""))
+      agent = "NCA";
     HostComponent[] hosts = experiment.getHostComponents();
     for (int i = 0; i < hosts.length; i++) {
       NodeComponent[] nodes = hosts[i].getNodes();
       for (int j = 0; j < nodes.length; j++) {
         AgentComponent[] agents = nodes[j].getAgents();
         for (int k = 0; k < agents.length; k++) {
-          if (agents[k].getShortName().equals("NCA")) {
+          if (agents[k].getShortName().equals(agent)) {
             int port = CSMARTUL.agentPort;
             Properties arguments = nodes[j].getArguments();
             if (arguments != null) {
@@ -831,7 +850,7 @@ public class CSMARTConsole extends JFrame {
                 }
               }
             }
-            return "http://" + hosts[i].getShortName() + ":" + port + "/$NCA";
+            return GLS_PROTOCOL + "://" + hosts[i].getShortName() + ":" + port + "/$" + agent;
           }
         }
       }
