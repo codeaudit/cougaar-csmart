@@ -61,7 +61,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   // Name of the remote registry that contains the runtime information.
   public static final String DEFAULT_SERVER_NAME = "ServerHook";
 
-  JFrame consoleFrame;
   HostConfigurationBuilder hostConfiguration;
   CommunityServesClient communitySupport;
   String nameServerHostName;
@@ -1401,6 +1400,9 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     boolean found = 
       ((ConsoleTextPane)(tabbedPane.getSelectedComponent())).searchNext();
     searchNextAction.setEnabled(found);
+    JComponent c = (JComponent)tabbedPane.getSelectedComponent();
+    c.revalidate();
+    c.repaint();
   }
 
   public void statusMenuItem_actionPerformed(ActionEvent e) {

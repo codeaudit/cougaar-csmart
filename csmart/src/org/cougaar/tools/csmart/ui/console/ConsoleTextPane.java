@@ -91,6 +91,7 @@ public class ConsoleTextPane extends JScrollPane {
       previousHighlight =
         highlighter.addHighlight(startOffset+index, startOffset+end, highlight);
       searchPosition = doc.createPosition(startOffset+end);
+      textPane.setCaretPosition(startOffset+end);
       Rectangle r = textPane.modelToView(startOffset);
       // scroll so that highlighted text is visible
       getViewport().setViewPosition(new Point((int)r.getX(), (int)r.getY()));
