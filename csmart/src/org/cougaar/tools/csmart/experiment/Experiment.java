@@ -683,7 +683,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     List experimentValues = new ArrayList();
     // Get Society Components.
     ModifiableComponent comp = getSocietyComponent();
-    List propertyNames = null;
     if (comp != null) {
        for (Iterator j = comp.getProperties(); j.hasNext(); ) {
         Property property = (Property)j.next();
@@ -1632,8 +1631,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     nc.setClassName(Node.class.getName()); // leave this out?? FIXME
     nc.setOwner(this); // the experiment? FIXME
     nc.setParent(parent);
-    ComponentName name = 
-      new ComponentName((ConfigurableComponent) node, "ConfigurationFileName");
+//     ComponentName name = 
+//       new ComponentName((ConfigurableComponent) node, "ConfigurationFileName");
     nc.addParameter(node.getShortName());
     Properties props = node.getArguments();
     for (Iterator i = props.entrySet().iterator(); i.hasNext(); ) {
@@ -2554,7 +2553,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   public boolean hasUnboundProperties() {
     // First handle Societies
     ModifiableComponent comp = getSocietyComponent();
-    List propertyNames = null;
     if (comp != null) {
        for (Iterator j = comp.getProperties(); j.hasNext(); ) {
         Property property = (Property)j.next();
@@ -2626,7 +2624,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     NodeComponent node = null;
 
     // BIG HACK IN HERE!!!!!!
-    SocietyComponent soc = getSocietyComponent();
     node = addNode("Node0");
     // Put all the agents in this Node
     // Skip agents already assigned to Nodes?

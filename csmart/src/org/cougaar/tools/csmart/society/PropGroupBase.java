@@ -57,7 +57,6 @@ public class PropGroupBase
   
   public void initProperties() {
     Iterator iter = pgd.getPropertiesIterator();
-    int i=0;
     while(iter.hasNext()) {
       PGPropData data = (PGPropData)iter.next();
       // Compose Name of Name and Type. 

@@ -106,12 +106,12 @@ public class CSMARTDomain extends DomainAdapter {
                              "Unable to initialize CSMART domain LPs without a binding site.");
     } 
 
-    ClusterServesLogicProvider cluster =
-      bindingSite.getClusterServesLogicProvider();
+//     ClusterServesLogicProvider cluster =
+//       bindingSite.getClusterServesLogicProvider();
 
     // Most LPs actually need a LogPlanServesLogicProvider. The only XPlan that implements
     // that (actually, the only one anywhere), is the LogPlan. So cast it.
-    LogPlan logPlan = (LogPlan) getXPlan();
+    //    LogPlan logPlan = (LogPlan) getXPlan();
     
     //getLoggingService() is a logger the LPs can use
 

@@ -64,7 +64,6 @@ public class ComponentDataXML extends XMLUtils {
 
     Document doc = null;
 
-    String experimentName = data.getName();
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     try {
       DocumentBuilder db = dbf.newDocumentBuilder();

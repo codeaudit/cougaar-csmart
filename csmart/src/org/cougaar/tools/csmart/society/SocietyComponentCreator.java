@@ -62,7 +62,7 @@ public class SocietyComponentCreator {
    * @return a <code>ComponentData</code> value
    */
   public static final ComponentData getComponentData(SocietyComponent society) {
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.society.SocietyComponentCreator");
+    //    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.society.SocietyComponentCreator");
 
     ComponentData cData = new GenericComponentData();
 
@@ -100,7 +100,7 @@ public class SocietyComponentCreator {
   }
 
   private static final void addContainer(ComponentData cd, BaseComponent cp, String name) {
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.society.SocietyComponentCreator");
+    //    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.society.SocietyComponentCreator");
 
     Iterator iter = ((Collection)cp.getDescendentsOfClass(ContainerBase.class)).iterator();
     while(iter.hasNext()) {

@@ -115,7 +115,7 @@ public abstract class SocietyBase
       return;
 
     boolean temp = modified;
-    String oldname = getSocietyName();
+    //    String oldname = getSocietyName();
     super.setName(newName);
     if (getAssemblyId() != null) {
       // do the DB save that is necessary

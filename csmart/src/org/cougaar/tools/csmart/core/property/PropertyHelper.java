@@ -124,7 +124,7 @@ public class PropertyHelper {
   public static Object validateValue(Class cls, Set validValues, Object newValue)
     throws InvalidPropertyValueException
   {
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.property.PropertyHelper");
+    //    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.property.PropertyHelper");
 
  //    if(log.isDebugEnabled()) {
 //        log.debug("validateValue(Class, Set, Object) \n" +
@@ -199,7 +199,6 @@ public class PropertyHelper {
   {
     int len = Array.getLength(newValue);
     String[] result = new String[len];
-    Class cls = newValue.getClass();
     for (int i = 0; i < len; i++) {
       String x = Array.get(newValue, i).toString();
       result[i] = (String) validateValidValue(validValues, x);

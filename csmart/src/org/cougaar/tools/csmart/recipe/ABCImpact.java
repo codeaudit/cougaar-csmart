@@ -424,7 +424,6 @@ public class ABCImpact
   }
 
   public ComponentData modifyComponentData(ComponentData data) {
-    ComponentData[] children = data.getChildren();
 
     // First we need to add a line to the Node file for the Binder.
     data = addBinder(data);
@@ -470,7 +469,6 @@ public class ABCImpact
     }
 
     public ComponentData addComponentData(ComponentData child) {
-      StringBuffer sb = new StringBuffer();
       ABCImpact parent = (ABCImpact)this.getParent();
 
       // Remove this hack when we switch to ComponentData

@@ -211,7 +211,6 @@ public class CMT {
     ResultSet rs = null;
     boolean ret = false;
     try {
-      StringBuffer q = new StringBuffer();
       Connection conn = DBUtils.getConnection(QUERY_FILE);
       Statement stmt = null;
       try {
@@ -720,7 +719,7 @@ public class CMT {
     
     String expt_id = DBUtils.sqlQuote(experiment_id);
     String trial_id = DBUtils.sqlQuote(getTrialId(experiment_id));
-    String society_id = DBUtils.sqlQuote(PopulateDb.getSocietyAlibId(experiment_name));
+    //    String society_id = DBUtils.sqlQuote(PopulateDb.getSocietyAlibId(experiment_name));
     ArrayList queries = new ArrayList();
 
     queries.add(DBUtils.makeDeleteQuery(asbPrefix+"expt_trial_assembly", "expt_id", expt_id));

@@ -123,9 +123,6 @@ public class DBUtils {
   public static boolean isValidDBConnection() {
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
     DBProperties dbProps;
-    String database;
-    String username;
-    String password;
 
     boolean valid = false;
     Map substitutions = new HashMap();
@@ -146,8 +143,6 @@ public class DBUtils {
 	      Statement stmt = conn.createStatement();
 	      String query = dbProps.getQuery(ASSEMBLYID_QUERY, substitutions);
 	      ResultSet rs = stmt.executeQuery(query);
-	      String assemblyId;
-	      String description;
 	      if (rs.next()) {
 		valid = true;
 	      }
@@ -485,7 +480,6 @@ public class DBUtils {
 
   public static boolean isSocietyNameInDatabase(String societyName) {
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
-    Logger qLog = CSMART.createLogger("queries");
     Map substitutions = new HashMap();
     String result = null;
     String query = "";
@@ -519,7 +513,6 @@ public class DBUtils {
 
   public static boolean isRecipeNameInDatabase(String recipeName) {
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
-    Logger qLog = CSMART.createLogger("queries");
     Map substitutions = new HashMap();
     String result = null;
     String query = "";
@@ -559,7 +552,6 @@ public class DBUtils {
    */
   public static boolean agentHasAssetData(String name, String assemblyId) {
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
-    Logger qLog = CSMART.createLogger("queries");
     Map substitutions = new HashMap();
     String result = null;
     String query = "";
