@@ -70,9 +70,9 @@ public class Analyzer extends JFrame implements ActionListener {
    * Display a csv file in excel.
    */
 
-  public Analyzer(CSMART csmart) {
+  public Analyzer(CSMART csmart, Experiment experiment) {
     this.csmart = csmart;
-    experiment = csmart.getExperiment();
+    this.experiment = experiment;
     myFrame = this;
     JMenu fileMenu = new JMenu(FILE_MENU);
     JMenuItem openMenuItem = new JMenuItem(OPEN_MENU_ITEM);
@@ -192,7 +192,7 @@ public class Analyzer extends JFrame implements ActionListener {
   }
 
   public static void main(String[] args) {
-    new Analyzer(null);
+    new Analyzer(null, null);
   }
 
   class MyFileFilter extends javax.swing.filechooser.FileFilter {
