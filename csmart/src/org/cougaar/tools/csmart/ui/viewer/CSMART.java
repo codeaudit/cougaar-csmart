@@ -152,8 +152,8 @@ public class CSMART extends JFrame {
   private static final String PRE="<html><center><b><font face=\"sans-serif\">";
   private static final String POST="</font></b></center></html>";
   // tool names
-  private static final String CONFIGURATION_BUILDER = "Configuration Builder";
-  private static final String EXPERIMENT_BUILDER = "Experiment Builder";
+  public static final String CONFIGURATION_BUILDER = "Configuration Builder";
+  public static final String EXPERIMENT_BUILDER = "Experiment Builder";
   private static final String EXPERIMENT_CONTROLLER = "Experiment Controller";
   private static final String SOCIETY_MONITOR = "Society Monitor";
   private static final String PERFORMANCE_ANALYZER = "Performance Analyzer";
