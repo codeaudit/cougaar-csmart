@@ -46,7 +46,7 @@ org.cougaar.mlm.plugin.generic.UniversalExpanderPlugIn|Build_Short_Runway|0,0,or
 org.cougaar.mlm.plugin.generic.UniversalExpanderPlugIn|Build_Small_Tent_City|0,0,org.cougaar.mlm.plugin.generic.UniversalExpanderPlugIn,Build_Small_Tent_City,UNIVERSAL_EXPANDER_ARGS, 
 org.cougaar.mlm.plugin.generic.UniversalExpanderPlugIn|Expand_Runway_Apron|0,0,org.cougaar.mlm.plugin.generic.UniversalExpanderPlugIn,Expand_Runway_Apron,UNIVERSAL_EXPANDER_ARGS, 
 org.cougaar.mlm.plugin.ldm.LDMSQLPlugIn|fdm_equip.q|0,0,org.cougaar.mlm.plugin.ldm.LDMSQLPlugIn,fdm_equip.q,ASSET_FILE, 
-org.cougaar.mlm.plugin.ldm.SQLOplanPlugIn|093FF.oplan.q|0,0,org.cougaar.mlm.plugin.ldm.SQLOplanPlugIn,093FF.oplan.q,OPLAN_Q_FILE, 
+org.cougaar.mlm.plugin.organization.GLSInitServlet|093FF.oplan.q|0,0,org.cougaar.mlm.plugin.organization.GLSInitServlet,093FF.oplan.q,OPLAN_Q_FILE, 
 org.cougaar.mlm.plugin.ldm.XMLPolicyPlugIn|ArmyFeedingPolicy.ldm.xml|0,0,org.cougaar.mlm.plugin.ldm.XMLPolicyPlugIn,ArmyFeedingPolicy.ldm.xml,DIV_POLICY_FILES, 
 org.cougaar.mlm.plugin.ldm.XMLPolicyPlugIn|BasicLoadPolicy.ldm.xml|1,1,org.cougaar.mlm.plugin.ldm.XMLPolicyPlugIn,BasicLoadPolicy.ldm.xml,DIV_POLICY_FILES, 
 org.cougaar.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0,0,org.cougaar.mlm.plugin.ldm.XMLPolicyPlugIn,InventoryPolicy-ARBN.ldm.xml,INVENTORY_MANAGEMENT_POLICY_FILE, 

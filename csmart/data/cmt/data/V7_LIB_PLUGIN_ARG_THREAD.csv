@@ -46,7 +46,7 @@ org.cougaar.mlm.plugin.generic.UniversalExpanderPlugIn|Build_Short_Runway|0,CLAS
 org.cougaar.mlm.plugin.generic.UniversalExpanderPlugIn|Build_Small_Tent_City|0,CLASS-4, 
 org.cougaar.mlm.plugin.generic.UniversalExpanderPlugIn|Expand_Runway_Apron|0,CLASS-4, 
 org.cougaar.mlm.plugin.ldm.LDMSQLPlugIn|fdm_equip.q|0,BASE, 
-org.cougaar.mlm.plugin.ldm.SQLOplanPlugIn|093FF.oplan.q|0,BASE, 
+org.cougaar.mlm.plugin.organization.GLSInitServlet|093FF.oplan.q|0,BASE, 
 org.cougaar.mlm.plugin.ldm.XMLPolicyPlugIn|ArmyFeedingPolicy.ldm.xml|0,BASE, 
 org.cougaar.mlm.plugin.ldm.XMLPolicyPlugIn|BasicLoadPolicy.ldm.xml|1,BASE, 
 org.cougaar.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0,BASE, 

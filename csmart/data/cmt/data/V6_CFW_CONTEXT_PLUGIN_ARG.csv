@@ -129,7 +129,7 @@ CFW_ID,ORG_CONTEXT,PLUGIN_ARG_ID,BLANK,PLUGIN_CLASS,ARG_ORDER,PARAMETER_TYPE,PAR
 3ID-CFW,THEATER-CONSTRUCTION,org.cougaar.mlm.plugin.generic.UniversalExpanderPlugIn|Expand_Runway_Apron|0, ,org.cougaar.mlm.plugin.generic.UniversalExpanderPlugIn,0,UNIVERSAL_EXPANDER_ARGS,Expand_Runway_Apron,0,BASE
 3ID-CFW,THEATER-CONSTRUCTION,org.cougaar.mlm.plugin.generic.UniversalExpanderPlugIn|Build_Small_Tent_City|2, ,org.cougaar.mlm.plugin.generic.UniversalExpanderPlugIn,0,UNIVERSAL_EXPANDER_ARGS,Build_Small_Tent_City,2,BASE
 3ID-CFW,THEATER-CONSTRUCTION,org.cougaar.mlm.construction.ConstructionInventoryPlugIn|+ClassIVConstructionMaterialInventory|0, ,org.cougaar.mlm.construction.ConstructionInventoryPlugIn,0,CONSTRUCTION_INVENTORY_ARGS, +ClassIVConstructionMaterialInventory,0,BASE
-3ID-CFW,ALL,org.cougaar.mlm.plugin.ldm.SQLOplanPlugIn|092MP.oplan.q|0, ,org.cougaar.mlm.plugin.ldm.SQLOplanPlugIn,0,OPLAN_Q_FILE,092MP.oplan.q,0,BASE
+3ID-CFW,ALL,org.cougaar.mlm.plugin.organization.GLSInitServlet|092MP.oplan.q|0, ,org.cougaar.mlm.plugin.organization.GLSInitServlet,0,OPLAN_Q_FILE,092MP.oplan.q,0,BASE
 3ID-CFW,DIV-HHC,org.cougaar.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,BASE
 3ID-CFW,DIV-HHC,org.cougaar.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|2, ,org.cougaar.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,2,BASE
 3ID-CFW,SPTGP-UNIT,org.cougaar.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,BASE

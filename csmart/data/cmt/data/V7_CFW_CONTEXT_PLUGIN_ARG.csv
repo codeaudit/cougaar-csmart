@@ -65,7 +65,7 @@ CFW_ID,ORG_CONTEXT,PLUGIN_ARG_ID,BLANK,PLUGIN_CLASS,ARG_ORDER,PARAMETER_TYPE,PAR
 1AD-CFW,ALL,org.cougaar.mlm.plugin.generic.GenericTablePlugIn|default_allocation_rules.xml|0, ,org.cougaar.mlm.plugin.generic.GenericTablePlugIn,0,ALLOCATION_RULES,default_allocation_rules.xml,0,BASE
 1AD-CFW,ALL,org.cougaar.mlm.plugin.generic.PropagationPlugIn|forward.xml|0, ,org.cougaar.mlm.plugin.generic.PropagationPlugIn,0,PROPAGATION_RULES,forward.xml,0,BASE
 1AD-CFW,ALL,org.cougaar.mlm.plugin.ldm.LDMSQLPlugIn|fdm_equip.q|0, ,org.cougaar.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,fdm_equip.q,0,BASE
-1AD-CFW,ALL,org.cougaar.mlm.plugin.ldm.SQLOplanPlugIn|093FF.oplan.q|0, ,org.cougaar.mlm.plugin.ldm.SQLOplanPlugIn,0,OPLAN_Q_FILE,093FF.oplan.q,0,BASE
+1AD-CFW,ALL,org.cougaar.mlm.plugin.organization.GLSInitServlet|093FF.oplan.q|0, ,org.cougaar.mlm.plugin.organization.GLSInitServlet,0,OPLAN_Q_FILE,093FF.oplan.q,0,BASE
 1AD-CFW,ALL,org.cougaar.mlm.plugin.ldm.XMLPolicyPlugIn|LimitResourcesPolicy.ldm.xml|0, ,org.cougaar.mlm.plugin.ldm.XMLPolicyPlugIn,0,NCA_POLICY_FILES,LimitResourcesPolicy.ldm.xml,0,BASE
 1AD-CFW,ALL,org.cougaar.mlm.plugin.sample.StrategicTransportProjectorPlugIn|OffsetDays=0|1, ,org.cougaar.mlm.plugin.sample.StrategicTransportProjectorPlugIn,0,STRAT_TRANS_ARGS,OffsetDays=7,1,BASE
 1AD-CFW,ALL,org.cougaar.mlm.plugin.sample.StrategicTransportProjectorPlugIn|OriginFile=None|0, ,org.cougaar.mlm.plugin.sample.StrategicTransportProjectorPlugIn,0,STRAT_TRANS_ARGS,OriginFile=None,0,BASE
