@@ -99,6 +99,9 @@ save behavior (bug 2002).
   or Component Collection recipe, reject names the same as the recipe
   name.
 - Bug 2064: Sort recipe target queries by name in drop-down lists.
+- Bug 2105: Print a separate CSMART build time, as well as the core
+  build time, to support updating just the CSMART jar without the
+  rest of core.
 
 Release 9.4.1.1:
 This release includes bug fixes to support the Fall 2002 Ultra*Log

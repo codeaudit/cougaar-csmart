@@ -60,7 +60,6 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.cougaar.Version;
 import org.cougaar.bootstrap.Bootstrapper;
 import org.cougaar.util.ConfigFinder;
 import org.cougaar.util.log.Logger;
@@ -999,19 +998,70 @@ public class CSMART extends JFrame {
     StringBuffer result = new StringBuffer();
     String version = null;
     long buildtime = 0;
+    String repositoryTag = null;
+    boolean repositoryModified = false;
+    long repositoryTime = -1;
     try {
-      Class vc = Class.forName("org.cougaar.Version");
+      Class vc = Class.forName("org.cougaar.tools.csmart.Version");
       Field vf = vc.getField("version");
       Field bf = vc.getField("buildTime");
       version = (String) vf.get(null);
       buildtime = bf.getLong(null);
+      Field tf = vc.getField("repositoryTag");
+      Field rmf = vc.getField("repositoryModified");
+      Field rtf = vc.getField("repositoryTime");
+      repositoryTag = (String) tf.get(null);
+      repositoryModified = rmf.getBoolean(null);
+      repositoryTime = rtf.getLong(null);
     } catch (Exception e) {}
 
     result.append("CSMART ");
     if (version == null) {
       result.append("(unknown version)\n");
     } else {
-      result.append(version+" built on "+(new Date(buildtime)) + "\n");
+      result.append(version+" built on "+((buildtime > 0) ? (new Date(buildtime)).toString() : "(unknown time)") + "\n");
+      // add repositoryTag, repositoryModified, repositoryTime?
+      result.append("Repository: "+
+          ((repositoryTag != null) ? 
+           (repositoryTag + 
+            (repositoryModified ? " (modified)" : "")) :
+           "(unknown tag)")+
+          " on "+
+          ((repositoryTime > 0) ? 
+           ((new Date(repositoryTime)).toString()) :
+           "(unknown time)") + "\n");
+    }
+
+    version = null;
+    try {
+      Class vc = Class.forName("org.cougaar.Version");
+      Field vf = vc.getField("version");
+      Field bf = vc.getField("buildTime");
+      version = (String) vf.get(null);
+      buildtime = bf.getLong(null);
+      Field tf = vc.getField("repositoryTag");
+      Field rmf = vc.getField("repositoryModified");
+      Field rtf = vc.getField("repositoryTime");
+      repositoryTag = (String) tf.get(null);
+      repositoryModified = rmf.getBoolean(null);
+      repositoryTime = rtf.getLong(null);
+    } catch (Exception e) {}
+
+    result.append("Based on Cougaar core ");
+    if (version == null) {
+      result.append("(unknown version)\n");
+    } else {
+      result.append(version+" built on "+((buildtime > 0) ? (new Date(buildtime)).toString() : "(unknown time)") + "\n");
+      // add repositoryTag, repositoryModified, repositoryTime?
+      result.append("Repository: "+
+          ((repositoryTag != null) ? 
+           (repositoryTag + 
+            (repositoryModified ? " (modified)" : "")) :
+           "(unknown tag)")+
+          " on "+
+          ((repositoryTime > 0) ? 
+           ((new Date(repositoryTime)).toString()) :
+           "(unknown time)") + "\n");
     }
     
     String vminfo = System.getProperty("java.vm.info");
