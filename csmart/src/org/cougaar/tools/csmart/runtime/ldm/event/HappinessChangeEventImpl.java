@@ -30,7 +30,7 @@ import org.cougaar.core.agent.ClusterIdentifier;
  *
  * @author <a href="mailto:ahelsing@bbn.com">Aaron Helsinger</a>
  * @see org.cougaar.planning.ldm.plan.PlanElement
- * @see org.cougaar.tools.csmart.plugin.CustomerPlugIn
+ * @see org.cougaar.tools.csmart.runtime.plugin.CustomerPlugIn
  */
 public class HappinessChangeEventImpl implements NewHappinessChangeEvent {
   

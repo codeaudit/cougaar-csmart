@@ -273,7 +273,7 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
 	  ComponentData[] plugins = agent.getChildren();
 	  for(int j=0; j < plugins.length; j++) {
 	    ComponentData aa = plugins[j];
-	    if(aa.getName().equals("org.cougaar.tools.csmart.plugin.MetricsInitializerPlugin")) {
+	    if(aa.getName().equals("org.cougaar.tools.csmart.runtime.plugin.MetricsInitializerPlugin")) {
 	      metricsInitializer = agent.getName().toString();
 	      break;
 	    }

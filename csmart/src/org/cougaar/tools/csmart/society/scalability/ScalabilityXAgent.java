@@ -142,7 +142,7 @@ public class ScalabilityXAgent
   // But there's no way to tell the society
   // to add this PlugIn to every Agent
   private static final String ABCImpactPlugIn_name =
-    "org.cougaar.tools.csmart.plugin.ABCImpactPlugin";
+    "org.cougaar.tools.csmart.runtime.plugin.ABCImpactPlugin";
 
   private static HashMap subscriptionCounts = new HashMap(13);
 

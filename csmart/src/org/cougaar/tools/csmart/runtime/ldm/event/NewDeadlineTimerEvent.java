@@ -32,7 +32,7 @@ import org.cougaar.core.agent.ClusterIdentifier;
  *
  * @author <a href="mailto:ahelsing@bbn.com">Aaron Helsinger</a>
  * @see PlanElement
- * @see org.cougaar.tools.csmart.plugin.AllocatorPlugIn
+ * @see org.cougaar.tools.csmart.runtime.plugin.AllocatorPlugIn
  */
 public interface NewDeadlineTimerEvent extends DeadlineTimerEvent {
   void setRegarding(PlanElement pe);

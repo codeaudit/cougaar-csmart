@@ -36,7 +36,7 @@ import org.cougaar.tools.csmart.runtime.ldm.plugin.transducer.Society;
  * @author <a href="mailto:ahelsing@bbn.com">Aaron Helsinger</a>
  * @see RealWorldEvent
  * @see InfrastructureEvent
- * @see org.cougaar.tools.csmart.plugin.TransducerPlugIn
+ * @see org.cougaar.tools.csmart.runtime.plugin.TransducerPlugIn
  * @see Society
  */
 public interface ImpactModel {

@@ -41,7 +41,7 @@ import org.cougaar.planning.ldm.plan.Task;
  *
  * @author <a href="mailto:ahelsing@bbn.com">Aaron Helsinger</a>
  * @see PlanElement
- * @see org.cougaar.tools.csmart.plugin.AllocatorPlugIn
+ * @see org.cougaar.tools.csmart.runtime.plugin.AllocatorPlugIn
  */
 public class DeadlineTimerEventImpl implements NewDeadlineTimerEvent {
   private PlanElement pe = null;

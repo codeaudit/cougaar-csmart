@@ -119,9 +119,9 @@ public class BasicMetric extends ModifiableConfigurableComponent
   private Property propMWatchServ;
   
   private static final String MetricsPlugIn_name =
-    "org.cougaar.tools.csmart.plugin.MetricsPlugin";
+    "org.cougaar.tools.csmart.runtime.plugin.MetricsPlugin";
   private static final String MetricsInitializerPlugIn_name =
-    "org.cougaar.tools.csmart.plugin.MetricsInitializerPlugin";
+    "org.cougaar.tools.csmart.runtime.plugin.MetricsInitializerPlugin";
   private static final String MetricControl_Role = "MetricsControlProvider";
 
   private boolean editable = true;

@@ -20,9 +20,7 @@
  */
 package org.cougaar.tools.csmart.society.abc;
 
-import org.cougaar.tools.csmart.ui.component.*;
 import java.io.*;
-
 
 public class Test {
   public static void test1(String configDir) {

@@ -54,7 +54,7 @@ import org.cougaar.tools.csmart.society.AgentComponent;
  * be able to modify the Node.ini files as necessary.
  * 
  * @see org.cougaar.tools.csmart.runtime.ldm.event.RealWorldEvent
- * @see org.cougaar.tools.csmart.plugin.ScriptedEventPlugIn
+ * @see org.cougaar.tools.csmart.runtime.plugin.ScriptedEventPlugIn
  */
 public class ABCImpact 
   extends ModifiableConfigurableComponent
@@ -94,7 +94,7 @@ public class ABCImpact
   public static final String PROP_OUT_MSGSPERSECOND_DESC = "How many messages can be sent per second by an agent";
 
   public static final String BinderClass_name = "org.cougaar.tools.csmart.runtime.binder.SlowMessageTransportServiceFilter";
-  public static final String ImpactPlugin_name = "org.cougaar.tools.csmart.plugin.ABCImpactPlugin";
+  public static final String ImpactPlugin_name = "org.cougaar.tools.csmart.runtime.plugin.ABCImpactPlugin";
 
   private static final String tAgentName = "Transducer";
   private static final String gAgentName = "Generator";
@@ -493,8 +493,8 @@ public class ABCImpact
 
     private String agentClass_name = "org.cougaar.core.agent.ClusterImpl";
     private String planServer_name = "org.cougaar.lib.planserver.PlanServerPlugIn";
-    private String scriptedEvent_name = "org.cougaar.tools.csmart.plugin.ScriptedEventPlugIn";
-    private String transducer_name = "org.cougaar.tools.csmart.plugin.TransducerPlugIn";
+    private String scriptedEvent_name = "org.cougaar.tools.csmart.runtime.plugin.ScriptedEventPlugIn";
+    private String transducer_name = "org.cougaar.tools.csmart.runtime.plugin.TransducerPlugIn";
 
     public ImpactAgentComponent() {
       this("ImpactAgent", false);
