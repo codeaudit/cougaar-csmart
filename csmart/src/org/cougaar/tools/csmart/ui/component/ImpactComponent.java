@@ -47,7 +47,7 @@ public interface ImpactComponent extends ModifiableComponent, ComponentPropertie
   /**
    * Get a configuration writer for this Impact.
    */
-  public ConfigurationWriter getConfigurationWriter(NodeComponent[] nodes);
+  ConfigurationWriter getConfigurationWriter(NodeComponent[] nodes);
 
   /**
    * This is the opportunity for an impact to specify additional
@@ -55,7 +55,7 @@ public interface ImpactComponent extends ModifiableComponent, ComponentPropertie
    *
    * @return a <code>String</code> Node file addition, possibly null
    */
-  public String getNodeFileAddition();
+  String getNodeFileAddition();
 }
 
 

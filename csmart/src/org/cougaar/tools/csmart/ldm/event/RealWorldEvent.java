@@ -45,7 +45,7 @@ public interface RealWorldEvent extends Directive, UniqueObject, Publishable, Se
    *<br>
    * @return a <code>String</code> event type
    */
-  public String getType();
+  String getType();
 
   /**
    * Each <code>RealWorldEvent<code> must return a model of its impact.<br>
@@ -53,7 +53,7 @@ public interface RealWorldEvent extends Directive, UniqueObject, Publishable, Se
    *
    * @return an <code>ImpactModel</code> of the events impact.
    */
-  public ImpactModel getModel();
+  ImpactModel getModel();
 
   /**
    * Return a list of Name-Value pairs for use by the UI.
@@ -61,15 +61,15 @@ public interface RealWorldEvent extends Directive, UniqueObject, Publishable, Se
    *
    * @return a <code>List</code> of Name-Value pairs, using <code>org.cougaar.tools.csmart.util.ArgValue</code>
    */
-  public List getParameters();
+  List getParameters();
 
   /**
    * Get the time in milliseconds at which this Event occurs.
    */
-  public long getTime();
+  long getTime();
 
   /**
    * Get the <code>String</code> name of the publisher of this Event.
    */
-  public String getPublisher();
+  String getPublisher();
 } // End of RealWorldEvent.java

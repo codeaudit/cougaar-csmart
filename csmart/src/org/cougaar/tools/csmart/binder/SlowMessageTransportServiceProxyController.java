@@ -42,7 +42,7 @@ public interface SlowMessageTransportServiceProxyController {
    * @param factor a double that is &gt;= to 0.0 and &lt;= to 1.0
    * @param duration the number of milliseconds for this slow-down
    */
-  public void degradeReleaseRate(
+  void degradeReleaseRate(
       double factor,
       long duration);
 

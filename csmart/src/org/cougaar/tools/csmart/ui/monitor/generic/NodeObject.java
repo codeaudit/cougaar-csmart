@@ -38,69 +38,61 @@ public interface NodeObject {
    * Return a unique identifier for this node.
    */
 
-  public String getUID();
+  String getUID();
 
-  public String getLabel();
+  String getLabel();
 
-  public String getToolTip();
+  String getToolTip();
 
   /**
    * The string that will be used to determine the color of the 
    * node; for example, the name of a community or agent.
    */
-
-  public String getColor();
+  String getColor();
 
   /**
    * Return null to mean "use same color as fill color".
    * Currently unused.
    */
+  String getBorderColor();
 
-  public String getBorderColor();
-
-  public String getShape();
+  String getShape();
 
   /**
    * The number of sides.  A returned value of "0" is ignored (i.e. the
    * default is used).
    */
-
-  public String getSides();
+  String getSides();
 
   /**
    * The width aspect ratio.  A returned value of "0" is ignored 
    * (i.e. the default aspect ratio is used).
    */
-
-  public String getWidth();
+  String getWidth();
 
   /**
    * The height aspect ratio.  A returned value of "0" is ignored 
    * (i.e. the default aspect ratio is used).
    */
-
-  public String getHeight();
+  String getHeight();
 
   /**
    * The distortion.  A returned value of "0" is ignored (i.e. the
    * default is used).
    */
-
-  public String getDistortion();
+  String getDistortion();
 
   /**
    * The orientation.  A returned value of "0" is ignored (i.e. the
    * default is used).
    */
-
-  public String getOrientation();
+  String getOrientation();
 
   /**
    * The orientation.  A returned value of "normal" is ignored (i.e. the
    * default is used).
    */
-
-  public String getFontStyle();
+  String getFontStyle();
 
   /**
    * Return a PropertyTree containing properties (names/values)
@@ -111,8 +103,7 @@ public interface NodeObject {
    * attached to the JTable that displays the attributes.
    * @see CSMARTFrame#getAttributeTableModel
    */
-
-  public PropertyTree getProperties();
+  PropertyTree getProperties();
 
   /**
    * Return a vector of the nodes at the tail ends of
@@ -121,8 +112,7 @@ public interface NodeObject {
    * by the getUID method in this interface).
    * Return null if there are no links.
    */
-
-  public Vector getIncomingLinks();
+  Vector getIncomingLinks();
 
   /**
    * Return a vector of the nodes at the head ends of
@@ -131,8 +121,7 @@ public interface NodeObject {
    * by the getUID method in this interface).
    * Return null if there are no links.
    */
-
-  public Vector getOutgoingLinks();
+  Vector getOutgoingLinks();
 
   /**
    * Return a vector of the nodes at the ends of bidirectional links.
@@ -141,10 +130,8 @@ public interface NodeObject {
    * by the getUID method in this interface).
    * Return null if there are no links.
    */
+  Vector getBidirectionalLinks();
 
-  public Vector getBidirectionalLinks();
-
-  public boolean isVisible();
-
+  boolean isVisible();
 }
 

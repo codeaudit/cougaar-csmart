@@ -35,22 +35,22 @@ import org.cougaar.core.cluster.ClusterIdentifier;
  * @see org.cougaar.tools.csmart.plugin.AllocatorPlugIn
  */
 public interface NewDeadlineTimerEvent extends DeadlineTimerEvent {
-  public void setRegarding(PlanElement pe);
+  void setRegarding(PlanElement pe);
 
   /**
    * @param time a <code>long</code> time in milliseconds at which this Event should appear
    */
-  public void setTime(long time);
+  void setTime(long time);
 
   /**
    * Set the <code>String</code> name of the publisher of this <code>Event</code>.
    */
-  public void setPublisher(String publisher);
+  void setPublisher(String publisher);
 
   /**
    * Set the <code>ClusterIdentifier</code> "source" publisher of 
    * this <code>Event</code>.
    */
-  public void setSource(ClusterIdentifier source);
+  void setSource(ClusterIdentifier source);
 
 }

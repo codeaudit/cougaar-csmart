@@ -37,27 +37,27 @@ import org.cougaar.core.cluster.ClusterIdentifier;
  */
 public interface DeadlineTimerEvent extends Serializable, UniqueObject, Publishable {
   // Need access to the thing for which you are expecting an answer
-  public PlanElement getRegarding();
+  PlanElement getRegarding();
 
   // Time at which this deadline timer goes off
-  public long getTime();
+  long getTime();
 
   /**
    * Get the <code>String</code> name of the publisher of this <code>Event</code>.
    */
-  public String getPublisher();
+  String getPublisher();
 
   /**
    * Get the <code>ClusterIdentifier</code> "source" publisher of 
    * this <code>Event</code>.
    */
-  public ClusterIdentifier getSource();
+  ClusterIdentifier getSource();
 
 
   // Publishable gives us boolean isPersistable(), for which for now we can say no
   // UniqueObject gives UID getUID() and void setUID(UID uid)
 
   // What about description?
-  public String getDescription();
+  String getDescription();
 }
 

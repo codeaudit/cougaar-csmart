@@ -51,6 +51,6 @@ public interface ImpactModel {
    * @return an <code>Iterator</code> of <code>InfrastructureEvent</code>s
    * @see InfrastructureEvent
    */
-  public Iterator getImpact(Society world, IEFactory theIEF);
+  Iterator getImpact(Society world, IEFactory theIEF);
 } // end of ImpactModel
 

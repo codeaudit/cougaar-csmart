@@ -37,14 +37,14 @@ public interface SimpleKEvent extends KineticEvent {
    *
    * @return a <code>LatLonPoint</code> geographic location
    */
-  public LatLonPoint getLocation();
+  LatLonPoint getLocation();
 
   /**
    * Get the peak intensity of the kinetic event.
    * Values are <code>0</code> to <code>1</code>.
    * @return a <code>double</code> kinetic event peak intensity
    */
-  public double getIntensity();
+  double getIntensity();
 
   /**
    * Get the duration of the kinetic event, including time for the
@@ -52,6 +52,6 @@ public interface SimpleKEvent extends KineticEvent {
    *
    * @return a <code>long</code> kinetic event duration in milliseconds
    */
-  public long getDuration();
+  long getDuration();
 
 } // end of SimpleKEvent.java

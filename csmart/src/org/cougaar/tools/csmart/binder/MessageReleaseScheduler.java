@@ -33,19 +33,19 @@ public interface MessageReleaseScheduler {
   /**
    * @see SlowMessageTransportServiceProxyController
    */
-  public void degradeReleaseRate(
+  void degradeReleaseRate(
       double factor, 
       long duration);
 
   /**
    * Add an output message to the outgoing-queue.
    */
-  public void sendMessage(Message m);
+  void sendMessage(Message m);
 
   /**
    * Add an input message to the ingoing-queue.
    */
-  public void receiveMessage(Message m);
+  void receiveMessage(Message m);
 
   /**
    * Get the I/O <code>Message</code>s that are now due for release.
@@ -69,6 +69,6 @@ public interface MessageReleaseScheduler {
    * @param toIn  input messages are added to this List
    * @param toIn output messages are added to this List
    */
-  public void getDueMessages(List toIn, List toOut);
+  void getDueMessages(List toIn, List toOut);
 
 }

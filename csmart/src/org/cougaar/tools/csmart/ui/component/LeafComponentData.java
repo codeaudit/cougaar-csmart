@@ -31,7 +31,7 @@ package org.cougaar.tools.csmart.ui.component;
 public interface LeafComponentData {
 
   /** Leaf Component Types **/
-  public static final String FILE = "File";
+  String FILE = "File";
 
   /** 
    * Gets the type of the leaf component.
@@ -39,14 +39,14 @@ public interface LeafComponentData {
    * 
    * @return Component type
    **/
-  public String getType();
+  String getType();
 
   /**
    * Sets the type of the leaf component.
    *
    * @param String component type.
    */
-  public void setType(String type);
+  void setType(String type);
 
   /** 
    * Name of Component.  For example,
@@ -55,14 +55,14 @@ public interface LeafComponentData {
    *
    * @return name of the component.
    **/
-  public String getName();
+  String getName();
   
   /**
    * Sets the name of the component.
    *
    * @param String name of the component.
    */
-  public void setName(String name);
+  void setName(String name);
 
   /** 
    * Value of Component.  For a file,
@@ -70,12 +70,12 @@ public interface LeafComponentData {
    *
    * @return component value
    **/
-  public Object getValue();
+  Object getValue();
 
   /**
    * Sets the value of the component.
    *
    * @param Object value of the component
    */
-  public void setValue(Object val);
+  void setValue(Object val);
 }

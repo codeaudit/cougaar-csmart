@@ -35,12 +35,12 @@ public interface NewNamedLocation extends NamedLocation {
    *
    * @param name a <code>String</code> location name
    */
-  public void setName(String name);
+  void setName(String name);
 
   /**
    * Set the position of this location
    *
    * @param pos a <code>LatLonPoint</code>
    */
-  public void setPosition(LatLonPoint pos);
+  void setPosition(LatLonPoint pos);
 } // NewNamedLocation.java

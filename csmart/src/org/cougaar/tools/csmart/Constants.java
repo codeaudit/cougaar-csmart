@@ -35,25 +35,25 @@ public final class Constants {
    *
    * @author <a href="mailto:wfarrell@bbn.com">Wilson Farrell</a>
    */
-  public static interface Expr {
+  public interface Expr {
 
     // value is an Integer indicating the number of attack steps required to
     // complete the attack
-    public static final String STEPS_TAKEN = "Steps-Taken";
+    String STEPS_TAKEN = "Steps-Taken";
 
     // value is a Long indicating the length of time required to complete the
     // attack
-    public static final String TIME_TAKEN = "Time-Taken";
+    String TIME_TAKEN = "Time-Taken";
 
     // The current iteration of the attack as an Integer
-    public static final String  ITERATION= "Iteration";
+    String  ITERATION= "Iteration";
 
     // The name of the current attack step as a String
-    public static final String STEP_NAME = "Step-Name";
+    String STEP_NAME = "Step-Name";
 
     // Whether the attack failed or succeeded.  One of Value.SUCCEED or
     // Value.FAILURE
-    public static final String END_STATE = "End-State";
+    String END_STATE = "End-State";
   }
 
   /**
@@ -62,52 +62,52 @@ public final class Constants {
    *
    * @author <a href="mailto:ahelsing@bbn.com">Aaron Helsinger</a>
    */
-  public static interface Value {
+  public interface Value {
     // use these as the Status in a CommandResponseBody, for example
-    public static final String SUCCESS = "Success"; // eventually maybe an Integer(0)
-    public static final String FAILURE = "Failure"; // eventually maybe an Integer(1)
+    String SUCCESS = "Success"; // eventually maybe an Integer(0)
+    String FAILURE = "Failure"; // eventually maybe an Integer(1)
     // Use these for the Arg.PW argument for example
-    public static final String VALID = "Valid";
-    public static final String INVALID = "Invalid";
+    String VALID = "Valid";
+    String INVALID = "Invalid";
     // Use this for the Arg.PERMISSION Argument for example
-    public static final String EXECUTABLE = "Executable";
+    String EXECUTABLE = "Executable";
 
     // experiment body status types
 
     // issued when the attacker starts a new traversal of the same attack tree
-    public static final String ITERATION_CHANGE = "Iteration-Change";
+    String ITERATION_CHANGE = "Iteration-Change";
 
     // issued when the attack has completed
-    public static final String ATTACK_COMPLETE = "Attack-Complete";
+    String ATTACK_COMPLETE = "Attack-Complete";
 
     // issued when the attacker moves to a new step in the attack tree
-    public static final String STATE_CHANGE = "State-Change";
+    String STATE_CHANGE = "State-Change";
 
     // issued when an attack commences
-    public static final String ATTACK_START = "Attack-Start";
+    String ATTACK_START = "Attack-Start";
 
   }
 
-  public static interface Rating {
+  public interface Rating {
     // Description of failure.
-    public static final String SUCCESS         = "Task Was a Success";
-    public static final String FAIL_INV_EMPTY  = "The current inventory is empty";
-    public static final String FAIL_DEADLINE   = "Deadline exceeded";
-    public static final String FAIL_ALLOCATION = "All possible allocations failed";
-    public static final String FAIL_NO_RULE    = "No Allocation Rule Exists";
+    String SUCCESS         = "Task Was a Success";
+    String FAIL_INV_EMPTY  = "The current inventory is empty";
+    String FAIL_DEADLINE   = "Deadline exceeded";
+    String FAIL_ALLOCATION = "All possible allocations failed";
+    String FAIL_NO_RULE    = "No Allocation Rule Exists";
   }
 
   // Set up some Relationships to ensure the Entity's work out OK
-  public static interface RelationshipType {
-    public static final String SUPERIOR_SUFFIX = "Superior";
-    public static final String SUBORDINATE_SUFFIX = "Subordinate";
+  public interface RelationshipType {
+    String SUPERIOR_SUFFIX = "Superior";
+    String SUBORDINATE_SUFFIX = "Subordinate";
 
-    public static final org.cougaar.domain.planning.ldm.plan.RelationshipType SUPERIOR = 
+    org.cougaar.domain.planning.ldm.plan.RelationshipType SUPERIOR = 
       org.cougaar.domain.planning.ldm.plan.RelationshipType.create(SUPERIOR_SUFFIX, SUBORDINATE_SUFFIX);
 
-    public static final String PROVIDER_SUFFIX = "Provider";
-    public static final String CUSTOMER_SUFFIX = "Customer";
-    public static final org.cougaar.domain.planning.ldm.plan.RelationshipType PROVIDER = 
+    String PROVIDER_SUFFIX = "Provider";
+    String CUSTOMER_SUFFIX = "Customer";
+    org.cougaar.domain.planning.ldm.plan.RelationshipType PROVIDER = 
       org.cougaar.domain.planning.ldm.plan.RelationshipType.create(PROVIDER_SUFFIX, CUSTOMER_SUFFIX);
   }
 
@@ -169,23 +169,23 @@ public final class Constants {
    * Constants defining types of attacks on a network.
    * @author <a href="mailto:ahelsing@bbn.com">Aaron Helsinger</a>
    */
-  public static interface RWEType {
-    public static final String DOSNODE = "DoS Node";
-    public static final String DOSNET = "DoS Network";
-    public static final String KILLNODE = "Kill Node";
-    public static final String ISOLATENODE = "Isolate Node";
-    public static final String FLOOD = "H2O flood";
-    public static final String BOMB = "Bomb blast";
-    public static final String EARTHQUAKE = "Earthquake";
+  public interface RWEType {
+    String DOSNODE = "DoS Node";
+    String DOSNET = "DoS Network";
+    String KILLNODE = "Kill Node";
+    String ISOLATENODE = "Isolate Node";
+    String FLOOD = "H2O flood";
+    String BOMB = "Bomb blast";
+    String EARTHQUAKE = "Earthquake";
   }
 
   /**
    * Valid <tt>InfrastructureEvent.getType()</tt> values.
    */
-  public static interface InfEventType {
-    public static final String WIRE_BUSY = "Wire Busy";
-    public static final String WIRE_DOWN = "Wire Down";
-    public static final String NODE_BUSY = "Node Busy";
-    public static final String NODE_DOWN = "Node Down";
+  public interface InfEventType {
+    String WIRE_BUSY = "Wire Busy";
+    String WIRE_DOWN = "Wire Down";
+    String NODE_BUSY = "Node Busy";
+    String NODE_DOWN = "Node Down";
   }
 } // Constants

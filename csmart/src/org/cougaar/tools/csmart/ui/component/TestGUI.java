@@ -134,7 +134,7 @@ public class TestGUI
         setDetailComponent(node.component);
     }
 
-    private static interface ArrayElementRenderer {
+    private interface ArrayElementRenderer {
         String render(Object ary, int ix);
     }
 

@@ -50,32 +50,32 @@ public interface NewInfrastructureEvent
    * </pre>
    * @see org.cougaar.tools.csmart.Constants
    */
-  public void setType(String type);
+  void setType(String type);
   
   /**
    * Set the duration in milliseconds.
    */
-  public void setDuration(long duration);
+  void setDuration(long duration);
 
   /**
    * Set the intensity value (0.0 &lt;= <tt>intensity</tt> &lt;= 1.0).
    */
-  public void setIntensity(double intensity);
+  void setIntensity(double intensity);
 
   /**
    * Set the time in milliseconds at which the given effect should take place
    */
-  public void setTime(long time);
+  void setTime(long time);
 
   /**
    * Set the <code>String</code> name of the publisher of this <code>Event</code>.
    */
-  public void setPublisher(String publisher);
+  void setPublisher(String publisher);
 
   /**
    * Set the event which should be drawn as the parent of this event
    *
    * @param parent a <code>RealWorldEvent</code> cause
    */
-  public void setParent(RealWorldEvent parent);
+  void setParent(RealWorldEvent parent);
 }

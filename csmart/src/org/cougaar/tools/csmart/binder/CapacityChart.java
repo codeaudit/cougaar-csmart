@@ -28,14 +28,14 @@ public interface CapacityChart {
   /**
    * Get the start time for this chart.
    */
-  public long getTime();
+  long getTime();
 
   /**
    * Get the capacity at this point in time.
    *
    * @param time millisecond time that is &gt;= to <tt>getTime()</tt>
    */
-  public double getCapacity(long time);
+  double getCapacity(long time);
 
   /**
    * Get the area over the specified time interval.
@@ -43,7 +43,7 @@ public interface CapacityChart {
    * @param start millisecond time that is &gt;= to <tt>getTime()</tt>
    * @param stop millisecond time that is &gt; than <tt>start</tt>
    */
-  public double getArea(long start, long stop);
+  double getArea(long start, long stop);
 
   /**
    * Degrade the chart over the specified time interval.
@@ -52,6 +52,6 @@ public interface CapacityChart {
    *
    * @return another CapacityChart that should be used for future calls
    */
-  public CapacityChart create(double factor, long start, long stop);
+  CapacityChart create(double factor, long start, long stop);
 
 }

@@ -61,29 +61,27 @@ import org.cougaar.util.*;
  * }
  * </code>
  *
- */
- 
+ */ 
 public interface LogStream extends GenericStateModel {
-
+  
   /** All Possible Debug Severity Levels **/
- 
+  
   /**	Indicates a severe problem; Usually program died **/
-  public static final int SEVERE       = 0;
- 
+  int SEVERE       = 0;
+  
   /** Indicates a problematic, but not fatal error occurred **/
-  public static final int PROBLEM      = 1;
+  int PROBLEM      = 1;
  
   /** Indicates a level one debug message, useful but not verbose **/
-  public static final int DEBUG        = 2;
+  int DEBUG        = 2;
  
   /** Indicates a level two debug, more verbose than a debug entry **/
-  public static final int VERBOSE      = 3;
+  int VERBOSE      = 3;
  
   /** Indicates a level three debug, very verbose.  
-     Used for extreme debugging 
-  */
-  public static final int VERY_VERBOSE = 4;
-
+   *   Used for extreme debugging 
+   */
+  int VERY_VERBOSE = 4;
  
   /**
    *
@@ -94,49 +92,46 @@ public interface LogStream extends GenericStateModel {
    *
    */
   boolean isApplicable(int severity);
- 
- /**
-  *
-  * Logs a message at the specified severity level.
-  *
-  * @param severity The severity level of the log entry
-  * @param message The message content of the log entry
-  *
-  * deprecated Relpaced by (@link #log(String, int, String)) which allows package filtering.
-  * 
-  */
   
+  /**
+   *
+   * Logs a message at the specified severity level.
+   *
+   * @param severity The severity level of the log entry
+   * @param message The message content of the log entry
+   *
+   * deprecated Relpaced by (@link #log(String, int, String)) which allows package filtering.
+   * 
+  */  
   void log(int severity, String message);
 
- /**
-  *
-  * Logs a message at the specified severity level.  This log
-  * method specifies a class name to allow turning on and off
-  * packages and classes during debugging.  The <code>className</code> must specify the
-  * entire package.  Use: <code>getClass().getName()</code>
-  *
-  * Example Usage: <code>log(this.getClass().getName(), .... </code>
-  *
-  * @param className The name of the calling class.
-  * @param severity The severity level of the log entry
-  * @param message The message content of the log entry
-  */
-  
+  /**
+   *
+   * Logs a message at the specified severity level.  This log
+   * method specifies a class name to allow turning on and off
+   * packages and classes during debugging.  The <code>className</code> must specify the
+   * entire package.  Use: <code>getClass().getName()</code>
+   *
+   * Example Usage: <code>log(this.getClass().getName(), .... </code>
+   *
+   * @param className The name of the calling class.
+   * @param severity The severity level of the log entry
+   * @param message The message content of the log entry
+   */
   void log(String className, int severity, String message);
 
- /**
-  *
-  * Logs a message at the specified severity level.  This log
-  * method specifies a class name to allow turning on and off
-  * packages and classes during debugging.
-  *
-  * Example Usage: <code>log(this, .... </code>
-  *
-  * @param objRef Reference to the calling object (this)
-  * @param severity The severity level of the log entry
-  * @param message The message content of the log entry
-  */
-  
+  /**
+   *
+   * Logs a message at the specified severity level.  This log
+   * method specifies a class name to allow turning on and off
+   * packages and classes during debugging.
+   *
+   * Example Usage: <code>log(this, .... </code>
+   *
+   * @param objRef Reference to the calling object (this)
+   * @param severity The severity level of the log entry
+   * @param message The message content of the log entry
+   */
   void log(Object objRef, int severity, String message);
  
   /**

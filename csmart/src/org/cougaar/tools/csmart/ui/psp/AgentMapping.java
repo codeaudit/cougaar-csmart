@@ -36,7 +36,7 @@ public interface AgentMapping {
    * is known, but the existing PSP proxy mechanism should allow the user to
    * specify one PSP host for all agents.
    */
-  public String getHost(String agentName);
+  String getHost(String agentName);
 
   /**
    * Get the port address for an agent's PSP server.
@@ -46,6 +46,5 @@ public interface AgentMapping {
    *
    * @see #getHost(String)
    */
-  public int getPort(String agentName);
-
+  int getPort(String agentName);
 }

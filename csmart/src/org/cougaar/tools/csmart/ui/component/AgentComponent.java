@@ -35,7 +35,7 @@ public interface AgentComponent extends ComponentProperties {
    *
    * @return a <code>String</code> line for the file
    */
-  public String getConfigLine();
+  String getConfigLine();
   
   /**
    * Write the Agents ini file
@@ -43,5 +43,5 @@ public interface AgentComponent extends ComponentProperties {
    * @param configDir a <code>File</code> path to write the file into
    * @exception IOException if an error occurs
    */
-  public void writeIniFile(File configDir) throws IOException;
+  void writeIniFile(File configDir) throws IOException;
 }

@@ -43,15 +43,15 @@ public interface NewRealWorldEvent extends RealWorldEvent, NewDirective {
    * <br>
    * @param type a <code>String</code> event type constant
    */
-  public void setType(String type);
+  void setType(String type);
   
   /**
    * @param time a <code>long</code> time in milliseconds at which this Event should occur
    */
-  public void setTime(long time);
+  void setTime(long time);
 
   /**
    * Set the <code>String</code> name of the publisher of this <code>Event</code>.
    */
-  public void setPublisher(String publisher);
+  void setPublisher(String publisher);
 } // end of NewRealWorldEvent.java

@@ -34,12 +34,12 @@ public interface NamedLocation extends Location {
    *
    * @return a <code>String</code> name
    */
-  public String getName();
+  String getName();
 
   /**
    * Get the position of this location
    *
    * @return a <code>LatLonPoint</code> 
    */
-  public LatLonPoint getPosition();
+  LatLonPoint getPosition();
 } // Named Location.java

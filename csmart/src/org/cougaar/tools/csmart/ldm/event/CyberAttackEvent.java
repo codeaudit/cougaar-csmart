@@ -39,14 +39,14 @@ public interface CyberAttackEvent extends RealWorldEvent {
    *
    * @return a <code>ClusterIdentifier</code> Agent to attack
    */
-  public ClusterIdentifier getTarget();
+  ClusterIdentifier getTarget();
 
   /**
    * Get the peak intensity of the attack.
    * Values are <code>0</code> to <code>1</code>.
    * @return a <code>double</code> attack peak intensity
    */
-  public double getIntensity();
+  double getIntensity();
 
   /**
    * Get the duration of the Attack, including time for the
@@ -54,5 +54,5 @@ public interface CyberAttackEvent extends RealWorldEvent {
    *
    * @return a <code>long</code> attack duration
    */
-  public long getDuration();
+  long getDuration();
 } // end of CyberAttackEvent.java

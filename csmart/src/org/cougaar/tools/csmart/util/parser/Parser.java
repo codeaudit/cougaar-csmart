@@ -29,7 +29,7 @@ import java.io.*;
  *
  * An interface to define a Properties file parser.
  */
-interface Parser {
+public interface Parser {
 	
   /**
    * parse     <br><br>
@@ -38,7 +38,7 @@ interface Parser {
    * <br>
    * @throws IOException
    */
-	public void parse() throws IOException;
+  void parse() throws IOException;
 
   /**
    * setCommentChar      <br><br>
@@ -48,8 +48,7 @@ interface Parser {
    * <br>
    * @param chr Comment start character.
    */
-  
-	public void setCommentChar(String chr);
+  void setCommentChar(String chr);
 
   /**
    * setSeparatorChar      <br><br>
@@ -59,7 +58,7 @@ interface Parser {
    * <br>
    * @param chr Separator character.
    */
-  public void setSeparatorChar(String chr);
+  void setSeparatorChar(String chr);
   
   /**
    * load        <br><br>
@@ -68,7 +67,6 @@ interface Parser {
    * <br>
    * @param filename The name of the file to load
    * @throws IOException
-   */
-   
-  public void load(String filename) throws IOException;
+   */ 
+  void load(String filename) throws IOException;
 }

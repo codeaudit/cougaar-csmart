@@ -25,7 +25,7 @@ import java.io.Serializable;
 import java.util.EventListener;
 
 public interface PropertiesListener extends EventListener, Serializable {
-    static final long serialVersionUID = -7670483003143673509L;
+    long serialVersionUID = -7670483003143673509L;
 
     void propertyAdded(PropertyEvent e);
     void propertyRemoved(PropertyEvent e);

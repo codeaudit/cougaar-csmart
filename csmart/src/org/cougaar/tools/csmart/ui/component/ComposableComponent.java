@@ -40,7 +40,7 @@ public interface ComposableComponent extends Serializable {
    * @param c collection to add descendants to
    * @return collection of all descendants
    */
-  public Collection getDescendentsOfClass(Class cls, Collection c);
+  Collection getDescendentsOfClass(Class cls, Collection c);
 
   /**
    * Iterates through all components returning all leaf components
@@ -49,7 +49,7 @@ public interface ComposableComponent extends Serializable {
    * @param cls class of Descendants to obtain
    * @return collection of all descendants 
    */
-  public Collection getDescendentsOfClass(Class cls);
+  Collection getDescendentsOfClass(Class cls);
 
   /** Parent Operations **/
 
@@ -60,14 +60,14 @@ public interface ComposableComponent extends Serializable {
    *
    * @param newParent New parent name.
    */
-  public void setParent(ConfigurableComponent newParent);
+  void setParent(ConfigurableComponent newParent);
 
   /**
    * Returns the parent of this component.
    *
    * @return parent of this component.
    */
-  public ConfigurableComponent getParent();
+  ConfigurableComponent getParent();
  
   /** Child Operations **/
 
@@ -76,41 +76,41 @@ public interface ComposableComponent extends Serializable {
    * @param c the child to add
    * @return child count.
    */
-  public int addChild(ConfigurableComponent c);
+  int addChild(ConfigurableComponent c);
 
   /**
    * Removes a child from this component.
    * @param index of child to remove.
    */
-  public void removeChild(int childIndex);
+  void removeChild(int childIndex);
 
   /**
    * Removes a child from this component.
    * @param c Child to remove
    */
-  public void removeChild(ConfigurableComponent c);
+  void removeChild(ConfigurableComponent c);
 
   /**
    * Removes all children from this component.
    */
-  public void removeAllChildren();
+  void removeAllChildren();
 
   /**
    * Returns a child of this component.
    * @param childIndex Index of the child within this component.
    */
-  public ConfigurableComponent getChild(int childIndex);
+  ConfigurableComponent getChild(int childIndex);
 
   /**
    * Returns a child of this component.
    * @param childName Name of child to retrieve
    * @return Requested child or null of child not found
    */
-  public ConfigurableComponent getChild(CompositeName childName);
+  ConfigurableComponent getChild(CompositeName childName);
 
   /**
    * Count of all children in this component.
    * @return child count.
    */
-  public int getChildCount();
+  int getChildCount();
 }

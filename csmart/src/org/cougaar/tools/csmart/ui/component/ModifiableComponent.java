@@ -45,11 +45,11 @@ public interface ModifiableComponent {
    * Returns whether or not the society can be edited.
    * @return true if society can be edited and false otherwise
    */
-  public boolean isEditable();
+  boolean isEditable();
 
   /**
    * Set whether or not the society can be edited.
    * @param editable true if society is editable and false otherwise
    */
-  public void setEditable(boolean editable);
+  void setEditable(boolean editable);
 }

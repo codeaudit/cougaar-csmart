@@ -34,14 +34,14 @@ public interface NewSimpleKEvent extends SimpleKEvent, NewKineticEvent {
    *
    * @param agent a <code>LatLongPoint</code> location of the event
    */
-  public void setLocation(LatLonPoint location);
+  void setLocation(LatLonPoint location);
 
   /**
    * Set the peak intensity of the kinetic event, as a value from 0 to 1.
    *
    * @param mag a <code>double</code> peak intensity
    */
-  public void setIntensity(double mag);
+  void setIntensity(double mag);
 
   /**
    * Set the length of the kinetic event, including time for the event
@@ -49,5 +49,5 @@ public interface NewSimpleKEvent extends SimpleKEvent, NewKineticEvent {
    *
    * @param length a <code>long</code> length of the attack in milliseconds
    */
-  public void setDuration(long length);
+  void setDuration(long length);
 }

@@ -38,14 +38,14 @@ public interface NewCyberAttackEvent extends CyberAttackEvent, NewRealWorldEvent
    *
    * @param agent a <code>ClusterIdentifier</code> Agent to attack
    */
-  public void setTarget(ClusterIdentifier agent);
+  void setTarget(ClusterIdentifier agent);
 
   /**
    * Set the peak intensity of this attack, as a value from 0 to 1.
    *
    * @param mag a <code>double</code> peak intensity
    */
-  public void setIntensity(double mag);
+  void setIntensity(double mag);
 
   /**
    * Set the length of the attack, including time for the attack
@@ -53,5 +53,5 @@ public interface NewCyberAttackEvent extends CyberAttackEvent, NewRealWorldEvent
    *
    * @param length a <code>long</code> length of the attack in milliseconds
    */
-  public void setDuration(long length);
+  void setDuration(long length);
 } // end of NewCyberAttackEvent.java

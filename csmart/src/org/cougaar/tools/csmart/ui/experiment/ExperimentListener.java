@@ -32,13 +32,11 @@ public interface ExperimentListener {
    * is manually terminated.
    * @return true if experiment is being monitored by the listener
    */
-
-  public boolean isMonitoring();
+  boolean isMonitoring();
 
   /**
    * Called when the experiment is terminated.
    * The listener should terminate any monitoring of the experiment.
    */
-
-  public void experimentTerminated();
+  void experimentTerminated();
 }

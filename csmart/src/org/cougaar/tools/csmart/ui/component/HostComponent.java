@@ -56,29 +56,24 @@ public interface HostComponent extends ComponentProperties {
    * Defaults to the port specified in: ???
    * @return the server port
    */
-
-  public int getServerPort();
+  int getServerPort();
 
   /**
    * Set the port on which to contact the server on this host.
    * @param the server port
    */
-
-  public void setServerPort(int serverPort);
+  void setServerPort(int serverPort);
 
   /**
    * Get the port on which to monitor nodes running on this host.
    * Defaults to the port specified in: ???
    * @return the monitoring port
    */
-
-  public int getMonitoringPort();
+  int getMonitoringPort();
 
   /**
    * Set the port on which to monitor nodes running on this host.
    * @param the monitoring port
    */
-
-  public void setMonitoringPort(int monitoringPort);
-
+  void setMonitoringPort(int monitoringPort);
 }

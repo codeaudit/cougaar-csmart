@@ -30,25 +30,24 @@ import org.cougaar.core.cluster.ClusterIdentifier;
  * @author <a href="mailto:ahelsing@bbn.com">Aaron Helsinger</a>
  */
 public interface NewHappinessChangeEvent extends HappinessChangeEvent {
-  public void setRegarding(PlanElement pe);
+  void setRegarding(PlanElement pe);
 
-  public void setTime(long time);
+  void setTime(long time);
 
-  public void setCurrentHappiness(double hap);
+  void setCurrentHappiness(double hap);
 
-  public void setTimeCompleted(long time);
+  void setTimeCompleted(long time);
 
-  public void setRating(float rate);
+  void setRating(float rate);
 
   /**
    * Set the <code>String</code> name of the publisher of this <code>Event</code>.
    */
-  public void setPublisher(String publisher);
+  void setPublisher(String publisher);
 
   /**
    * Set the <code>ClusterIdentifier</code> "source" publisher of 
    * this <code>Event</code>.
    */
-  public void setSource(ClusterIdentifier source);
-
+  void setSource(ClusterIdentifier source);
 }

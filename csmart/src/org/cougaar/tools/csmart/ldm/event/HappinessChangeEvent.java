@@ -45,7 +45,7 @@ public interface HappinessChangeEvent extends Serializable, Publishable, UniqueO
    * <br>
    * @return Rating for the Task response causing the change in Happiness
    */
-  public float getRating();
+  float getRating();
 
   /**
    * The time that this task was completed.  This should
@@ -56,7 +56,7 @@ public interface HappinessChangeEvent extends Serializable, Publishable, UniqueO
    * <br>
    * @return Time that this task was Completed
    */
-  public long getTimeCompleted();
+  long getTimeCompleted();
 
   /**
    * The current Happiness Level of the Customer.  Customer
@@ -66,30 +66,29 @@ public interface HappinessChangeEvent extends Serializable, Publishable, UniqueO
    * <br>
    * @return The current Happiness Level of the Customer.
    */
-  public double getCurrentHappiness();
+  double getCurrentHappiness();
 
   /**
    * Get the object whose result caused a change in happiness.
    *
    * @return a <code>PlanElement</code>, usually a Task
    */
-  public PlanElement getRegarding();
+  PlanElement getRegarding();
 
   // Vis time?
-  public long getTime();
+  long getTime();
   
   // description?
-  public String getDescription();
+  String getDescription();
   
   /**
    * Get the <code>String</code> name of the publisher of this <code>Event</code>.
    */
-  public String getPublisher();
+  String getPublisher();
 
   /**
    * Get the <code>ClusterIdentifier</code> "source" publisher of 
    * this <code>Event</code>.
    */
-  public ClusterIdentifier getSource();
-
+  ClusterIdentifier getSource();
 }

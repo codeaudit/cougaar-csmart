@@ -56,12 +56,12 @@ public interface InfrastructureEvent
    * @see #isBusyType()
    * @see #isDownType()
    */
-  public String getType();
+  String getType();
   
   /**
    * Get the duration in simulation cycles.
    */
-  public long getDuration();
+  long getDuration();
 
   /**
    * Get the intensity value (0.0 &lt;= <tt>getIntensity()</tt> &lt;= 1.0).
@@ -69,7 +69,7 @@ public interface InfrastructureEvent
    * If <tt>isDownType()</tt> then the intensity is defined to be 1.0,
    * otherwise (<tt>isBusyType()</tt>) the intensity is less than 1.0.
    */
-  public double getIntensity();
+  double getIntensity();
 
   //
   // Helpers based on getType():
@@ -83,7 +83,7 @@ public interface InfrastructureEvent
    *   <tt>(!(isNodeType()))</tt>
    * </pre>
    */
-  public boolean isWireType();
+  boolean isWireType();
 
   /**
    * Equivalent to<pre>
@@ -93,7 +93,7 @@ public interface InfrastructureEvent
    *   <tt>(!(isWireType()))</tt>
    * </pre>
    */
-  public boolean isNodeType();
+  boolean isNodeType();
 
   /**
    * Equivalent to<pre>
@@ -105,7 +105,7 @@ public interface InfrastructureEvent
    *   <tt>(!(isDownType()))</tt>
    * </pre>
    */
-  public boolean isBusyType();
+  boolean isBusyType();
 
   /**
    * Equivalent to<pre>
@@ -117,22 +117,22 @@ public interface InfrastructureEvent
    *   <tt>(!(isBusyType()))</tt>
    * </pre>
    */
-  public boolean isDownType();
+  boolean isDownType();
   
   /**
    * Time at which this event should occur.
    */
-  public long getTime();
+  long getTime();
 
   /**
    * Get the <code>String</code> name of the publisher of this Event.
    */
-  public String getPublisher();
+  String getPublisher();
 
   /**
    * Get the event which caused this one.
    *
    * @return a <code>RealWorldEvent</code> cause
    */
-  public RealWorldEvent getParent();
+  RealWorldEvent getParent();
 }

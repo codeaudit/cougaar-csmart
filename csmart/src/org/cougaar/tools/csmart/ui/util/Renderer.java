@@ -32,7 +32,7 @@ import org.cougaar.tools.csmart.ui.component.*;
 
 public class Renderer {
 
-  private static interface ArrayElementRenderer {
+  private interface ArrayElementRenderer {
     String render(Object ary, int ix);
   }
 
