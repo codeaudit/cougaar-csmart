@@ -71,7 +71,7 @@ public class ServletGroupInsertionRecipe extends RecipeBase
   private static final String PROP_TARGET_AGENT_QUERY_DESC = 
     "The query name for selecting agents to which to add servlets.";
 
-  private static final String PROP_NEW_SERVLETS_COUNT = "_Number of New Servlets";
+  private static final String PROP_NEW_SERVLETS_COUNT = "Number of New Servlets";
   private static final Integer PROP_NEW_SERVLETS_COUNT_DFLT = new Integer(0);
   private static final Integer PROP_NEW_SERVLETS_ARG_COUNT_DFLT = new Integer(2);
   private static final String PROP_NEW_SERVLETS_COUNT_DESC = "Number of servlets to be added that are not listed above.";
@@ -155,10 +155,10 @@ public class ServletGroupInsertionRecipe extends RecipeBase
     propNewServletArgs = new Property[count][0];
 
     for(int i=0; i < count; i++) {
-      propNewServlets[i] = addProperty("Classname of servlet " + (i+1), DFLT_SERVLET_CLASS);
+      propNewServlets[i] = addProperty("_Classname of servlet " + (i+1), DFLT_SERVLET_CLASS);
       ((Property) propNewServlets[i]).setToolTip("Full classname of the new servlet (loader) #" + (i+1));
 
-      propNewServletNumArgs[i] = addProperty("Number of args for servlet " + (i+1), PROP_NEW_SERVLETS_ARG_COUNT_DFLT);
+      propNewServletNumArgs[i] = addProperty("_Number of args for servlet " + (i+1), PROP_NEW_SERVLETS_ARG_COUNT_DFLT);
       ((Property)propNewServletNumArgs[i]).setToolTip("Number of arguments for servlet " + (i+1));
       ((Property)propNewServletNumArgs[i]).addPropertyListener(new ConfigurableComponentPropertyAdapter() {
 	  public void propertyValueChanged(PropertyEvent e) {
@@ -195,11 +195,11 @@ public class ServletGroupInsertionRecipe extends RecipeBase
     propNewServletArgs[servnum] = new Property[count];
     // The first argument is usually the real class of the servlet
     if (count > 0) {
-      propNewServletArgs[servnum][0] = addProperty("New Servlet " + (servnum+1) + " arg 1", "");
+      propNewServletArgs[servnum][0] = addProperty("_New Servlet " + (servnum+1) + " arg 1", "");
       ((Property) propNewServletArgs[servnum][0]).setToolTip("New Servlet " + (servnum+1) + " First argument, usu class");
     }
     for (int i = 1; i < count; i++) {
-      propNewServletArgs[servnum][i] = addProperty("New Servlet " + (servnum+1) + " arg " + (i+1), "");
+      propNewServletArgs[servnum][i] = addProperty("_New Servlet " + (servnum+1) + " arg " + (i+1), "");
       ((Property) propNewServletArgs[servnum][i]).setToolTip("New Servlet " + (servnum+1) + " argument " + (i+1));
     }
   }
