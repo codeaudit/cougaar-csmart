@@ -87,26 +87,30 @@ public class AgentFileComponent
     container.initProperties();
     addChild(container);
 
-    if(log.isDebugEnabled()) {
-      log.debug("Parse: " + filename);
-    }
     ComponentDescription[] desc = 
       ComponentConnector.parseFile(filename);
     for (int i=0; i < desc.length; i++) {
-      if(log.isDebugEnabled()) {
-        log.debug("Create Plugin: " + desc[i].getName());
-      }
       String name = desc[i].getName();
-      int index = name.lastIndexOf('.');
-      if (index != -1)
-        name = name.substring(index+1);
-      PluginBase plugin = 
-        new PluginBase(name, desc[i].getClassname());
-      plugin.initProperties();
-      Iterator iter = ComponentConnector.getPluginProps(desc[i]);
-      while(iter.hasNext()) 
-        plugin.addParameter((String)iter.next());
-      container.addChild(plugin);
+      String insertionPoint = desc[i].getInsertionPoint();
+      if(log.isDebugEnabled()) {
+        log.debug("Insertion Point: " + insertionPoint);
+      }
+
+      if(insertionPoint.endsWith("Plugin")) {
+        if(log.isDebugEnabled()) {
+          log.debug("Create Plugin: " + desc[i].getName());
+        }
+        int index = name.lastIndexOf('.');
+        if (index != -1)
+          name = name.substring(index+1);
+        PluginBase plugin = 
+          new PluginBase(name, desc[i].getClassname());
+        plugin.initProperties();
+        Iterator iter = ComponentConnector.getPluginProps(desc[i]);
+        while(iter.hasNext()) 
+          plugin.addParameter((String)iter.next());
+        container.addChild(plugin);
+      }
     }
   }
 
@@ -115,28 +119,32 @@ public class AgentFileComponent
     container.initProperties();
     addChild(container);
 
-    if(log.isDebugEnabled()) {
-      log.debug("Parse: " + filename);
-    }
     ComponentDescription[] desc = 
       ComponentConnector.parseFile(filename);
     for (int i=0; i < desc.length; i++) {
-      if(log.isDebugEnabled()) {
-        log.debug("Create Binder: " + desc[i].getName());
-      }
       String name = desc[i].getName();
-      int index = name.lastIndexOf('.');
-      if (index != -1)
-        name = name.substring(index+1);
-      BinderBase binder = 
-        new BinderBase(name, desc[i].getClassname());
-      binder.initProperties();
+      String insertionPoint = desc[i].getInsertionPoint();
+      if(log.isDebugEnabled()) {
+        log.debug("Insertion Point: " + insertionPoint);
+      }
 
-      // FIXME: Must I change ComponentConnector in some way here?
-      Iterator iter = ComponentConnector.getPluginProps(desc[i]);
-      while(iter.hasNext()) 
-        binder.addParameter((String)iter.next());
-      container.addChild(binder);
+      if(insertionPoint.endsWith("Binder")) {
+        if(log.isDebugEnabled()) {
+          log.debug("Create Binder: " + name);
+        }
+        int index = name.lastIndexOf('.');
+        if (index != -1)
+          name = name.substring(index+1);
+        BinderBase binder = 
+          new BinderBase(name, desc[i].getClassname());
+        binder.initProperties();
+        
+        // FIXME: Must I change ComponentConnector in some way here?
+        Iterator iter = ComponentConnector.getPluginProps(desc[i]);
+        while(iter.hasNext()) 
+          binder.addParameter((String)iter.next());
+        container.addChild(binder);
+      }
     }
   }
 
