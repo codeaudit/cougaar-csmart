@@ -59,5 +59,9 @@ SET MYCONFIG="%COUGAAR_INSTALL_PATH%/csmart/data/common/\;"
 SET MYPROPERTIES=%MYDOMAINS% -Dorg.cougaar.system.path=%COUGAAR3RDPARTY% -Dorg.cougaar.install.path=%COUGAAR_INSTALL_PATH% -Duser.timezone=GMT -Dorg.cougaar.domain.planning.ldm.lps.ComplainingLP.level=0
 
 SET MYPROPERTIES=%MYPROPERTIES% -Dorg.cougaar.config.path=%MYCONFIG% -Dcsmart.log.severity=%MYLOG%
-SET MYMEMORY=-Xms100m -Xmx300m
 
+REM To collect statistics on Message Transport, the following is required
+REM This may only work with RMI Transport
+SET MYPROPERTIES=%MYPROPERTIES% -Dorg.cougaar.message.transport.aspects=org.cougaar.core.mts.StatisticsAspect
+
+SET MYMEMORY=-Xms100m -Xmx300m

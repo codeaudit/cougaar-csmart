@@ -79,7 +79,11 @@ set MYDOMAINS=""
 set MYPROPERTIES="$MYDOMAINS -Dorg.cougaar.system.path=$COUGAAR3RDPARTY -Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH -Duser.timezone=GMT -Dorg.cougaar.core.cluster.startTime=08/10/2005 -Dorg.cougaar.domain.planning.ldm.lps.ComplainingLP.level=0 -Dorg.cougaar.core.cluster.SharedPlugInManager.watching=false"
 
 # This line for CSMART specific properties
-set MYPROPERTIES="$MYPROPERTIES -Dorg.cougaar.config.path=$MYCONFIGS -Dcsmart.log.severity=$MYLOG"
+set MYPROPERTIES="${MYPROPERTIES} -Dorg.cougaar.config.path=$MYCONFIGS -Dcsmart.log.severity=$MYLOG"
+
+# To collect message statistics on the RMI Message transport:
+set MYPROPERTIES="${MYPROPERTIES} -Dorg.cougaar.message.transport.aspects=org.cougaar.core.mts.StatisticsAspect"
+
 set MYMEMORY=""
 
 set node = $argv[1]
@@ -127,4 +131,3 @@ endif
 
 # exec instead of eval
 exec java $javaargs org.cougaar.core.society.Node $args
-

@@ -10,5 +10,7 @@ org.cougaar.install.path=/home/ahelsing/Cougaar
 org.cougaar.tools.server.verbose=false
 # Note the trailing escaped semi-colon
 org.cougaar.config.path=/home/ahelsing/Cougaar/csmart/data/common/\;
-org.cougaar.vm.arguments=-Duser.timezone=GMT -Dcsmart.log.severity=PROBLEM -Dorg.cougaar.domain.planning.ldm.lps.ComplainingLP.level=0
+
+org.cougaar.vm.arguments=-Duser.timezone=GMT -Dcsmart.log.severity=PROBLEM -Dorg.cougaar.domain.planning.ldm.lps.ComplainingLP.level=0 -Dorg.cougaar.message.transport.aspects=org.cougaar.core.mts.StatisticsAspect
+
 org.cougaar.node.arguments= -c

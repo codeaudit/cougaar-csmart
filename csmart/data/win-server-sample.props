@@ -22,7 +22,8 @@ java.class.path=d\:\\CSMART\\Cougaar\\csmart\\tmpdir\;d\:\\CSMART\\Cougaar\\lib\
 org.cougaar.install.path=D\:\\CSMART\\Cougaar
 
 # may specify additional -D arguments
-org.cougaar.vm.arguments=-Duser.timezone=GMT -Dcsmart.log.severity=PROBLEM -Dorg.cougaar.domain.planning.ldm.lps.ComplainingLP.level=0
+# Note that the Statistics arg is for RMI message transport statistics
+org.cougaar.vm.arguments=-Duser.timezone=GMT -Dcsmart.log.severity=PROBLEM -Dorg.cougaar.domain.planning.ldm.lps.ComplainingLP.level=0 -Dorg.cougaar.message.transport.aspects=org.cougaar.core.mts.StatisticsAspect
 
 #In addition, the console will send the following properties to the
 #server in order to start the Node 
