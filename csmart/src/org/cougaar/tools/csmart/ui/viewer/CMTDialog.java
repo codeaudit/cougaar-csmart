@@ -61,6 +61,7 @@ public class CMTDialog extends JDialog {
   private ArrayList originalGroupSelected = new ArrayList();
   private ArrayList originalGroupMultiplier = new ArrayList();
   private Organizer organizer;
+  private boolean cancelled = false;
 
   public CMTDialog(JFrame parent, Organizer organizer,
                    String experimentName,
@@ -197,17 +198,34 @@ public class CMTDialog extends JDialog {
     int centerY = p.y + d.height/2;
     Dimension myD = getSize();
     setLocation(new Point(centerX - myD.width/2, centerY - myD.height/2));
-    setVisible(true);
+    show();
   }
+
+
+  private void ok_actionPerformed() {
+    cancelled = false;
+    hide();
+  }
+
+  /**
+   * Returns true if any UltraLog thread was selected and false otherwise.
+   */
+
+  public boolean isULThreadSelected() {
+    int n = ULThreads.length;
+    for (int i = 0; i < n; i++) {
+      JCheckBox cb = (JCheckBox)ULThreadCheckBoxes.get(i);
+      if (cb.isSelected())
+        return true;
+    }
+    return false;
+  }
+
 
   /**
    * If threads, groups or multipliers have been modified, then
    * create a new trial.
    */
-
-  private void ok_actionPerformed() {
-    setVisible(false);
-  }
 
   public void processResults() {
     boolean modified = false;
@@ -285,7 +303,8 @@ public class CMTDialog extends JDialog {
 
 
   private void cancel_actionPerformed() {
-    setVisible(false);
+    cancelled = true;
+    hide();
     trialId = null;
   }
 
@@ -305,9 +324,13 @@ public class CMTDialog extends JDialog {
     return cloned;
   }
 
+  public boolean wasCancelled() {
+    return cancelled;
+  }
+
   public static void main(String[] args) {
     ArrayList trialNames = new ArrayList();
     CMTDialog d = new CMTDialog(null, null, "ExperimentName", "ExperimentID");
-    d.setVisible(true);
+    d.show();
   }
 }
