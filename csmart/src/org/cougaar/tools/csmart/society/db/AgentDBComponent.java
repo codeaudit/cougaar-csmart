@@ -274,7 +274,12 @@ public class AgentDBComponent
       name = name.substring(dotPos + 1);
     }
 
-    String assemblyMatch = DBUtils.getListMatch(assemblyID, "CMT");
+    // FIXME!!!
+    // Why should this re-read from the database?
+    // Why not use all the properties we just filled in?
+
+    String assemblyMatch = DBUtils.getListMatch(assemblyID);
+    //    String assemblyMatch = DBUtils.getListMatch(assemblyID, "CMT");
     if (assemblyMatch != null) {
       substitutions.put(":assemblyMatch", assemblyMatch);
 
@@ -368,7 +373,9 @@ public class AgentDBComponent
     container.initProperties();
     addChild(container);
 
-    String assemblyMatch = DBUtils.getListMatch(assemblyID, "CMT");
+    // Grab all non-CMT assemblies. Why?
+    //    String assemblyMatch = DBUtils.getListMatch(assemblyID, "CMT");
+    String assemblyMatch = DBUtils.getListMatch(assemblyID);
     if (assemblyMatch != null) {
       substitutions.put(":assemblyMatch", assemblyMatch);
       substitutions.put(":agent_name", name);
