@@ -493,4 +493,20 @@ public class ScalabilityXAgent
       writer.close();
     }
   }
+
+  public ComponentData addComponentData(ComponentData data) {
+    GenericComponentData plugin;
+
+    for (int i = 0, n = getChildCount(); i < n; i++) {
+      ScalabilityXPlugIn sxp = (ScalabilityXPlugIn) getChild(i);
+      plugin = new GenericComponentData();
+      plugin.setOwner(this);
+      plugin.setParent(data);
+      data.addChild(sxp.addComponentData(plugin));      
+    }
+   
+    return data;
+  }
+
+
 }

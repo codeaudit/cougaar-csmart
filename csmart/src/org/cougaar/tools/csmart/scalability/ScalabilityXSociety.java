@@ -475,4 +475,29 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
     return new ScalabilityConfigurationWriter(this, nodes, nodeFileAddition);
   }
 
+  public ComponentData addComponentData(ComponentData data) {
+    ComponentData[] children = data.getChildren();
+
+    // This seams like it can be more efficient.
+    for(int i=0; i < children.length; i++) {
+      ComponentData child = children[i];
+      if(child.getType() == ComponentData.AGENT) {
+
+	Iterator iter = ((Collection)getDescendentsOfClass(ScalabilityXAgent.class)).iterator();
+
+	while(iter.hasNext()) {
+	  ScalabilityXAgent agent = (ScalabilityXAgent)iter.next();
+	  if(child.getName().equals(agent.getFullName().toString())) {
+	    child.setOwner(this);
+	    agent.addComponentData(child);
+	  }
+	}		
+      } else {
+	// Process it's children.
+	addComponentData(child);
+      }      
+    }
+
+    return data;
+  }
 }
