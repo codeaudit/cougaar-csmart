@@ -85,10 +85,10 @@ public class AgentCDataComponent
         
         if(typeid.equals(ComponentData.PLUGIN)) {
           component = new PluginBase(childCData[i].getName(),
-                                                   childCData[i].getClassName());
+                                                   childCData[i].getClassName(), childCData[i].getPriority());
         } else if (typeid.equals(ComponentData.AGENTBINDER)) {
           component = new BinderBase(childCData[i].getName(),
-                                             childCData[i].getClassName());
+                                             childCData[i].getClassName(), childCData[i].getPriority());
         }
         component.initProperties();
 	component.setComponentType(childCData[i].getType());
@@ -117,7 +117,7 @@ public class AgentCDataComponent
 	// not added here
       } else {
         ComponentBase plugin = new ComponentBase(childCData[i].getName(),
-                                           childCData[i].getClassName(), childCData[i].getType());
+                                           childCData[i].getClassName(), childCData[i].getPriority(), childCData[i].getType());
         plugin.initProperties();
 	plugin.setComponentType(childCData[i].getType());
         Object[] parameters = childCData[i].getParameters();

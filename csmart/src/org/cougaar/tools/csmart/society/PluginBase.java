@@ -45,16 +45,20 @@ public class PluginBase
 
   protected String folderLable = "Plugins";
 
-  public PluginBase(String name, String classname) {
+  public PluginBase(String name, String classname, String priority) {
     super(name);
     this.classname = classname;
+    if(priority != null)
+      this.priority = priority;
     createLogger();
   }
 
-  public PluginBase(String name, String classname, String type) {
+  public PluginBase(String name, String classname, String priority, String type) {
     super(name);
     this.classname = classname;
     this.type = type;
+    if(priority != null)
+      this.priority = priority;
     createLogger();
   }
 

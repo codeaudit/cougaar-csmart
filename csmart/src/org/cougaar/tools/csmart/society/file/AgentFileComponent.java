@@ -117,6 +117,7 @@ public class AgentFileComponent
       StringBuffer name = new StringBuffer(desc[i].getName());
       StringBuffer className = new StringBuffer(desc[i].getClassname());
       String insertionPoint = desc[i].getInsertionPoint();
+      String priority = desc[i].priorityToString(desc[i].getPriority());
 //       if(log.isDebugEnabled()) {
 //         log.debug("Insertion Point: " + insertionPoint);
 //       }
@@ -133,7 +134,7 @@ public class AgentFileComponent
         if (index != -1)
           name.delete(0,index+1);
         PluginBase plugin = 
-          new PluginBase(name.substring(0), className.substring(0));
+          new PluginBase(name.substring(0), className.substring(0), priority);
         plugin.initProperties();
         Iterator iter = ComponentConnector.getPluginProps(desc[i]);
         while(iter.hasNext()) 
@@ -171,7 +172,9 @@ public class AgentFileComponent
         if (index != -1)
           name = name.substring(index+1);
         BinderBase binder = 
-          new BinderBase(name, desc[i].getClassname(), insertionPoint);
+          new BinderBase(name, desc[i].getClassname(), 
+                         desc[i].priorityToString(desc[i].getPriority()),
+                         insertionPoint);
         binder.initProperties();
         
         // FIXME: Must I change ComponentConnector in some way here?
@@ -211,7 +214,9 @@ public class AgentFileComponent
         if (index != -1)
           name = name.substring(index+1);
         ComponentBase binder = 
-          new ComponentBase(name, desc[i].getClassname(), insertionPoint);
+          new ComponentBase(name, desc[i].getClassname(), 
+                            desc[i].priorityToString(desc[i].getPriority()), 
+                            insertionPoint);
         binder.initProperties();
         
         // FIXME: Must I change ComponentConnector in some way here?

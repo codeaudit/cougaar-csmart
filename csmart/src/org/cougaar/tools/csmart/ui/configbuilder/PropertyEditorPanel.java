@@ -745,7 +745,7 @@ public class PropertyEditorPanel extends JPanel
       className = className.trim(); // trim white space
       if (className.length() == 0) return;
     }
-    BinderComponent binder = new BinderBase(name, className);
+    BinderComponent binder = new BinderBase(name, className, null);
     addBaseComponent(binder);
     binder.setComponentType(ComponentData.AGENTBINDER);
   }
@@ -826,7 +826,7 @@ public class PropertyEditorPanel extends JPanel
       if (className.length() == 0) return;
     }
     PluginComponent plugin = 
-      (PluginComponent)new PluginBase(name, className);
+      (PluginComponent)new PluginBase(name, className, null);
     addBaseComponent(plugin);
   }
 

@@ -21,6 +21,7 @@
 package org.cougaar.tools.csmart.society;
 
 import java.util.Iterator;
+import org.cougaar.core.component.ComponentDescription;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
@@ -28,6 +29,7 @@ import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyAlias;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
+import org.cougaar.tools.csmart.recipe.PriorityProperty;
 
 /**
  * ComponentBase is the basic implementation for editing & configuring
@@ -40,6 +42,11 @@ public class ComponentBase
   /** Component Classname Property Definition **/
   public static final String PROP_CLASSNAME = "Component Class Name";
   public static final String PROP_CLASSNAME_DESC = "Name of the Component Class";
+
+  public static final String PROP_PRIORITY = "Component Priority";
+  public static final String PROP_PRIORITY_DESC = "Load Priority of the component in it's container relative to other child components";
+  public static final String PROP_PRIORITY_DFLT = 
+    ComponentDescription.priorityToString(ComponentDescription.PRIORITY_STANDARD);
 
   // FIXME:
   // Need to specify the insertion point
@@ -54,22 +61,27 @@ public class ComponentBase
   public static final String PROP_PARAM = "param-";
   protected int nParameters = 0;
   protected String classname = "";
+  protected String priority = ComponentDescription.priorityToString(ComponentDescription.PRIORITY_STANDARD);
 
   public ComponentBase(String name) {
     super(name);
     createLogger();
   }
 
-  public ComponentBase(String name, String classname) {
+  public ComponentBase(String name, String classname, String priority) {
     super(name);
     this.classname = classname;
+    if(priority != null)
+      this.priority = priority;
     createLogger();
   }
 
-  public ComponentBase(String name, String classname, String type) {
+  public ComponentBase(String name, String classname, String priority, String type) {
     super(name);
     this.classname = classname;
     this.type = type;
+    if(priority != null)
+      this.priority = priority;
     createLogger();
   }
 
@@ -87,6 +99,15 @@ public class ComponentBase
 
     prop = addProperty(PROP_TYPE, type);
     prop.setToolTip(PROP_TYPE_DESC);
+
+    prop = addPriorityProperty(PROP_PRIORITY, priority);
+    prop.setToolTip(PROP_PRIORITY_DESC);
+  }
+
+  private Property addPriorityProperty(String name, String dflt) {
+    Property prop = addProperty(new PriorityProperty(this, name, dflt));
+    prop.setPropertyClass(String.class);
+    return prop;
   }
 
   /**
@@ -170,6 +191,7 @@ public class ComponentBase
     self.setParent(data);
 
     self.setClassName(getComponentClassName());
+    self.setPriority(getPriority());
 
     Iterator names = getSortedLocalPropertyNames();
     while (names.hasNext()) {
@@ -284,6 +306,16 @@ public class ComponentBase
       p.setValue(type);
       fireModification();
     }
+  }
+
+  public String getPriority() {
+    Property p = getProperty(PROP_PRIORITY);
+    if(p != null) {
+      Object o = p.getValue();
+      if( o != null)
+        return o.toString();
+    }
+    return ComponentDescription.priorityToString(ComponentDescription.PRIORITY_COMPONENT);
   }
 
   /**

@@ -26,6 +26,7 @@ import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyAlias;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.core.component.ComponentDescription;
 
 /**
  * BinderBase is the basic implementation for editing & configuring
@@ -49,7 +50,6 @@ public class BinderBase
   public static final String PROP_TYPE = "Binder Type";
   public static final String PROP_TYPE_DESC = "Type of Binder (Agent, Node)";
   protected String type = ComponentData.AGENTBINDER;
-
   public static final String PROP_PARAM = "param-";
 
   public BinderBase(String name) {
@@ -57,15 +57,27 @@ public class BinderBase
     createLogger();
   }
 
-  public BinderBase(String name, String classname) {
+  public BinderBase(String name, String classname, String priority) {
     super(name);
     this.classname = classname;
+    if(priority != null) {
+      this.priority = priority;
+    } else {
+      this.priority = 
+        ComponentDescription.priorityToString(ComponentDescription.PRIORITY_BINDER);
+    }
     createLogger();
   }
 
-  public BinderBase(String name, String classname, String type) {
+  public BinderBase(String name, String classname, String priority, String type) {
     super(name);
     this.classname = classname;
+    if(priority != null) {
+      this.priority = priority;
+    } else {
+      this.priority = 
+        ComponentDescription.priorityToString(ComponentDescription.PRIORITY_BINDER);
+    }
     this.type = type;
     createLogger();
   }

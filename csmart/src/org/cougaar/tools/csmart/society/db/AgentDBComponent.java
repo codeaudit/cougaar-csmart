@@ -242,9 +242,10 @@ public class AgentDBComponent
         while(rs.next()) {
           String pluginClassName = rs.getString(1);
           String pluginName = rs.getString(4);
-          PluginBase plugin = new PluginBase(pluginName, pluginClassName);
+          String priority = rs.getString(6).intern();
+          PluginBase plugin = new PluginBase(pluginName, pluginClassName, priority);
           plugin.initProperties();
-          String alibId =rs.getString(2);
+          String alibId = rs.getString(2);
           // does this need to be preserved in the plugin? FIXME
           // plugin.setAlibID(alibId);
           substitutions.put(":comp_alib_id", alibId);
@@ -302,7 +303,8 @@ public class AgentDBComponent
         while(rs.next()) {
           String binderClassName = rs.getString(1);
           String binderName = rs.getString(4);
-          BinderBase binder = new BinderBase(binderName, binderClassName);
+          String priority = rs.getString(6).intern();
+          BinderBase binder = new BinderBase(binderName, binderClassName, priority);
           binder.initProperties();
 	  //binder.setBinderType(ComponentData.AGENTBINDER);
           String alibId =rs.getString(2);
@@ -376,8 +378,8 @@ public class AgentDBComponent
         while(rs.next()) {
           String binderClassName = rs.getString(1);
           String binderName = rs.getString(4);
-
-          ComponentBase binder = new ComponentBase(binderName, binderClassName);
+          String priority = rs.getString(6).intern();
+          ComponentBase binder = new ComponentBase(binderName, binderClassName, priority);
           binder.initProperties();
 	  binder.setComponentType(rs.getString(5));
           String alibId =rs.getString(2);
