@@ -109,136 +109,134 @@ org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn|specsFile=89-TKCO-CGO.vsh.xm
 org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn|gaFile=89-TKCO-CGO.ga.xml|4,BASE, ,4,org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn,gaFile=89-TKCO-CGO.ga.xml,VISHNU,108
 org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn|defaultFormat=89-TKCO-CGO.dff.xml|5,BASE, ,5,org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn,defaultFormat=89-TKCO-CGO.dff.xml,VISHNU,109
 mil.darpa.log.alpine.blackjack.plugins.TransportAllocatorPlugIn|envFile=89-TKCO-CGO.env.xml|0,BASE, ,0,mil.darpa.log.alpine.blackjack.plugins.TransportAllocatorPlugIn,envFile=89-TKCO-CGO.env.xml,VISHNU,110
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WELQAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WELQAA',UIC,111
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCKVAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCKVAA',UIC,112
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH38AA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WH38AA',UIC,113
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WELKAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WELKAA',UIC,114
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAFZAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAFZAA',UIC,115
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAAFAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAAFAA',UIC,116
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAETAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAETAA',UIC,117
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDJ0AA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WDJ0AA',UIC,118
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WJA0AA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WJA0AA',UIC,119
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WQ91AA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WQ91AA',UIC,120
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WJEQAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WJEQAA',UIC,121
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAKRAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAKRAA',UIC,122
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCYPAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCYPAA',UIC,123
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WHDLAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WHDLAA',UIC,124
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAPYAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAPYAA',UIC,125
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAE3AA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAE3AA',UIC,126
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH54AA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WH54AA',UIC,127
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAHSAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAHSAA',UIC,128
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAPEAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAPEAA',UIC,129
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WGM8AA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WGM8AA',UIC,130
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAFDAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAFDAA',UIC,131
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCNPAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCNPAA',UIC,132
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WC9GAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WC9GAA',UIC,133
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAEUAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAEUAA',UIC,134
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAPSAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAPSAA',UIC,135
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCKXAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCKXAA',UIC,136
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB0MAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WB0MAA',UIC,137
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WFPEAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WFPEAA',UIC,138
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDNZAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WDNZAA',UIC,139
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WFMVAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WFMVAA',UIC,140
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAF7AA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAF7AA',UIC,141
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='XXXXXX'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='XXXXXX',UIC,142
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAPBAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAPBAA',UIC,143
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='XXXXXX'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='XXXXXX',UIC,144
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAELAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAELAA',UIC,145
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='XXXXXX'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='XXXXXX',UIC,146
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH8HAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WH8HAA',UIC,147
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCF0AA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCF0AA',UIC,148
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='XXXXXX'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='XXXXXX',UIC,149
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WD4PAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WD4PAA',UIC,150
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCDWAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCDWAA',UIC,151
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAD9AA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAD9AA',UIC,152
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WS1AAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WS1AAA',UIC,153
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAEQAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAEQAA',UIC,154
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB3TAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WB3TAA',UIC,155
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WE7PAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WE7PAA',UIC,156
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WE7PAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WE7PAA',UIC,157
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WS5DAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WS5DAA',UIC,158
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH1SAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WH1SAA',UIC,159
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDHJAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WDHJAA',UIC,160
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDUVAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WDUVAA',UIC,161
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH5QAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WH5QAA',UIC,162
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WQ1FAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WQ1FAA',UIC,163
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAPWAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAPWAA',UIC,164
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH1LAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WH1LAA',UIC,165
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAZBAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAZBAA',UIC,166
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCPPAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCPPAA',UIC,167
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAYRAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAYRAA',UIC,168
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCKNAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCKNAA',UIC,169
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCAYAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCAYAA',UIC,170
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAPGAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAPGAA',UIC,171
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WBG7AA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WBG7AA',UIC,172
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WG1DAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WG1DAA',UIC,173
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WSRPAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WSRPAA',UIC,174
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WET9AA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WET9AA',UIC,175
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WSS7AA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WSS7AA',UIC,176
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WFSRAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WFSRAA',UIC,177
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCMBAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCMBAA',UIC,178
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCJZAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCJZAA',UIC,179
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAHEAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAHEAA',UIC,180
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WBG0AA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WBG0AA',UIC,181
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDKXAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WDKXAA',UIC,182
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WNCNAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WNCNAA',UIC,183
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WA00AA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WA00AA',UIC,184
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH9UAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WH9UAA',UIC,185
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCMPAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCMPAA',UIC,186
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH28AA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WH28AA',UIC,187
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WQ56AA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WQ56AA',UIC,188
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH98AA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WH98AA',UIC,189
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB0UAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WB0UAA',UIC,190
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH96AA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WH96AA',UIC,191
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH6YAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WH6YAA',UIC,192
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAPCAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAPCAA',UIC,193
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB38AA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WB38AA',UIC,194
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCNBAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCNBAA',UIC,195
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB0HAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WB0HAA',UIC,196
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCNTAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCNTAA',UIC,197
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB5KAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WB5KAA',UIC,198
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WNAHAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WNAHAA',UIC,199
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCNDAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCNDAA',UIC,200
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDEEAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WDEEAA',UIC,201
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDWTAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WDWTAA',UIC,202
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDCQAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WDCQAA',UIC,203
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WEYBAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WEYBAA',UIC,204
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WD4MAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WD4MAA',UIC,205
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WQ92AA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WQ92AA',UIC,206
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCPGAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCPGAA',UIC,207
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WE7LAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WE7LAA',UIC,208
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WHLMAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WHLMAA',UIC,209
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAT6AA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAT6AA',UIC,210
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='XXXXXX'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='XXXXXX',UIC,211
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='XXXXXX'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='XXXXXX',UIC,212
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB1XAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WB1XAA',UIC,213
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB40AA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WB40AA',UIC,214
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCNXAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCNXAA',UIC,215
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCNZAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCNZAA',UIC,216
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAVNAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAVNAA',UIC,217
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WA8RAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WA8RAA',UIC,218
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCKKAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCKKAA',UIC,219
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB54Y1'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WB54Y1',UIC,220
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAZ8AA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAZ8AA',UIC,221
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB0RAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WB0RAA',UIC,222
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WET5AA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WET5AA',UIC,223
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB6CRD'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WB6CRD',UIC,224
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB35AA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WB35AA',UIC,225
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH7MAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WH7MAA',UIC,226
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WD1HAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WD1HAA',UIC,227
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WSTMAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WSTMAA',UIC,228
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDJUAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WDJUAA',UIC,229
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAPLAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAPLAA',UIC,230
-org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAPKAA'|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAPKAA',UIC,231
-org.cougaar.pkg.glmtrans.plugins.base.GLMTransOneToManyExpanderPlugIn|envFile=GLMT.SimpleTransport.env.xml|0,STRATEGIC-TRANS, ,0,org.cougaar.pkg.glmtrans.plugins.base.GLMTransOneToManyExpanderPlugIn,envFile=GLMT.SimpleTransport.env.xml,ENV_FILE,232
-org.cougaar.pkg.glmtrans.plugins.TransportExpanderPlugIn|envFile=GLMT.SimpleTransport.env.xml|0,STRATEGIC-TRANS, ,0,org.cougaar.pkg.glmtrans.plugins.TransportExpanderPlugIn,envFile=GLMT.SimpleTransport.env.xml,ENV_FILE,233
-org.cougaar.pkg.glmtrans.plugins.GroundTransportAllocatorPlugIn|envFile=GLMT.SimpleTransport.env.xml|0,STRATEGIC-TRANS, ,0,org.cougaar.pkg.glmtrans.plugins.GroundTransportAllocatorPlugIn,envFile=GLMT.SimpleTransport.env.xml,ENV_FILE,234
-org.cougaar.pkg.glmtrans.plugins.TransportAllocatorPlugIn|envFile=GLMT.SimpleTransport.env.xml|0,STRATEGIC-TRANS, ,0,org.cougaar.pkg.glmtrans.plugins.TransportAllocatorPlugIn,envFile=GLMT.SimpleTransport.env.xml,ENV_FILE,235
-org.cougaar.pkg.glmtrans.plugins.GenericVishnuPlugIn|envFile=GLMT.Transport.env.xml|0,STRATEGIC-TRANS, ,0,org.cougaar.pkg.glmtrans.plugins.GenericVishnuPlugIn,envFile=GLMT.Transport.env.xml,ENV_FILE,236
-org.cougaar.pkg.glmtrans.plugins.SeaVishnuPlugIn|envFile=GLMT.Transport.env.xml|0,STRATEGIC-TRANS, ,0,org.cougaar.pkg.glmtrans.plugins.SeaVishnuPlugIn,envFile=GLMT.Transport.env.xml,ENV_FILE,237
-org.cougaar.pkg.glmtrans.plugins.SeaVishnuPlugIn|defaultFormat=GLMT.ShipPacker.dff.xml|1,STRATEGIC-TRANS, ,1,org.cougaar.pkg.glmtrans.plugins.SeaVishnuPlugIn,defaultFormat=GLMT.ShipPacker.dff.xml,ENV_FILE,238
-org.cougaar.pkg.glmtrans.plugins.TransportExpanderPlugIn|envFile=GLMT.Transport.env.xml|0,STRATEGIC-TRANS, ,0,org.cougaar.pkg.glmtrans.plugins.TransportExpanderPlugIn,envFile=GLMT.Transport.env.xml,ENV_FILE,239
-org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn|envFile=GLMT.Transport.env.xml|0,STRATEGIC-TRANS, ,0,org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn,envFile=GLMT.Transport.env.xml,ENV_FILE,240
-org.cougaar.pkg.glmtrans.plugins.GroundTransportAllocatorPlugIn|envFile=GLMT.Transport.env.xml|0,STRATEGIC-TRANS, ,0,org.cougaar.pkg.glmtrans.plugins.GroundTransportAllocatorPlugIn,envFile=GLMT.Transport.env.xml,ENV_FILE,241
-org.cougaar.pkg.glmtrans.plugins.TranscomVishnuPlugIn|envFile=GLMT.TRANSCOM.env.xml|0,STRATEGIC-TRANS, ,0,org.cougaar.pkg.glmtrans.plugins.TranscomVishnuPlugIn,envFile=GLMT.TRANSCOM.env.xml,ENV_FILE,242
-org.cougaar.lib.plugin.UTILLdmXMLPlugIn|ldmFile=GLMT.TRANSCOM.ldm.xml|0,STRATEGIC-TRANS, ,0,org.cougaar.lib.plugin.UTILLdmXMLPlugIn,ldmFile=GLMT.TRANSCOM.ldm.xml,ENV_FILE,243
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WELQAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WELQAA',UIC,111
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCKVAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCKVAA',UIC,112
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH38AA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WH38AA',UIC,113
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WELKAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WELKAA',UIC,114
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAFZAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAFZAA',UIC,115
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAAFAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAAFAA',UIC,116
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAETAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAETAA',UIC,117
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDJ0AA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WDJ0AA',UIC,118
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WJA0AA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WJA0AA',UIC,119
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WQ91AA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WQ91AA',UIC,120
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WJEQAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WJEQAA',UIC,121
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAKRAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAKRAA',UIC,122
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCYPAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCYPAA',UIC,123
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WHDLAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WHDLAA',UIC,124
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAPYAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAPYAA',UIC,125
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAE3AA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAE3AA',UIC,126
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH54AA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WH54AA',UIC,127
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAHSAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAHSAA',UIC,128
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAPEAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAPEAA',UIC,129
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WGM8AA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WGM8AA',UIC,130
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAFDAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAFDAA',UIC,131
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCNPAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCNPAA',UIC,132
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WC9GAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WC9GAA',UIC,133
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAEUAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAEUAA',UIC,134
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAPSAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAPSAA',UIC,135
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCKXAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCKXAA',UIC,136
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB0MAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WB0MAA',UIC,137
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WFPEAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WFPEAA',UIC,138
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDNZAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WDNZAA',UIC,139
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WFMVAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WFMVAA',UIC,140
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAF7AA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAF7AA',UIC,141
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH3FAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WH3FAA',UIC,142
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAPBAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAPBAA',UIC,143
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAELAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAELAA',UIC,144
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WNBPAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WNBPAA',UIC,145
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH8HAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WH8HAA',UIC,146
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCF0AA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCF0AA',UIC,147
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WNBSAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WNBSAA',UIC,148
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WD4PAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WD4PAA',UIC,149
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WEVGAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WEVGAA',UIC,150
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCDWAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCDWAA',UIC,151
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAD9AA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAD9AA',UIC,152
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WS1AAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WS1AAA',UIC,153
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAEQAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAEQAA',UIC,154
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB3TAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WB3TAA',UIC,155
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WE7PAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WE7PAA',UIC,156
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WS5DAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WS5DAA',UIC,157
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH1SAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WH1SAA',UIC,158
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDHJAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WDHJAA',UIC,159
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDUVAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WDUVAA',UIC,160
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH5QAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WH5QAA',UIC,161
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WQ1FAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WQ1FAA',UIC,162
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAPWAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAPWAA',UIC,163
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH1LAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WH1LAA',UIC,164
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAZBAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAZBAA',UIC,165
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCPPAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCPPAA',UIC,166
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAYRAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAYRAA',UIC,167
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCKNAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCKNAA',UIC,168
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCAYAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCAYAA',UIC,169
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAPGAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAPGAA',UIC,170
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WBG7AA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WBG7AA',UIC,171
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WG1DAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WG1DAA',UIC,172
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WSRPAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WSRPAA',UIC,173
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WET9AA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WET9AA',UIC,174
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WSS7AA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WSS7AA',UIC,175
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WFSRAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WFSRAA',UIC,176
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCMBAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCMBAA',UIC,177
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCJZAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCJZAA',UIC,178
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAHEAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAHEAA',UIC,179
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WBG0AA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WBG0AA',UIC,180
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDKXAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WDKXAA',UIC,181
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WNCNAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WNCNAA',UIC,182
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WA00AA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WA00AA',UIC,183
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH9UAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WH9UAA',UIC,184
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCMPAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCMPAA',UIC,185
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH28AA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WH28AA',UIC,186
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WQ56AA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WQ56AA',UIC,187
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH98AA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WH98AA',UIC,188
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB0UAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WB0UAA',UIC,189
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH96AA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WH96AA',UIC,190
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH6YAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WH6YAA',UIC,191
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAPCAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAPCAA',UIC,192
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB38AA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WB38AA',UIC,193
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCNBAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCNBAA',UIC,194
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB0HAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WB0HAA',UIC,195
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCNTAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCNTAA',UIC,196
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB5KAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WB5KAA',UIC,197
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WNAHAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WNAHAA',UIC,198
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCNDAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCNDAA',UIC,199
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDEEAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WDEEAA',UIC,200
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDWTAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WDWTAA',UIC,201
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDCQAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WDCQAA',UIC,202
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WEYBAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WEYBAA',UIC,203
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WD4MAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WD4MAA',UIC,204
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WQ92AA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WQ92AA',UIC,205
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCPGAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCPGAA',UIC,206
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WE7LAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WE7LAA',UIC,207
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WHLMAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WHLMAA',UIC,208
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAT6AA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAT6AA',UIC,209
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WA0TAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WA0TAA',UIC,210
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB1XAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WB1XAA',UIC,211
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB40AA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WB40AA',UIC,212
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCNXAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCNXAA',UIC,213
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCNZAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCNZAA',UIC,214
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAVNAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAVNAA',UIC,215
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WA8RAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WA8RAA',UIC,216
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCKKAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCKKAA',UIC,217
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB54Y1'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WB54Y1',UIC,218
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAZ8AA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAZ8AA',UIC,219
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB0RAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WB0RAA',UIC,220
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WET5AA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WET5AA',UIC,221
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB6CRD'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WB6CRD',UIC,222
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB35AA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WB35AA',UIC,223
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH7MAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WH7MAA',UIC,224
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WD1HAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WD1HAA',UIC,225
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WSTMAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WSTMAA',UIC,226
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDJUAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WDJUAA',UIC,227
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAPLAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAPLAA',UIC,228
+org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAPKAA'|1,BASE,,1,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAPKAA',UIC,229
+org.cougaar.pkg.glmtrans.plugins.base.GLMTransOneToManyExpanderPlugIn|envFile=GLMT.SimpleTransport.env.xml|0,STRATEGIC-TRANS, ,0,org.cougaar.pkg.glmtrans.plugins.base.GLMTransOneToManyExpanderPlugIn,envFile=GLMT.SimpleTransport.env.xml,ENV_FILE,230
+org.cougaar.pkg.glmtrans.plugins.TransportExpanderPlugIn|envFile=GLMT.SimpleTransport.env.xml|0,STRATEGIC-TRANS, ,0,org.cougaar.pkg.glmtrans.plugins.TransportExpanderPlugIn,envFile=GLMT.SimpleTransport.env.xml,ENV_FILE,231
+org.cougaar.pkg.glmtrans.plugins.GroundTransportAllocatorPlugIn|envFile=GLMT.SimpleTransport.env.xml|0,STRATEGIC-TRANS, ,0,org.cougaar.pkg.glmtrans.plugins.GroundTransportAllocatorPlugIn,envFile=GLMT.SimpleTransport.env.xml,ENV_FILE,232
+org.cougaar.pkg.glmtrans.plugins.TransportAllocatorPlugIn|envFile=GLMT.SimpleTransport.env.xml|0,STRATEGIC-TRANS, ,0,org.cougaar.pkg.glmtrans.plugins.TransportAllocatorPlugIn,envFile=GLMT.SimpleTransport.env.xml,ENV_FILE,233
+org.cougaar.pkg.glmtrans.plugins.GenericVishnuPlugIn|envFile=GLMT.Transport.env.xml|0,STRATEGIC-TRANS, ,0,org.cougaar.pkg.glmtrans.plugins.GenericVishnuPlugIn,envFile=GLMT.Transport.env.xml,ENV_FILE,234
+org.cougaar.pkg.glmtrans.plugins.SeaVishnuPlugIn|envFile=GLMT.Transport.env.xml|0,STRATEGIC-TRANS, ,0,org.cougaar.pkg.glmtrans.plugins.SeaVishnuPlugIn,envFile=GLMT.Transport.env.xml,ENV_FILE,235
+org.cougaar.pkg.glmtrans.plugins.SeaVishnuPlugIn|defaultFormat=GLMT.ShipPacker.dff.xml|1,STRATEGIC-TRANS, ,1,org.cougaar.pkg.glmtrans.plugins.SeaVishnuPlugIn,defaultFormat=GLMT.ShipPacker.dff.xml,ENV_FILE,236
+org.cougaar.pkg.glmtrans.plugins.TransportExpanderPlugIn|envFile=GLMT.Transport.env.xml|0,STRATEGIC-TRANS, ,0,org.cougaar.pkg.glmtrans.plugins.TransportExpanderPlugIn,envFile=GLMT.Transport.env.xml,ENV_FILE,237
+org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn|envFile=GLMT.Transport.env.xml|0,STRATEGIC-TRANS, ,0,org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn,envFile=GLMT.Transport.env.xml,ENV_FILE,238
+org.cougaar.pkg.glmtrans.plugins.GroundTransportAllocatorPlugIn|envFile=GLMT.Transport.env.xml|0,STRATEGIC-TRANS, ,0,org.cougaar.pkg.glmtrans.plugins.GroundTransportAllocatorPlugIn,envFile=GLMT.Transport.env.xml,ENV_FILE,239
+org.cougaar.pkg.glmtrans.plugins.TranscomVishnuPlugIn|envFile=GLMT.TRANSCOM.env.xml|0,STRATEGIC-TRANS, ,0,org.cougaar.pkg.glmtrans.plugins.TranscomVishnuPlugIn,envFile=GLMT.TRANSCOM.env.xml,ENV_FILE,240
+org.cougaar.lib.plugin.UTILLdmXMLPlugIn|ldmFile=GLMT.TRANSCOM.ldm.xml|0,STRATEGIC-TRANS, ,0,org.cougaar.lib.plugin.UTILLdmXMLPlugIn,ldmFile=GLMT.TRANSCOM.ldm.xml,ENV_FILE,241
