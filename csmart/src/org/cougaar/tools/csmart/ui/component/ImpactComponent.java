@@ -45,15 +45,6 @@ public interface ImpactComponent extends ModifiableComponent, ComponentPropertie
   AgentComponent[] getAgents();
 
   /**
-   * Return a deep copy of the society
-   *
-   * @param organizer an <code>Organizer</code> value
-   * @param context an <code>Object</code> value
-   * @return ImpactComponent created
-   */
-  public ImpactComponent copy(Organizer organizer, Object context);
-
-  /**
    * Get a configuration writer for this Impact.
    */
   public ConfigurationWriter getConfigurationWriter(NodeComponent[] nodes);
