@@ -109,12 +109,25 @@ public class Organizer extends JScrollPane {
   // define helper class
   private OrganizerHelper helper = new OrganizerHelper();
   
-  // Constructors
+  /**
+   * Construct a workspace, i.e. an user interface for a tree
+   * of components (experiments, societies, recipes).
+   * Reads the previous workspace from "Default Workspace.bin"
+   * @param csmart The <code>CSMART</code> user interface containing this.
+   */
   public Organizer(CSMART csmart) {
     this(csmart, null);
     organizer = this;
   }
   
+  /**
+   * Construct a workspace, i.e. an user interface for a tree
+   * of components (experiments, societies, recipes).
+   * If the workspace file name parameter is null,
+   * reads the previous workspace from "Default Workspace.bin"
+   * @param csmart The <code>CSMART</code> user interface containing this.
+   * @param workspaceFileName file from which to read previous workspace
+   */
   public Organizer(CSMART csmart, String workspaceFileName) {
     createLogger();
     
@@ -183,21 +196,21 @@ public class Organizer extends JScrollPane {
   // Methods to get the user's selection
   ///////////////////////////////////////  
 
-  public DefaultMutableTreeNode getSelectedNode() {
+  protected DefaultMutableTreeNode getSelectedNode() {
     TreePath selPath = workspace.getSelectionPath();
     if (selPath == null) return null;
     return (DefaultMutableTreeNode) selPath.getLastPathComponent();
   }
   
-  public SocietyComponent[] getSelectedSocieties() {
+  protected SocietyComponent[] getSelectedSocieties() {
     return (SocietyComponent[]) getSelectedLeaves(SocietyComponent.class);
   }
   
-  public RecipeComponent[] getSelectedRecipes() {
+  protected RecipeComponent[] getSelectedRecipes() {
     return (RecipeComponent[]) getSelectedLeaves(RecipeComponent.class);
   }
     
-  public Experiment[] getSelectedExperiments() {
+  protected Experiment[] getSelectedExperiments() {
     return (Experiment[]) getSelectedLeaves(Experiment.class);
   }
   
@@ -240,7 +253,7 @@ public class Organizer extends JScrollPane {
     return result.toArray((Object[]) Array.newInstance(leafClass, result.size()));
   }
   
-  public Object getSelectedObject() {
+  protected Object getSelectedObject() {
     DefaultMutableTreeNode selNode = getSelectedNode();
     if (selNode == null) return null;
     return selNode.getUserObject();
@@ -250,7 +263,7 @@ public class Organizer extends JScrollPane {
   // Start tools; used to start tools from menus
   ////////////////////////////////////  
 
-  public void startBuilder() {
+  protected void startBuilder() {
     csmart.runBuilder((ModifiableComponent) getSelectedNode().getUserObject(), 
                       false);
   }
@@ -261,7 +274,7 @@ public class Organizer extends JScrollPane {
    * selected user object is a recipe or society.
    */
 
-  public void startExperimentBuilder() {
+  protected void startExperimentBuilder() {
     Experiment experiment = null;
     DefaultMutableTreeNode node = getSelectedNode();
     Object o = node.getUserObject();
@@ -294,7 +307,7 @@ public class Organizer extends JScrollPane {
    * 2) the user has selected a society and this method creates an experiment
    */
 
-  public void startConsole() {
+  protected void startConsole() {
     DefaultMutableTreeNode node = getSelectedNode();
     Object o = node.getUserObject();
     Experiment experiment;
@@ -335,7 +348,7 @@ public class Organizer extends JScrollPane {
    * @param allowExistingName true to allow existing name (true if renaming)
    * @return String new unique name
    */
-  public String getUniqueExperimentName(String originalName,
+  protected String getUniqueExperimentName(String originalName,
                                         boolean allowExistingName) {
     return getUniqueName("Experiment", experimentNames, originalName,
                          allowExistingName, "isExperimentNameInDatabase");
@@ -345,7 +358,7 @@ public class Organizer extends JScrollPane {
    * Create an experiment for a society read from a file.
    */
 
-  public void createExperimentFromFile() {
+  protected void createExperimentFromFile() {
     // query user for INI file and create society
     SocietyComponent society = newSocietyComponent();
     if (society == null)
@@ -363,7 +376,7 @@ public class Organizer extends JScrollPane {
    * from the user interface.
    */
 
-  public void createExperimentFromUI() {
+  protected void createExperimentFromUI() {
     String name = getUniqueExperimentName("", false);
     if (name == null)
       return;
@@ -427,7 +440,7 @@ public class Organizer extends JScrollPane {
     return sc;
   }
 
-  public void addSociety(SocietyComponent sc) {
+  protected void addSociety(SocietyComponent sc) {
     String name = sc.getSocietyName();
     // if name is not unique, then get an unique name for the society
     while (societyNames.contains(name)) {
@@ -458,13 +471,13 @@ public class Organizer extends JScrollPane {
    * Optionally allow re-use of existing name.
    */
 
-  public String getUniqueRecipeName(String originalName,
+  protected String getUniqueRecipeName(String originalName,
                                     boolean allowExistingName) {
     return getUniqueName("Recipe", recipeNames, originalName,
                          allowExistingName, "isRecipeNameInDatabase");
   }
 
-  public void newRecipe() {
+  protected void newRecipe() {
     Object[] values = metNameClassItems;
     Object answer =
       JOptionPane.showInputDialog(this, "Select Recipe Type",
@@ -497,7 +510,7 @@ public class Organizer extends JScrollPane {
     }
   } // end of newRecipe
 
-  public void newFolder() {
+  protected void newFolder() {
     String name = getUniqueFolderName("", false);
     if (name == null) return;
     addFolderToWorkspace(name, getSelectedNode());
@@ -511,7 +524,7 @@ public class Organizer extends JScrollPane {
    * Rename a folder, experiment, society or recipe.
    */
 
-  public void rename() {
+  protected void rename() {
     DefaultMutableTreeNode node = getSelectedNode();
     if (node == null)
       return;
@@ -534,7 +547,7 @@ public class Organizer extends JScrollPane {
    * Rename the top-level workspace.
    */
 
-  public void renameWorkspace() {
+  protected void renameWorkspace() {
     String name = JOptionPane.showInputDialog("New workspace name");
     if (name == null || name.equals(""))
       return;
@@ -553,7 +566,7 @@ public class Organizer extends JScrollPane {
    * Rename an experiment.
    */
 
-  public void renameExperiment() {
+  protected void renameExperiment() {
     DefaultMutableTreeNode node = getSelectedNode();
     final Experiment experiment = (Experiment) node.getUserObject();
     String originalName = experiment.getExperimentName();
@@ -582,7 +595,7 @@ public class Organizer extends JScrollPane {
     model.nodeChanged(node);
   }
 
-  public String getUniqueSocietyName(String originalName,
+  protected String getUniqueSocietyName(String originalName,
                                      boolean allowExistingName) {
     return getUniqueName("Society", societyNames, originalName,
                          allowExistingName, "isSocietyNameInDatabase");
@@ -595,7 +608,7 @@ public class Organizer extends JScrollPane {
    * need to save any experiments that contain it.
    */
 
-  public void renameSociety() {
+  protected void renameSociety() {
     DefaultMutableTreeNode node = getSelectedNode();
     DefaultMutableTreeNode parentNode = 
       (DefaultMutableTreeNode)node.getParent();
@@ -639,7 +652,7 @@ public class Organizer extends JScrollPane {
    * need to save any experiments that contain it.
    */
 
-  public void renameRecipe() {
+  protected void renameRecipe() {
     DefaultMutableTreeNode node = getSelectedNode();
     DefaultMutableTreeNode parentNode = 
       (DefaultMutableTreeNode)node.getParent();
@@ -685,7 +698,7 @@ public class Organizer extends JScrollPane {
                          allowExistingName, null);
   }
 
-  public void renameFolder() {
+  protected void renameFolder() {
     String originalName = (String)(getSelectedNode().getUserObject());
     String newName = getUniqueFolderName(originalName, true);
     if (newName == null) return;
@@ -702,7 +715,7 @@ public class Organizer extends JScrollPane {
   // Select items from database
   ///////////////////////////////////
 
-  public void selectExperimentFromDatabase() {
+  protected void selectExperimentFromDatabase() {
     Map experimentNamesMap = ExperimentDB.getExperimentNames();
     Set keys = experimentNamesMap.keySet();
     JComboBox cb = new JComboBox(keys.toArray(new String[keys.size()]));
@@ -798,7 +811,7 @@ public class Organizer extends JScrollPane {
     workspace.setSelection(expNode);
   }
 
-  public void selectRecipeFromDatabase() {
+  protected void selectRecipeFromDatabase() {
     Map recipeNamesHT = helper.getRecipeNamesFromDatabase();
     Set dbRecipeNames = recipeNamesHT.keySet();
     if (dbRecipeNames.isEmpty()) {
@@ -841,7 +854,7 @@ public class Organizer extends JScrollPane {
    * Copy an experiment, society or recipe.
    */
 
-  public void duplicate() {
+  protected void duplicate() {
     DefaultMutableTreeNode node = getSelectedNode();
     if (node == null)
       return;
@@ -856,7 +869,7 @@ public class Organizer extends JScrollPane {
       copyRecipe((RecipeComponent)o);
   }
 
-  public Experiment copyExperiment(Experiment experiment) {
+  protected Experiment copyExperiment(Experiment experiment) {
     String newName = generateExperimentName(experiment.getExperimentName());
     final Experiment experimentCopy = (Experiment)experiment.copy(newName);
     // save copy in database
@@ -896,7 +909,7 @@ public class Organizer extends JScrollPane {
    * @param society the society to copy
    * @return SocietyComponent the copied society
    */
-  public SocietyComponent copySociety(SocietyComponent society) {
+  protected SocietyComponent copySociety(SocietyComponent society) {
     String newName = generateSocietyName(society.getSocietyName());
     final SocietyComponent societyCopy = 
       (SocietyComponent)society.copy(newName);
@@ -935,7 +948,7 @@ public class Organizer extends JScrollPane {
    * @return RecipeComponent the copied recipe
    */
 
-  public RecipeComponent copyRecipe(RecipeComponent recipe) {
+  protected RecipeComponent copyRecipe(RecipeComponent recipe) {
     String newName = generateRecipeName(recipe.getRecipeName());
     final RecipeComponent recipeCopy = (RecipeComponent)recipe.copy(newName);
     GUIUtils.timeConsumingTaskStart(organizer);
@@ -967,7 +980,7 @@ public class Organizer extends JScrollPane {
   // Delete items
   ////////////////////////////////////
 
-  public void delete() {
+  protected void delete() {
     DefaultMutableTreeNode node = getSelectedNode();
     if (node == null)
       return;
@@ -982,11 +995,11 @@ public class Organizer extends JScrollPane {
       deleteRecipe();
   }
 
-  public void deleteExperiment() {
+  protected void deleteExperiment() {
     deleteExperimentInNode(getSelectedNode());
   }
 
-  public void deleteExperimentInNode(DefaultMutableTreeNode node) {
+  protected void deleteExperimentInNode(DefaultMutableTreeNode node) {
     if (node == null) return;
     Experiment experiment = (Experiment)node.getUserObject();
     if (!experiment.isEditable()) {
@@ -1024,11 +1037,11 @@ public class Organizer extends JScrollPane {
    * if the society was included in an experiment, then the experiment
    * still retains the society.
    */
-  public void deleteSociety() {
+  protected void deleteSociety() {
     deleteSocietyInNode(getSelectedNode());
   }
 
-  public void deleteSocietyInNode(DefaultMutableTreeNode societyNode) {
+  protected void deleteSocietyInNode(DefaultMutableTreeNode societyNode) {
     SocietyComponent society = (SocietyComponent)societyNode.getUserObject();
     if (!society.isEditable()) {
       int result = JOptionPane.showConfirmDialog(this,
@@ -1091,7 +1104,7 @@ public class Organizer extends JScrollPane {
 
 
 
-  public void deleteRecipe() {
+  protected void deleteRecipe() {
     deleteRecipeInNode(getSelectedNode());
   }
   
@@ -1179,7 +1192,7 @@ public class Organizer extends JScrollPane {
    * Delete folder and recursively delete all its contents.
    */
 
-  public void deleteFolder() {
+  protected void deleteFolder() {
     DefaultMutableTreeNode node = getSelectedNode();
     if (node == root) return;
     if (node == null) return;
@@ -1265,7 +1278,7 @@ public class Organizer extends JScrollPane {
    * Delete experiment from database and from workspace if it's there.
    */
 
-  public void deleteExperimentFromDatabase() {
+  protected void deleteExperimentFromDatabase() {
     Map experimentNamesMap = ExperimentDB.getExperimentNames();
     Set keys = experimentNamesMap.keySet();
     JComboBox cb = new JComboBox(keys.toArray(new String[keys.size()]));
@@ -1296,7 +1309,7 @@ public class Organizer extends JScrollPane {
   /**
    * Delete recipe from database and from workspace if it's there.
    */
-  public void deleteRecipeFromDatabase() {
+  protected void deleteRecipeFromDatabase() {
     Map recipeNamesHT = helper.getRecipeNamesFromDatabase();
     Set dbRecipeNames = recipeNamesHT.keySet();
     if (dbRecipeNames.isEmpty()) {
@@ -1342,7 +1355,7 @@ public class Organizer extends JScrollPane {
   // Replace Component in Experiment
   ///////////////////////////////
 
-  public void replaceComponent(Experiment experiment,
+  protected void replaceComponent(Experiment experiment,
                                ModifiableComponent component,
                                ModifiableComponent newComponent) {
     // find experiment node
@@ -1386,6 +1399,11 @@ public class Organizer extends JScrollPane {
   // Add and remove nodes for children of an experiment
   ////////////////////////////////
 
+  /**
+   * Add tree nodes for the children (societies and recipes)
+   * of an experiment.
+   * @param experiment the experiment for which to add children
+   */
   public void addChildren(Experiment experiment) {
     DefaultMutableTreeNode expNode = findNode(experiment);
     SocietyComponent society = experiment.getSocietyComponent();
@@ -1398,10 +1416,11 @@ public class Organizer extends JScrollPane {
   }
 
   /**
-   * Remove the children of the experiment node.
+   * Remove tree nodes for the children (societies and recipes)
+   * of an experiment.
+   * @param experiment the experiment for which to remove children
    */
-
-  public void removeChildren(Experiment experiment) {
+  protected void removeChildren(Experiment experiment) {
     DefaultMutableTreeNode node = findNode(experiment);
     int n = node.getChildCount();
     for (int i = 0; i < n; i++)
@@ -1435,6 +1454,7 @@ public class Organizer extends JScrollPane {
   /**
    * Display names of experiments in workspace or database
    * that contain the indicated recipe.
+   * @param recipe the recipe component
    */
   public void displayExperiments(RecipeComponent recipe) {
     Set experimentNames = 
@@ -1561,15 +1581,15 @@ public class Organizer extends JScrollPane {
   // Utilities
   ///////////////////////////////
 
-  public String generateExperimentName(String name) {
+  protected String generateExperimentName(String name) {
     return experimentNames.generateName(name);
   }
   
-  public String generateSocietyName(String name) {
+  protected String generateSocietyName(String name) {
     return societyNames.generateName(name);
   }
 
-  public String generateRecipeName(String name) {
+  protected String generateRecipeName(String name) {
     return recipeNames.generateName(name);
   }
 
@@ -1862,11 +1882,11 @@ public class Organizer extends JScrollPane {
         public void ancestorMoved(AncestorEvent e) {}
       };
   
-  public void addTreeSelectionListener(TreeSelectionListener listener) {
+  protected void addTreeSelectionListener(TreeSelectionListener listener) {
     workspace.addTreeSelectionListener(listener);
   }
   
-  public void addTreeModelListener(TreeModelListener listener) {
+  protected void addTreeModelListener(TreeModelListener listener) {
     model.addTreeModelListener(listener);
   }
 
@@ -2001,7 +2021,7 @@ public class Organizer extends JScrollPane {
       }
     };
   
-  public boolean exitAllowed() {
+  protected boolean exitAllowed() {
     synchronized(root) {
       if (updateNeeded) {
 	nextUpdate = System.currentTimeMillis();
@@ -2020,7 +2040,7 @@ public class Organizer extends JScrollPane {
   /** 
    * Force an update, which saves the current workspace.
    */
-  public void save() {
+  protected void save() {
     update();
   }
   

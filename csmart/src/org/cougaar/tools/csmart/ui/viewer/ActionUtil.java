@@ -43,7 +43,7 @@ public class ActionUtil {
   public static String NEW_EXPERIMENT_FROM_DB_ACTION = "From Database";
   public static String NEW_EXPERIMENT_FROM_FILE_ACTION = "From File";
   public static String NEW_EXPERIMENT_FROM_UI_ACTION = "From User";
-  public static String NEW_SOCIETY_ACTION = "New Society";
+  //  public static String NEW_SOCIETY_ACTION = "New Society";
   public static String NEW_RECIPE_ACTION = "New Recipe";
   public static String NEW_FOLDER_ACTION = "New Folder";
   public static String DELETE_EXPERIMENT_FROM_DATABASE_ACTION = 
@@ -80,7 +80,7 @@ public class ActionUtil {
 
     if (organizer.getSelectedNode().isRoot()) {
       if (action.equals(NEW_EXPERIMENT_ACTION) ||
-          action.equals(NEW_SOCIETY_ACTION) ||
+          //          action.equals(NEW_SOCIETY_ACTION) ||
           action.equals(NEW_RECIPE_ACTION) ||
           action.equals(NEW_FOLDER_ACTION) ||
           action.equals(RENAME_ACTION) ||
@@ -139,7 +139,7 @@ public class ActionUtil {
         return true;
       }
       else if (action.equals(NEW_EXPERIMENT_ACTION) ||
-               action.equals(NEW_SOCIETY_ACTION) ||
+               //               action.equals(NEW_SOCIETY_ACTION) ||
                action.equals(NEW_RECIPE_ACTION) ||
                action.equals(NEW_FOLDER_ACTION) ||
                action.equals(RENAME_ACTION)) {

@@ -241,6 +241,11 @@ public class OrganizerMouseListener extends MouseAdapter {
     renameFolderAction
   };
 
+  /**
+   * Construct a mouse listener for the workspace tree.
+   * @param organizer the organizer for which this is the mouse listener
+   * @param workspace the workspace tree for which this is the mouse listener
+   */
   public OrganizerMouseListener(Organizer organizer,
                                 OrganizerTree workspace) {
     this.organizer = organizer;
@@ -275,14 +280,32 @@ public class OrganizerMouseListener extends MouseAdapter {
     }
   }
 
+  /**
+   * If the event is a popup trigger, then display the appropriate
+   * popup menu which depends on the type of object selected in the workspace
+   * (i.e. an experiment, society, recipe, etc.)
+   * @param e the mouse event
+   */
   public void mouseClicked(MouseEvent e) {
     if (e.isPopupTrigger()) doPopup(e);
   }
   
+  /**
+   * If the event is a popup trigger, then display the appropriate
+   * popup menu which depends on the type of object selected in the workspace
+   * (i.e. an experiment, society, recipe, etc.)
+   * @param e the mouse event
+   */
   public void mousePressed(MouseEvent e) {
     if (e.isPopupTrigger()) doPopup(e);
   }
   
+  /**
+   * If the event is a popup trigger, then display the appropriate
+   * popup menu which depends on the type of object selected in the workspace
+   * (i.e. an experiment, society, recipe, etc.)
+   * @param e the mouse event
+   */
   public void mouseReleased(MouseEvent e) {
     if (e.isPopupTrigger()) doPopup(e);
   }

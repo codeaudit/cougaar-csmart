@@ -186,8 +186,9 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       }
   };
 
-  // Constructor
-
+  /**
+   * Constructor for top level class in CSMART.
+   */
   public CSMART() {
     setTitle("CSMART");
 
@@ -225,14 +226,6 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     for (int i = 0; i < newRecipeActions.length; i++)
       newRecipeMenu.add(newRecipeActions[i]);
     fileMenu.add(newRecipeMenu);
-    //    newSocietyMenuItem = new JMenuItem("New Society");
-    //    newSocietyMenuItem.addActionListener(new ActionListener() {
-    //        public void actionPerformed(ActionEvent e) {
-    //          organizer.newSociety();
-    //        }
-    //      });
-    //    newSocietyMenuItem.setEnabled(true); // disable creating built-in societies
-    //    fileMenu.add(newSocietyMenuItem);
     if(log.isDebugEnabled()) {
       log.debug("Enable Society Menu");
     }
@@ -302,15 +295,6 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
         }
       });
     fileMenu.add(renameMenuItem);
-    // don't need to save from top level workspace menu
-//      saveToDatabaseMenuItem = 
-//        new JMenuItem(ActionUtil.SAVE_TO_DATABASE_ACTION);
-//      saveToDatabaseMenuItem.addActionListener(new ActionListener() {
-//          public void actionPerformed(ActionEvent e) {
-//            organizer.saveComponent(); // save experiment or recipe
-//          }
-//        });
-//      fileMenu.add(saveToDatabaseMenuItem);
     fileMenu.addSeparator();
     JMenuItem exitMenuItem = new JMenuItem(EXIT_MENU_ITEM);
     exitMenuItem.addActionListener(this);
@@ -368,6 +352,11 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     setVisible(true);
   }
 
+  /**
+   * Get the <code>Organizer</code> object which manages the tree
+   * of experiments, societies, recipes, etc.
+   * @return the organizer
+   */
   public static Organizer getOrganizer() {
     return organizer;
   }
@@ -395,21 +384,29 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
         }
       }; // end of listener
 
+  /**
+   * Add an experiment to the list of running experiments.
+   * @param experiment the experiment to add
+   */
   public void addRunningExperiment(Experiment experiment) {
     runningExperiments.add(experiment);
   }
 
+  /**
+   * Remove an experiment from the list of running experiments.
+   * @param experiment the experiment to remove
+   */
   public void removeRunningExperiment(Experiment experiment) {
     runningExperiments.remove(experiment);
   }
 
+  /**
+   * Get the list of running experiments.
+   * @return an array of <code>Experiment</code>
+   */
   public static Experiment[] getRunningExperiments() {
     return (Experiment[])runningExperiments.toArray(new Experiment[runningExperiments.size()]);
   }
-
-  //  public Experiment[] getExperimentsInWorkspace() {
-  //    return organizer.getExperiments();
-  //  }
 
   private void enableConfigurationTool(boolean enable) {
     ((JButton)toolBar.getComponentAtIndex(0)).setEnabled(enable);
@@ -431,9 +428,11 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   }
 
   /**
-   * TreeSelectionListener interface.
+   * The selection in the workspace tree changed.
+   * This is defined in the TreeSelectionListener interface.
    * Listen on organizer tree to determine what is selected
    * and enable appropriate tools.
+   * @param e the tree selection event
    */
 
   public void valueChanged(TreeSelectionEvent e) {
@@ -441,23 +440,44 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   }
 
   /**
-   * TreeModelListener interface.
-   * Listen on organizer tree for nodes inserted/removed events
-   * and enable appropriate tools.
+   * Tree nodes were inserted.
+   * This is defined in the TreeModelListener interface.
+   * Enable the appropriate tools when new nodes are inserted in the
+   * workspace tree.
+   * @param e event that describes the nodes inserted
    */
-
   public void treeNodesInserted(TreeModelEvent e) {
     enableCSMARTTools();
   }
 
+  /**
+   * Tree nodes were removed.
+   * This is defined in the TreeModelListener interface.
+   * Enable the appropriate tools when nodes are removed from the
+   * workspace tree.
+   * @param e event that describes the nodes removed
+   */
   public void treeNodesRemoved(TreeModelEvent e) {
     enableCSMARTTools();
   }
 
+  /**
+   * Tree structure was changed.
+   * This is defined in the TreeModelListener interface.
+   * Enable the appropriate tools when the workspace tree structure
+   * is changed.
+   * @param e event that describes the change
+   */
   public void treeStructureChanged(TreeModelEvent e) {
     enableCSMARTTools();
   }
 
+  /**
+   * Tree nodes were changed.
+   * This is defined in the TreeModelListener interface.
+   * Does nothing.
+   * @param e event that describes the change
+   */
   public void treeNodesChanged(TreeModelEvent e) {
     // don't care about these
   }
@@ -508,9 +528,10 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 
   /**
    * Window management for windows launched by CSMART.
-   * Updates which tools are enabled.
+   * Updates which tools are enabled and updates the Window menu.
+   * @param o the <code>NamedFrame</code> that was added, removed or changed
+   * @param arg an event describing the change
    */
-
   public void update(Observable o, Object arg) {
     if (o instanceof NamedFrame) {
       NamedFrame namedFrame = (NamedFrame) o;
@@ -566,9 +587,10 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
    * create a new society (SocietyCDataComponent), 
    * remove the society and any recipes from the experiment copy,
    * and put the new society in the experiment.
+   * @param cc the component to configure
+   * @param alwaysNew if true create a new configuration builder, otherwise re-use existing one
    */
-
-  public void runBuilder(ModifiableComponent cc, 
+  protected void runBuilder(ModifiableComponent cc, 
                          boolean alwaysNew) {
     // note that cc is guaranteed non-null when this is called
     Class[] paramClasses = 
@@ -651,7 +673,12 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     }
   }
 
-  public static boolean isExperimentInEditor(Experiment experiment) {
+  /**
+   * Determine if an experiment is being edited in the ExperimentBuilder.
+   * @param experiment the experiment
+   * @return true if experiment is in the ExperimentBuilder
+   */
+  protected static boolean isExperimentInEditor(Experiment experiment) {
     String s = EXPERIMENT_BUILDER + ": " + experiment.getExperimentName();
     if (NamedFrame.getNamedFrame().getFrame(s) != null)
       return true;
@@ -659,7 +686,12 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       return false;
   }
     
-  public static boolean isRecipeInEditor(RecipeComponent recipe) {
+  /**
+   * Determine if a recipe is being edited in the ConfigurationBuilder.
+   * @param recipe the recipe
+   * @return true if recipe is in the ConfigurationBuilder
+   */
+  protected static boolean isRecipeInEditor(RecipeComponent recipe) {
     String s = CONFIGURATION_BUILDER + ": " + recipe.getRecipeName();
     if (NamedFrame.getNamedFrame().getFrame(s) != null)
       return true;
@@ -667,7 +699,12 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       return false;
   }
     
-  public static boolean isSocietyInEditor(SocietyComponent society) {
+  /**
+   * Determine if a society is being edited in the ConfigurationBuilder.
+   * @param society the society
+   * @return true if society is in the ConfigurationBuilder
+   */
+  protected static boolean isSocietyInEditor(SocietyComponent society) {
     String s = CONFIGURATION_BUILDER + ": " + society.getShortName();
     if (NamedFrame.getNamedFrame().getFrame(s) != null)
       return true;
@@ -675,7 +712,12 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       return false;
   }
 
-  public void runExperimentBuilder(Experiment experiment, 
+  /**
+   * Run the experiment builder to edit an experiment.
+   * @param experiment the experiment to edit
+   * @param alwaysNew true to create a new <code>ExperimentBuilder</code>; false to re-use an existing one
+   */
+  protected void runExperimentBuilder(Experiment experiment, 
                                    boolean alwaysNew) {
     // if this experiment is being edited, then don't edit again
     if (isExperimentInEditor(experiment))
@@ -740,9 +782,9 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 
   /**
    * Run the specified experiment.  The experiment must be runnable.
+   * @param experiment the experiment to run
    */
-
-  public void runConsole(Experiment experiment) {
+  protected void runConsole(Experiment experiment) {
     // TODO: we get here if the user edits an experiment containing
     // societies and removes all the societies, and then invokes the console
     if (experiment.getSocietyComponentCount() == 0) {
@@ -769,7 +811,10 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
                                            paramClasses, params);
   }
 
-  public void runMonitor() {
+  /**
+   * Run the Society Monitor tool.
+   */
+  protected void runMonitor() {
     Experiment runningExperiment = null;
     String name = "";
     if (runningExperiments.size() > 0) {
@@ -784,7 +829,11 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
                paramClasses, params);
   }
 
-  public void runAnalyzer(Experiment experiment) {
+  /**
+   * Run the Performance Analyzer tool.
+   * @param experiment the experiment to analyze
+   */
+  protected void runAnalyzer(Experiment experiment) {
     Class[] paramClasses = { CSMART.class, Experiment.class };
     Object[] params = new Object[2];
     params[0] = this;
@@ -868,14 +917,15 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 
   /**
    * Return directory in which to store results.
+   * @return the directory
    */
-
   public File getResultDir() {
     return resultDir;
   }
 
   /**
    * ActionListener interface.
+   * @param e an event describing the action
    */
   public void actionPerformed(ActionEvent e) {
     String s = ((AbstractButton)e.getSource()).getActionCommand();

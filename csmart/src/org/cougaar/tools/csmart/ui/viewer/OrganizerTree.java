@@ -95,6 +95,8 @@ public class OrganizerTree extends DNDTree {
      * If the flavor allows children, then return
      * the DefaultMutableTreeNode, so that the children can
      * be transferred; otherwise just return the user object.
+     * @param flavor the flavor for the object being transferred
+     * @return the user object or a DefaultMutableTreeNode
      */
     public Object getTransferData(DataFlavor flavor) {
       if (!flavor.equals(flavors[0]))
@@ -112,6 +114,12 @@ public class OrganizerTree extends DNDTree {
     }
   }
 
+  /**
+   * Construct a tree from which objects can be dragged and dropped,
+   * and which is used to represent the workspace containing experiments,
+   * societies, recipes, etc.
+   * @param model the model for the tree
+   */
   public OrganizerTree(DefaultTreeModel model) {
     super(model);
     this.model = model;
@@ -123,12 +131,21 @@ public class OrganizerTree extends DNDTree {
     log = CSMART.createLogger(this.getClass().getName());
   }
 
+  /**
+   * Set the selection in the tree to be the specified tree node.
+   * @param treeNode the tree node to select
+   */
   public void setSelection(TreeNode treeNode) {
     TreeNode[] nodes = model.getPathToRoot(treeNode);
     TreePath path = new TreePath(nodes);
     setSelectionPath(path);
   }
 
+  /**
+   * Make a transferable object from the specified object.
+   * The specified object must be a <code>DefaultMutableTreeNode</code>.
+   * @param o the object to drag
+   */
   public Transferable makeDraggableObject(Object o) {
     Transferable tran = null;
     if (o instanceof DefaultMutableTreeNode) {
@@ -166,6 +183,7 @@ public class OrganizerTree extends DNDTree {
   /**
    * The object is draggable if it's not root and it's not
    * inside an experiment.
+   * @param o test if this object can be dragged
    */
   public boolean isDraggable(Object o) {
     if (o instanceof DefaultMutableTreeNode) {
@@ -186,6 +204,11 @@ public class OrganizerTree extends DNDTree {
   /**
    * Add the dragged element to the drop site.
    * If the dragged element has children, they are moved as well.
+   * If the before argument is null, then the dragged element
+   * is dropped at the end of the target's children.
+   * @param t the transferable for the dragged element
+   * @param target where to drop the element
+   * @param before optional, drop the element before this node in the target
    */
   public int addElement(Transferable t,
                         DefaultMutableTreeNode target,

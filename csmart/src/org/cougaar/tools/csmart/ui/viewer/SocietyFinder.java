@@ -73,8 +73,9 @@ public final class SocietyFinder {
  
   /**
    * Use SocietyFinder.getInstance instead of constructor.
+   * @param s configuration path
+   * @param p properties
    */
-
   public SocietyFinder(String s, Map p) {
     properties = p;
     if (s == null) {
@@ -93,6 +94,9 @@ public final class SocietyFinder {
     }
   }
 
+  /**
+   * Return an instance of <code>SocietyFinder</code>.
+   */
   public static SocietyFinder getInstance() {
     return defaultSocietyFinder;
   }
@@ -149,8 +153,8 @@ public final class SocietyFinder {
 
   /**
    * Get the first path that ConfigFinder will search.
+   * @return the path
    */
-
   public String getPath() {
     for (int i = 0; i < configPath.size(); i++) {
       URL url = (URL) configPath.get(i);

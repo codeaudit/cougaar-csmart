@@ -31,6 +31,11 @@ public class UniqueNameSet extends HashSet {
   private int nameCounter = 0;
   private transient Logger log;
 
+  /**
+   * Construct an object which can generate unique names
+   * from the specified prefix.
+   * @param prefix the prefix to use in the unique names
+   */
   public UniqueNameSet(String prefix) {
     this.prefix = prefix;
     createLogger();
@@ -40,6 +45,12 @@ public class UniqueNameSet extends HashSet {
     log = CSMART.createLogger(this.getClass().getName());
   }
 
+  /**
+   * Initialize the unique name set with a set of objects,
+   * using the specified method to get the names of those objects.
+   * @param things an array of objects used to initialize the unique name set
+   * @param getNameMethod the <code>Method</code> to get the name of an object
+   */
   public void init(Object[] things, Method getNameMethod) {
     Object[] noArgs = new Object[0];
     for (int i = 0; i < things.length; i++) {
@@ -53,11 +64,21 @@ public class UniqueNameSet extends HashSet {
       }
     }
   }
-    
+
+  /**
+   * Get a unique name for an object.
+   * @return the unique name
+   */
   public String generateName() {
     return generateName(prefix);
   }
 
+  /**
+   * Generate a unique name from the given name by appending
+   * a counter to it.
+   * @param name the name to use as the base
+   * @return a new unique name
+   */
   public String generateName(String name) {
     if (contains(name)) {
       String base = name;
