@@ -92,7 +92,7 @@ public class AssetFileComponent
       if(log.isDebugEnabled()) {
         log.debug("Using newStyle Parser");
       }
-      AssetDataCallbackImpl callback = new AssetDataCallbackImpl();
+      AssetDataCallbackImpl callback = new AssetDataCallbackImpl(clusterName);
       AssetDataFileReader reader = new AssetDataFileReader();
       reader.readAsset(filename, callback);
       aad = callback.getAgentAssetData();
