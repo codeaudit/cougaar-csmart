@@ -1,0 +1,10 @@
+COMPONENT_ALIB_ID,MACHINE_NAME,IP_ADDRESS,OPERATING_SYSTEM,DESCRIPTION,BLANK,CLOCK_SPEED,RAM,BAR_CODE,LOCATION
+mt_blanc.alpine.bbn.com,mt_blanc.alpine.bbn.com,192.1.100.200,Linux,400 MHz|384 Mbytes, ,400,384,8309,Lab
+everest.alpine.bbn.com,everest.alpine.bbn.com,192.1.100.19,Linux,450 MHz|512 Mbytes, ,450,512,8838,Lab
+fuji.alpine.bbn.com,fuji.alpine.bbn.com,192.1.100.18,Linux,450 MHz|512 Mbytes, ,450,512,8821,Lab
+ranier.alpine.bbn.com,ranier.alpine.bbn.com,192.1.100.199,NT,450 MHz|512 Mbytes, ,450,512,8814,Lab
+sandwich.alpine.bbn.com,sandwich.alpine.bbn.com,192.1.100.22,Linux,450 MHz|512 Mbytes, ,450,512,8812,Lab
+washington.alpine.bbn.com,washington.alpine.bbn.com,192.1.100.16,Linux,450 MHz|512 Mbytes, ,450,512,8809,Lab
+hood.alpine.bbn.com,hood.alpine.bbn.com,192.1.100.196,NT,450 MHz|512 Mbytes, ,450,512,8811,Lab
+matterhorn.alpine.bbn.com,matterhorn.alpine.bbn.com,192.1.100.191,Linux,450 MHz|512 Mbytes, ,450,512,8823,Lab
+olympus.alpine.bbn.com,olympus.alpine.bbn.com,192.1.100.192,Linux/NT,400 MHz|384 Mbytes, ,400,384,8305,Lab
