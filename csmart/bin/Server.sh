@@ -75,13 +75,12 @@ SERVERCONFIG=""
 # Below we set the AppServer's classpath to:
 #  $COUGAAR_DEV_PATH	if defined
 #  $COUGAAR_INSTALL_PATH/lib/server.jar
-#  $COUGAAR_INSTALL_PATH/lib/core.jar
 #  $COUGAAR_INSTALL_PATH/lib/csmart.jar
 #
 # This is only useful to altering the Server's codebase,
 # *not* the Node's codebase.  The ".props" file must be
 # modified to alter the Node's configuration.
-LIBPATHS="$COUGAAR_INSTALL_PATH/lib/server.jar:$COUGAAR_INSTALL_PATH/lib/core.jar:$COUGAAR_INSTALL_PATH/lib/csmart.jar"
+LIBPATHS="$COUGAAR_INSTALL_PATH/lib/server.jar:$COUGAAR_INSTALL_PATH/lib/csmart.jar"
 
 if [ "$COUGAAR_DEV_PATH" != "" ]; then
     LIBPATHS="$COUGAAR_DEV_PATH:$LIBPATHS"

@@ -76,18 +76,17 @@ set SERVERCONFIG = ""
 # Below we set the AppServer's classpath to:
 #  $COUGAAR_DEV_PATH	if defined
 #  $COUGAAR_INSTALL_PATH/lib/server.jar
-#  $COUGAAR_INSTALL_PATH/lib/core.jar
 #  $COUGAAR_INSTALL_PATH/lib/csmart.jar
 #
 # This is only useful to altering the Server's codebase,
 # *not* the Node's codebase.  The ".props" file must be
 # modified to alter the Node's configuration.
 set LIBPATHS = \
-  "${COUGAAR_INSTALL_PATH}/lib/server.jar:$COUGAAR_INSTALL_PATH/lib/core.jar:${COUGAAR_INSTALL_PATH}/lib/csmart.jar"
+  "${COUGAAR_INSTALL_PATH}/lib/server.jar:${COUGAAR_INSTALL_PATH}/lib/csmart.jar"
 
-if ($?COUGAAR_DEV_PATH) then
-    set LIBPATHS = "${COUGAAR_DEV_PATH}:${LIBPATHS}"
-endif
+#if ($?COUGAAR_DEV_PATH) then
+#    set LIBPATHS = "${COUGAAR_DEV_PATH}:${LIBPATHS}"
+#endif
 
 set OS = `uname`
 if ("$OS" == "Linux") then
