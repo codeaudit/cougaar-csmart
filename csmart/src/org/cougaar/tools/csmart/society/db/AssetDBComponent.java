@@ -136,6 +136,8 @@ public class AssetDBComponent
           rData.setRole((String)rel.getProperty(RelationshipBase.PROP_ROLE).getValue());
           rData.setItemId((String)rel.getProperty(RelationshipBase.PROP_ITEM).getValue());
           rData.setSupported((String)rel.getProperty(RelationshipBase.PROP_SUPPORTED).getValue());
+
+	  // FIXME Where are start & end time???
           assetData.addRelationship(rData);
         }
       }

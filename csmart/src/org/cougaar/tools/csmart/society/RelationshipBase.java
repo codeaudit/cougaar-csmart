@@ -46,6 +46,8 @@ public class RelationshipBase
   implements RelationshipComponent {
   private transient Logger log;
 
+  // FIXME!!! Where are the start and end times!!!
+
   public static final String PROP_TYPE = "Type";
   public static final String PROP_TYPE_DESC = "Type of Relationship";
 

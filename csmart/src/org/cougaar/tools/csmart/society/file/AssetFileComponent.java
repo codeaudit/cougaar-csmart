@@ -152,6 +152,9 @@ public class AssetFileComponent
           rData.setItemId((String)rel.getProperty(RelationshipBase.PROP_ITEM).getValue());
           rData.setTypeId((String)rel.getProperty(RelationshipBase.PROP_TYPEID).getValue());
           rData.setSupported((String)rel.getProperty(RelationshipBase.PROP_SUPPORTED).getValue());
+
+	  // FIXME!!!! Start and End Times!!!
+
           assetData.addRelationship(rData);
         }
       }
