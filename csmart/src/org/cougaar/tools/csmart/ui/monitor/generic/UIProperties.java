@@ -35,35 +35,35 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
  */
 
 public class UIProperties {
-  public static final String DEFAULT_COLOR_GVT = "255,255,255"; // white
-  public static final String DEFAULT_COLOR_SELECT = "238,44,44"; // firebrick2
-  public static final String DEFAULT_COLOR_CAUSES = "0,0,205"; // blue3
-  public static final String DEFAULT_COLOR_EFFECTS = "238,238,0"; // yellow2
-  public static final String DEFAULT_COLOR_BEFORE = "137,104,205"; // mediumpurple3
-  public static final String DEFAULT_COLOR_AFTER = "118,238,0"; // chartreuse2
-  public static final String DEFAULT_COLOR_CLUSTER1 = "155,205,155"; // darkseagreen3
-  public static final String DEFAULT_COLOR_CLUSTER2 = "238,180,34"; // goldenrod2
-  public static final String DEFAULT_COLOR_CLUSTER3 = "238,121,66"; // sienna2
-  public static final String DEFAULT_COLOR_CLUSTER4 = "216,191,216"; // thistle
-  public static final String DEFAULT_COLOR_CLUSTER5 = "224,238,238"; // azure2
-  public static final String DEFAULT_COLOR_CLUSTER6 = "30,144,25"; // dodgerblue
+  private static final String DEFAULT_COLOR_GVT = "255,255,255"; // white
+  private static final String DEFAULT_COLOR_SELECT = "238,44,44"; // firebrick2
+  private static final String DEFAULT_COLOR_CAUSES = "0,0,205"; // blue3
+  private static final String DEFAULT_COLOR_EFFECTS = "238,238,0"; // yellow2
+  private static final String DEFAULT_COLOR_BEFORE = "137,104,205"; // mediumpurple3
+  private static final String DEFAULT_COLOR_AFTER = "118,238,0"; // chartreuse2
+  private static final String DEFAULT_COLOR_CLUSTER1 = "155,205,155"; // darkseagreen3
+  private static final String DEFAULT_COLOR_CLUSTER2 = "238,180,34"; // goldenrod2
+  private static final String DEFAULT_COLOR_CLUSTER3 = "238,121,66"; // sienna2
+  private static final String DEFAULT_COLOR_CLUSTER4 = "216,191,216"; // thistle
+  private static final String DEFAULT_COLOR_CLUSTER5 = "224,238,238"; // azure2
+  private static final String DEFAULT_COLOR_CLUSTER6 = "30,144,25"; // dodgerblue
   // must match highest DEFAULT_COLOR_CLUSTER 
-  public static final int DEFAULT_MAX_COLOR = 6; // number of cluster colors
+  private static final int DEFAULT_MAX_COLOR = 6; // number of cluster colors
 
-  public static final String DEFAULT_COLOR_CLUSTER_ATTACKER = "155,205,155"; // darkseagreen3
-  public static final String DEFAULT_COLOR_CLUSTER_FIREWALL = "238,180,34"; // goldenrod2
-  public static final String DEFAULT_COLOR_CLUSTER_VICTIM = "238,121,66"; // sienna2
+  private static final String DEFAULT_COLOR_CLUSTER_ATTACKER = "155,205,155"; // darkseagreen3
+  private static final String DEFAULT_COLOR_CLUSTER_FIREWALL = "238,180,34"; // goldenrod2
+  private static final String DEFAULT_COLOR_CLUSTER_VICTIM = "238,121,66"; // sienna2
 
   // Default line sizes for the metrics.
-  public static final String DEFAULT_GRAPH_LINE_SIZE = "2";
-  public static final String DEFAULT_GRAPH_LEGEND_SIZE = "8";
+  private static final String DEFAULT_GRAPH_LINE_SIZE = "2";
+  private static final String DEFAULT_GRAPH_LEGEND_SIZE = "8";
 
   private transient Logger log;
 
-  String[] clusterNames = { "Attacker", "Firewall", "Victim" };
-  int nextColor = 1;
-  Properties properties;
-  int maxColor = DEFAULT_MAX_COLOR; // read from ui.properties file
+  private String[] clusterNames = { "Attacker", "Firewall", "Victim" };
+  private int nextColor = 1;
+  private Properties properties;
+  private int maxColor = DEFAULT_MAX_COLOR; // read from ui.properties file
 
   /**
    * Set default colors for known cluster names, and define a set
@@ -89,7 +89,7 @@ public class UIProperties {
         }
       }
     }
-    int maxColor =
+    maxColor =
       Integer.parseInt(properties.getProperty("color.cluster.max"));
     //    printColors(); // for debugging
   }
@@ -278,9 +278,9 @@ public class UIProperties {
     nextColor++;
     if (nextColor > maxColor)
       nextColor = 1;
-      if(log.isDebugEnabled()) {
-        log.debug("Assigned: " + colorString + " to: " + clusterName);
-      }
+    if(log.isDebugEnabled()) {
+      log.debug("Assigned: " + colorString + " to: " + clusterName);
+    }
     return stringToColor(colorString);
   }
 
