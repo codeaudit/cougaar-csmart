@@ -209,7 +209,7 @@ public class ComponentBase
       ComponentData kid = children[i];
       if (kid == null) {
 	if (log.isWarnEnabled()) {
-	  log.warn("Child " + i + " is null in " + parent.getName());
+	  log.warn("Bug 1279: Child " + i + " is null in " + parent.getName());
 	}
 	// FIXME: Maybe do a parent.setChildren with a new list that doesn't include
 	// the null?
