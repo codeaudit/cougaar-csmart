@@ -1539,7 +1539,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * @see org.cougaar.tools.csmart.core.db.PopulateDb
    */
   public void saveToDb(DBConflictHandler ch) {
-    System.out.println("Experiment: SAVING TO DATABASE");
     try {
       updateNameServerHostName(); // Be sure this is up-to-date
       List components = getComponents();
