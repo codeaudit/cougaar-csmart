@@ -60,7 +60,11 @@ public class FileParseUtil {
    * @return boolean indicating the result of the search.
    */
   public static final boolean containsPattern(String filename, String pattern) {
-    Logger log = CSMART.createLogger("org.coguaar.tools.csmart.FileParseUtil");
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.FileParseUtil");
+
+    if(log.isDebugEnabled()) {
+      log.debug("Using File: " + filename);
+    }
 
     // Create the CharBuffer for the file.
     FileInputStream iStream = null;
