@@ -51,8 +51,6 @@ public class CSMARTFactory
   protected ClusterIdentifier selfClusterId;
   protected UIDServer myUIDServer;
 
-  protected LogStream logStream;
-
   /**
    * @see #getNumberOfEvents()
    */
@@ -72,14 +70,9 @@ public class CSMARTFactory
     rf.addPropertyGroupFactory(
         new org.cougaar.tools.csmart.runtime.ldm.asset.PropertyGroupFactory());
 
-    logStream = new LogStreamImpl();
-
     ClusterServesPlugIn cspi = (ClusterServesPlugIn)ldm;
     selfClusterId = cspi.getClusterIdentifier();
     myUIDServer = ((ClusterContext)ldm).getUIDServer();
-
-    // Start the logging Stream.
-    logStream.start();
 
   }
 
@@ -101,13 +94,6 @@ public class CSMARTFactory
   public UID getNextEventUID() {
     ++nEvents;
     return myUIDServer.nextUID();
-  }
-
-  /**
-   * Get the <code>LogStream</code>.
-   **/
-  public LogStream getLogStream() {
-     return logStream;
   }
 
   /**
