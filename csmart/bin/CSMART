@@ -64,7 +64,7 @@ if ($?COUGAAR_DEV_PATH) then
    echo java $javaargs org.cougaar.tools.csmart.ui.viewer.CSMART
 endif
 
-echo "Cmd"
+#echo "Cmd"
 #exec java -version
 echo java $javaargs org.cougaar.core.node.Bootstrapper org.cougaar.tools.csmart.ui.viewer.CSMART
 exec java $javaargs org.cougaar.core.node.Bootstrapper org.cougaar.tools.csmart.ui.viewer.CSMART
