@@ -127,6 +127,16 @@ public class NamedFrame extends Observable {
     return (JFrame) titleToFrame.get(title);
   }
 
+  public JFrame getToolFrame(String toolTitle) {
+    Enumeration titles = titleToFrame.keys();
+    while (titles.hasMoreElements()) {
+      String title = (String)titles.nextElement();
+      if (title.startsWith(toolTitle)) 
+	return (JFrame)titleToFrame.get(title);
+    }
+    return null;
+  }
+
   public JFrame getToolFrame(String toolTitle, String societyName) {
     String newTitle = toolTitle + ": " + societyName;
     Enumeration titles = titleToFrame.keys();

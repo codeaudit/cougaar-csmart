@@ -56,8 +56,8 @@ public class ClientServletUtil {
    * @param URL the URL of the agent to contact
    * @return vector of String; URLs of agents in society
    */
-  public static Vector getAgentURLs(String URL) throws Exception {
-    String urlSpec = URL + "/" + AGENT_PROVIDER_SERVLET;
+  public static Vector getAgentURLs(String URLString) throws Exception {
+    String urlSpec = URLString + "/" + AGENT_PROVIDER_SERVLET;
     URL url = new URL(urlSpec);
     URLConnection connection = url.openConnection();
     connection.setDoInput(true);
@@ -65,8 +65,8 @@ public class ClientServletUtil {
     // get agent URLs from servlet
     InputStream is = connection.getInputStream();
     ObjectInputStream p = new ObjectInputStream(is);
-    Vector readobjects = (Vector) p.readObject();
-    return readobjects;
+    Vector readObjects = (Vector) p.readObject();
+    return readObjects;
   }
 
   /**
@@ -140,7 +140,6 @@ public class ClientServletUtil {
     String urlSpec = URLSpec.getResult();
     Collection results = null;
     try {
-      System.out.println("ClientServerUtil: contacting: " + urlSpec);
       URL url = new URL(urlSpec);
       URLConnection connection = url.openConnection();
       if (data != null) // force URL connection to use the PUT method for data
@@ -148,7 +147,6 @@ public class ClientServletUtil {
       connection.setDoInput(true);
       connection.setDoOutput(true);
       if (data != null) {
-        System.out.println("Sending list: " + data);
         OutputStream os = connection.getOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(os);
         oos.writeObject(data);
@@ -169,7 +167,7 @@ public class ClientServletUtil {
    * @return the URL string
    */
   public static String makeURL(String host, int port) {
-    return "http://" + host + ":" + String.valueOf(port) + "/";
+    return "http://" + host + ":" + String.valueOf(port);
   }
 
 
