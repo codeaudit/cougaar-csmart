@@ -215,9 +215,9 @@ public class CSMARTConsoleModel extends Observable implements Observer {
    * Start nodes that are not in the Running state.
    */
   private void startNodes() {
-    Enumeration enum = this.nodeModels.keys();
-    while (enum.hasMoreElements()) {
-      Object key = enum.nextElement();
+    Enumeration en = this.nodeModels.keys();
+    while (en.hasMoreElements()) {
+      Object key = en.nextElement();
       NodeModel model = (NodeModel) nodeModels.get(key);
       if (model.getState().equals(NodeModel.STATE_RUNNING))
         continue;
@@ -234,9 +234,9 @@ public class CSMARTConsoleModel extends Observable implements Observer {
    */
   public void stopNodes() {
     // FIXME: Really should call glsClient.stop() if we have a glsClient
-    Enumeration enum = this.nodeModels.elements();
-    while (enum.hasMoreElements()) {
-      NodeModel nodeModel = (NodeModel) enum.nextElement();
+    Enumeration en = this.nodeModels.elements();
+    while (en.hasMoreElements()) {
+      NodeModel nodeModel = (NodeModel) en.nextElement();
       if (nodeModel.getState().equals(NodeModel.STATE_RUNNING)) {
         if (log.isDebugEnabled()) {
           log.debug("Stopping Node: " + nodeModel.getNodeName());
@@ -395,9 +395,9 @@ public class CSMARTConsoleModel extends Observable implements Observer {
    * Destroys nodes whose state is STOPPED.
    */
   private void destroyOldNodes() {
-    Enumeration enum = nodeModels.keys();
-    while (enum.hasMoreElements()) {
-      String nodeName = (String) enum.nextElement();
+    Enumeration en = nodeModels.keys();
+    while (en.hasMoreElements()) {
+      String nodeName = (String) en.nextElement();
       NodeModel model = (NodeModel) nodeModels.get(nodeName);
       if (model.getState().equals(NodeModel.STATE_STOPPED)) {
         setChanged();
@@ -749,9 +749,9 @@ public class CSMARTConsoleModel extends Observable implements Observer {
    * Set the view size for all the nodes.
    */
   public void setViewSize(int size) {
-    Enumeration enum = this.nodeViews.elements();
-    while (enum.hasMoreElements()) {
-      NodeView nodeView = (NodeView) enum.nextElement();
+    Enumeration en = this.nodeViews.elements();
+    while (en.hasMoreElements()) {
+      NodeView nodeView = (NodeView) en.nextElement();
       nodeView.setViewSize(size);
     }
     viewSize = size;
@@ -769,9 +769,9 @@ public class CSMARTConsoleModel extends Observable implements Observer {
    * Set the filter for all the nodes.
    */
   public void setFilter(ConsoleNodeOutputFilter filter) {
-    Enumeration enum = this.nodeModels.elements();
-    while (enum.hasMoreElements()) {
-      NodeModel nodeModel = (NodeModel) enum.nextElement();
+    Enumeration en = this.nodeModels.elements();
+    while (en.hasMoreElements()) {
+      NodeModel nodeModel = (NodeModel) en.nextElement();
       nodeModel.setFilter(filter);
     }
   }
@@ -809,9 +809,9 @@ public class CSMARTConsoleModel extends Observable implements Observer {
   }
 
   public void setNotification(String notifyCondition, boolean notifyOnStdErr) {
-    Enumeration enum = this.nodeModels.elements();
-    while (enum.hasMoreElements()) {
-      NodeModel nodeModel = (NodeModel) enum.nextElement();
+    Enumeration en = this.nodeModels.elements();
+    while (en.hasMoreElements()) {
+      NodeModel nodeModel = (NodeModel) en.nextElement();
       nodeModel.setNotification(notifyCondition, notifyOnStdErr);
     }
     this.notifyCondition = notifyCondition;
@@ -846,9 +846,9 @@ public class CSMARTConsoleModel extends Observable implements Observer {
   }
 
   public void resetNotifyStatus() {
-    Enumeration enum = this.nodeViews.elements();
-    while (enum.hasMoreElements()) {
-      NodeView nodeView = (NodeView) enum.nextElement();
+    Enumeration en = this.nodeViews.elements();
+    while (en.hasMoreElements()) {
+      NodeView nodeView = (NodeView) en.nextElement();
       nodeView.resetNotify();
     }
   }

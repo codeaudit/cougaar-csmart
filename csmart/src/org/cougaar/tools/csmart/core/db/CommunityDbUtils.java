@@ -576,9 +576,9 @@ public class CommunityDbUtils {
       {
         String name = (String)enums.nextElement();
         Hashtable entities = (Hashtable)communities.get(name);
-        for(Enumeration enum = entities.keys(); enum.hasMoreElements();)
+        for(Enumeration en = entities.keys(); en.hasMoreElements();)
         {
-          String ename = (String)enum.nextElement();
+          String ename = (String)en.nextElement();
           List attrs = (List)entities.get(ename);
           for(int i=0; i<attrs.size(); i++)
           {
