@@ -27,9 +27,14 @@ import org.cougaar.tools.csmart.ui.experiment.PropTableModelBase;
 
 public class GridPanel2 extends JTable {
   private static class Model extends PropTableModelBase {
+    /**
+     * If property value is not set, then render it as "<not set>".
+     */
     public String render(Property prop) {
-      Object o = prop.getValue();
-      if (o == null) return "";
+      Object o = null;
+      if (prop.isValueSet())
+	o = prop.getValue();
+      if (o == null) return "<not set>";
       if (o.getClass().isArray()) {
         StringBuffer buf = new StringBuffer();
         buf.append('{');

@@ -22,9 +22,26 @@ public class TrialBuilder extends JPanel {
   TrialTableModel trialTableModel;
   JPopupMenu trialMenu;
   int deleteRowIndex; // row to delete
+  Experiment experiment;
+  boolean needUpdate = true; // need to update display
 
   public TrialBuilder(Experiment experiment, PropertyBuilder propertyBuilder) {
     this.propertyBuilder = propertyBuilder;
+    trialTable = new JTable();
+    trialTable.addMouseListener(mouseListener);
+    trialTable.setColumnSelectionAllowed(false);
+    trialTable.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+    JScrollPane scrollPane = new JScrollPane(trialTable);
+    trialMenu = new JPopupMenu();
+    JMenuItem deleteMenuItem = new JMenuItem(DELETE_MENU_ITEM);
+    deleteMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+	deleteTrial();
+      }
+    });
+    trialMenu.add(deleteMenuItem);
+    setLayout(new BorderLayout());
+    add(scrollPane, BorderLayout.CENTER);
     setExperiment(experiment);
   }
 
@@ -34,34 +51,33 @@ public class TrialBuilder extends JPanel {
    */
 
   public void setExperiment(Experiment experiment) {
-    removeAll();
+    if (this.experiment != null &&
+	this.experiment.equals(experiment))
+      return; // no change
+
+    this.experiment = experiment;
+    if (isShowing())
+      updateDisplay();
+    else
+      needUpdate = true;
+  }
+
+  private void updateDisplay() {
+    if (!experiment.hasValidTrials())
+      experiment.getTrials();
     trialTableModel = new TrialTableModel(experiment);
-    trialTableModel.update(PropertyBuilder.VARY_ONE_DIMENSION);
-    trialTable = new JTable(trialTableModel);
-    trialTable.addMouseListener(mouseListener);
-    trialTable.setColumnSelectionAllowed(false);
-    trialTable.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-    JScrollPane scrollPane = new JScrollPane(trialTable);
-    trialMenu = new JPopupMenu();
-    JMenuItem deleteMenuItem = new JMenuItem(DELETE_MENU_ITEM);
-    deleteMenuItem.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-	System.out.println("Delete trial at: " + deleteRowIndex);
-	deleteTrial();
-      }
-    });
-    trialMenu.add(deleteMenuItem);
-    setLayout(new BorderLayout());
-    add(scrollPane, BorderLayout.CENTER);
+    trialTable.setModel(trialTableModel);
+    needUpdate = false;
   }
 
   /**
-   * Update the table before displaying it.
+   * Update the trials if either there's a new experiment
+   * or the experiment trials have changed.
    */
 
   public void setVisible(boolean visible) {
-    if (visible)
-      trialTableModel.update(propertyBuilder.getVariationScheme());
+    if (visible && (needUpdate || !experiment.hasValidTrials()))
+      updateDisplay();
     super.setVisible(visible);
   }
 

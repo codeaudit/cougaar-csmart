@@ -26,6 +26,17 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   private List metrics = new ArrayList();
   private transient List listeners = null;
   private File metricsDirectory; // where to store metrics
+  private int numberOfTrials = 0;
+  private List trials = new ArrayList();
+  private boolean hasValidTrials = false;
+  // schemes for varying experimental data
+  private static final String VARY_ONE_DIMENSION = "Univariate";
+  private static final String VARY_TWO_DIMENSION = "Bivariate";
+  private static final String VARY_SEQUENTIAL = "Multivariate";
+  private static final String VARY_RANDOM = "Random";
+  private static final String[] variationSchemes = {
+    VARY_ONE_DIMENSION, VARY_TWO_DIMENSION, VARY_SEQUENTIAL, VARY_RANDOM };
+  private String variationScheme = null;
 
   public Experiment(String name, SocietyComponent[] societyComponents,
 		    Impact[] impacts, Metric[] metrics)
@@ -368,5 +379,182 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    */
   public ConfigurationWriter getConfigurationWriter(NodeComponent[] nodes) {
     return new ExperimentConfigWriter(societies, impacts, nodes);
+  }
+
+  /**
+   * Get possible experiment variation schemes, i.e. 
+   * univariate, bivariate, multivariate, random.
+   * @return the variation schemes which can being used in this experiment
+   */
+
+  public static String[] getVariationSchemes() {
+    return variationSchemes;
+  }
+
+  /**
+   * Return variation scheme being used in this experiment:
+   * univariate, bivariate, multivariate, or random.
+   * @return the variation scheme being used in this experiment
+   */
+
+  public String getVariationScheme() {
+    return variationScheme;
+  }
+
+  /**
+   * Set variation scheme to use in this experiment:
+   * univariate, bivariate, multivariate, or random.
+   * @param the variation scheme to use in this experiment
+   */
+
+  public void setVariationScheme(String variationScheme) {
+    if (this.variationScheme != null &&
+	!(this.variationScheme.equals(variationScheme)))
+      hasValidTrials = false; // new variation scheme, invalidates trials
+    this.variationScheme = variationScheme;
+  }
+
+  /**
+   * Return whether or not the experiment has a valid set of trials.
+   * The trials may be invalid because something about the experiment
+   * has changed (i.e. the set of configurable components, the
+   * unbound variables of a component, the variation scheme)
+   * and the trials have not been recomputed.  This supports recomputing
+   * trials only as needed.
+   * @return boolean indicating whether or not the trials are valid
+   */
+
+  public boolean hasValidTrials() {
+    return hasValidTrials;
+  }
+
+  /**
+   * Indicate that the experiment does not have valid trials; should
+   * be called when some aspect of the experiment or its components
+   * changes so as to invalidate trials.
+   */
+
+  public void invalidateTrials() {
+    hasValidTrials = false;
+  }
+
+  /**
+   * Return the trials defined for this experiment.  Computes trials
+   * if necessary.
+   * @return array of Trials
+   */
+
+  public Trial[] getTrials() {
+    if (hasValidTrials)
+      return (Trial[])trials.toArray(new Trial[trials.size()]);
+
+    // create trials
+    // get lists of unbound properties and their experimental values
+    List properties = new ArrayList();
+    List experimentValues = new ArrayList();
+    int n = getSocietyComponentCount();
+    for (int i = 0; i < n; i++) {
+      SocietyComponent society = getSocietyComponent(i);
+      List propertyNames = society.getPropertyNamesList();
+      for (Iterator j = propertyNames.iterator(); j.hasNext(); ) {
+	Property property = society.getProperty((CompositeName)j.next());
+	List values = property.getExperimentValues();
+	if (values != null && values.size() != 0) {
+	  properties.add(property);
+	  experimentValues.add(values);
+	}
+      }
+    }
+
+    int nProperties = properties.size();
+    if (nProperties == 0) {
+      hasValidTrials = true;
+      numberOfTrials = 0; 
+      trials = new ArrayList(0);
+      return new Trial[0];      // no properties to vary
+    }
+
+    if (variationScheme.equals(VARY_ONE_DIMENSION)) {
+      getTrialCount(); // update trial count if necessary
+      trials = new ArrayList(numberOfTrials);
+      int propToVaryIndex = 0; // index of property being varied
+      int k = 0; // index into values of property being varied
+      for (int i = 0; i < numberOfTrials; i++) {
+	Trial trial = new Trial("Trial " + (i+1));
+	trial.initProperties();
+	for (int j = 0; j < nProperties; j++) {
+	  List parameterValues = (List)experimentValues.get(j);
+	  Object value;
+	  if (j == propToVaryIndex)
+	    value = parameterValues.get(k++);
+	  else
+	    value = parameterValues.get(0);
+	  trial.addTrialParameter((Property)properties.get(j), value);
+	}
+	// if we've stepped through all the values of the property being varied
+	// then vary the next property
+	if (((List)experimentValues.get(propToVaryIndex)).size() == k) {
+	  k = 1; // after first pass, skip nominal values
+	  propToVaryIndex++;
+	}
+	trials.add(trial);
+      }
+    } else
+      System.out.println("Variation scheme not implemented yet.");
+    hasValidTrials = true;
+    return (Trial[])trials.toArray(new Trial[trials.size()]);
+  }
+
+  public void addTrial(Trial trial) {
+    trials.add(trial);
+    numberOfTrials++;
+  }
+
+  public void removeTrial(int trialIndex) {
+    trials.remove(trialIndex);
+    numberOfTrials--;
+  }
+
+  /**
+   * Get the number of trials. Recomputes the number of trials if necessary.
+   * @return number of trials
+   */
+
+  public int getTrialCount() {
+    if (hasValidTrials)
+      return numberOfTrials;
+    numberOfTrials = 0;
+    ArrayList experimentValueCounts = new ArrayList(100);
+    int n = getSocietyComponentCount();
+    for (int i = 0; i < n; i++) {
+      SocietyComponent society = getSocietyComponent(i);
+      Iterator names = society.getPropertyNames();
+      while (names.hasNext()) {
+	Property property = society.getProperty((CompositeName)names.next());
+	List values = property.getExperimentValues();
+	if (values != null)
+	  experimentValueCounts.add(new Integer(values.size()));
+      }
+    }
+    // one dimension: sum the counts of experiment values
+    // but only count nominal value the first time
+    if (variationScheme.equals(VARY_ONE_DIMENSION)) {
+      for (int i = 0; i < experimentValueCounts.size(); i++)
+	numberOfTrials = numberOfTrials + 
+	  ((Integer)experimentValueCounts.get(i)).intValue() - 1;
+      numberOfTrials++; // add one to use nominal value for first time
+    }
+    // sequential or random: (all combinations): multiply counts
+    else if (variationScheme.equals(VARY_RANDOM) ||
+	     variationScheme.equals(VARY_SEQUENTIAL)) {
+      numberOfTrials = 1;
+      for (int i = 0; i < experimentValueCounts.size(); i++)
+	numberOfTrials = numberOfTrials *
+	  ((Integer)experimentValueCounts.get(i)).intValue();
+    }
+    // two dimension: ???
+    if (numberOfTrials == 0)
+      numberOfTrials = 1;  // always assume at least one trial
+    return numberOfTrials;
   }
 }

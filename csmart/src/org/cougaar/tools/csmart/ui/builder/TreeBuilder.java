@@ -196,20 +196,22 @@ public class TreeBuilder
    * using the Renderer utility.
    */
 
-  private String renderValue(Property property) {
-    Class cls = property.getPropertyClass();
-    Object value = null;
-    value = property.getValue();
-    if (cls == null) {
-      System.err.println("getPropertyClass is null for " + property.getName());
-      if (value == null) {
-	cls = Object.class;
-      } else {
-	cls = value.getClass();
-      }
-    }
-    return Renderer.renderValue(cls, value);
-  }
+//   private String renderValue(Property property) {
+//     Class cls = property.getPropertyClass();
+//     Object value = null;
+//     //    value = property.getValue();
+//     if (property.isValueSet())
+//       value = property.getValue();
+//     if (cls == null) {
+//       System.err.println("getPropertyClass is null for " + property.getName());
+//       if (value == null) {
+// 	cls = Object.class;
+//       } else {
+// 	cls = value.getClass();
+//       }
+//     }
+//     return Renderer.renderValue(cls, value);
+//  }
 
   public void hyperlinkUpdate(HyperlinkEvent e) {
     if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {

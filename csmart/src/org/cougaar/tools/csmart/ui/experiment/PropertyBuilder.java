@@ -23,13 +23,7 @@ import org.cougaar.tools.csmart.ui.component.SocietyComponent;
 
 public class PropertyBuilder extends JPanel {
   private static final String REMOVE_MENU_ITEM = "Remove";
-  private static final String[] variationSchemes = {
-    "Univariate", "Bivariate", "Multivariate", "Random" };
-  public static final int VARY_ONE_DIMENSION = 0;
-  public static final int VARY_TWO_DIMENSION = 1;
-  public static final int VARY_SEQUENTIAL = 2;
-  public static final int VARY_RANDOM = 3;
-  private int variationScheme;
+  private String variationScheme;
   private DefaultTreeModel model;
   private ExperimentTree tree;
   private Experiment experiment;
@@ -110,7 +104,6 @@ public class PropertyBuilder extends JPanel {
         DefaultMutableTreeNode node =
         (DefaultMutableTreeNode) path.getLastPathComponent();
         displayEditorForNode(node);
-	updateTrialCount(experiment, variationScheme);
       }
     }
   };
@@ -122,8 +115,9 @@ public class PropertyBuilder extends JPanel {
 
   private TableModelListener myTableModelListener = new TableModelListener() {
     public void tableChanged(TableModelEvent e) {
-      System.out.println("Updating trial count...");
-      updateTrialCount(experiment, variationScheme);
+      // experimental property values changed; need to update trials
+      experiment.invalidateTrials();
+      updateTrialCount();
     }
   };
 
@@ -187,13 +181,14 @@ public class PropertyBuilder extends JPanel {
     setLayout(new BorderLayout());
     JPanel trialPanel = new JPanel();
     JLabel variationLabel = new JLabel("Variation Scheme:");
+    String[] variationSchemes = Experiment.getVariationSchemes();
     JComboBox cb = new JComboBox(variationSchemes);
+    variationScheme = variationSchemes[0];
     cb.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 	variationSchemeCB_actionPerformed(e);
       }
     });
-    variationScheme = 0; // vary one dimension 
     trialPanel.add(variationLabel);
     trialPanel.add(cb);
     JLabel trialLabel = new JLabel("Minimum number of Trials:");
@@ -244,6 +239,7 @@ public class PropertyBuilder extends JPanel {
     tree.expandNode(impacts);
     tree.expandNode(metrics);
     model.addTreeModelListener(myTreeModelListener);
+    updateTrialCount();
   }
 
   /**
@@ -287,6 +283,7 @@ public class PropertyBuilder extends JPanel {
         (Metric) ((DefaultMutableTreeNode) metrics.getChildAt(i)).getUserObject();
     }
     experiment.setMetrics(metricAry);
+    experiment.invalidateTrials(); // and force experiment to recreate trials
   }
 
   /**
@@ -344,6 +341,7 @@ public class PropertyBuilder extends JPanel {
     for (int i = 0; i < nodes.length; i++) {
       model.removeNodeFromParent(nodes[i]);
     }
+    propModel.clear(); // selected items were removed, so clear prop table
   }
 
   /**
@@ -378,64 +376,13 @@ public class PropertyBuilder extends JPanel {
    */
 
   public void variationSchemeCB_actionPerformed(ActionEvent e) {
-    variationScheme = ((JComboBox)e.getSource()).getSelectedIndex();
-    updateTrialCount(experiment, variationScheme);
+    variationScheme = (String)((JComboBox)e.getSource()).getSelectedItem();
+    updateTrialCount();
   }
 
-  /**
-   * Update the trial count and display it; called when user
-   * changes trial variation scheme, edits any property, or
-   * changes the experiment tree.
-   */
-
-  public static int getTrialCount(Experiment experiment, int variationScheme) {
-    int numberOfTrials = 0;
-    ArrayList experimentValueCounts = new ArrayList(100);
-    int n = experiment.getSocietyComponentCount();
-    for (int i = 0; i < n; i++) {
-      SocietyComponent society = experiment.getSocietyComponent(i);
-      Iterator names = society.getPropertyNames();
-      while (names.hasNext()) {
-	Property property = society.getProperty((CompositeName)names.next());
-	List values = property.getExperimentValues();
-	if (values != null) 
-	  experimentValueCounts.add(new Integer(values.size()));
-      }
-    }
-    // one dimension: sum the counts of experiment values
-    // but only count nominal value the first time
-    if (variationScheme == VARY_ONE_DIMENSION) {
-      for (int i = 0; i < experimentValueCounts.size(); i++)
-	numberOfTrials = numberOfTrials + 
-	  ((Integer)experimentValueCounts.get(i)).intValue() - 1;
-      numberOfTrials++; // add one to use nominal value for first time
-    }
-    // sequential or random: (all combinations): multiply counts
-    else if (variationScheme == VARY_RANDOM ||
-	     variationScheme == VARY_SEQUENTIAL) {
-      numberOfTrials = 1;
-      for (int i = 0; i < experimentValueCounts.size(); i++)
-	numberOfTrials = numberOfTrials *
-	  ((Integer)experimentValueCounts.get(i)).intValue();
-    }
-    // two dimension: ???
-    if (numberOfTrials == 0)
-      numberOfTrials = 1;  // always assume at least one trial
-    return numberOfTrials;
+  private void updateTrialCount() {
+    experiment.setVariationScheme(variationScheme);
+    trialCountField.setText(Integer.toString(experiment.getTrialCount()));
   }
 
-  private void updateTrialCount(Experiment experiment,
-				int variationScheme) {
-    int n = getTrialCount(experiment, variationScheme);
-    trialCountField.setText(Integer.toString(n));
-  }
-
-  /**
-   * Get scheme for auto-generating trial values; one of
-   * PropertyBuilder.ONE_DIMENSION, TWO_DIMENSION, VARY_SEQUENTIAL, VARY_RANDOM
-   */
-
-  public int getVariationScheme() {
-    return variationScheme;
-  }
 }

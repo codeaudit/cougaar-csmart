@@ -356,7 +356,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     ArrayList nodesToRun = new ArrayList();
     ArrayList hostsToUse = new ArrayList(); // hosts that nodes are on
     nameServerHostName = null;
-    String firstNodeName = null;
+    //    String firstNodeName = null;
     HostComponent[] hosts = experiment.getHosts();
     for (int i = 0; i < hosts.length; i++) {
       NodeComponent[] nodes = hosts[i].getNodes();
@@ -365,18 +365,22 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 	// skip nodes that have no agents
 	if (agents == null || agents.length == 0)
 	  continue;
-	if (firstNodeName == null)
-	  firstNodeName = nodes[j].toString();
+	//	if (firstNodeName == null)
+	//	  firstNodeName = nodes[j].toString();
 	nodesToRun.add(nodes[j]);
-	String hostName = hosts[i].toString();
-	if (nameServerHostName == null)
-	  nameServerHostName = hostName;
+	//	String hostName = hosts[i].toString();
+	//	if (nameServerHostName == null)
+	//	  nameServerHostName = hostName;
 	// record host for each node
-	hostsToUse.add(hostName);
+	hostsToUse.add(hosts[i].getShortName());
       }
     }
+    if (hostsToUse.size() > 0) 
+      nameServerHostName = (String)hostsToUse.get(0);
     NodeComponent[] nc =
       (NodeComponent[])nodesToRun.toArray(new NodeComponent[nodesToRun.size()]);
+    // repeat the rest of this method for each trial
+    //    setTrialParameters(); // set the trial parameters in the experiment
     ConfigurationWriter configWriter = experiment.getConfigurationWriter(nc);
     for (int i = 0; i < nc.length; i++) {
       NodeComponent nodeComponent = nc[i];
@@ -385,10 +389,15 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 		 configWriter);
     }
     // select first node
-    if (firstNodeName != null) {
+    if (nc.length > 0) {
+      String firstNodeName = nc[0].getShortName();
       selectTabbedPane(firstNodeName);
       selectStatusButton(firstNodeName);
     }
+    //    if (firstNodeName != null) {
+    //      selectTabbedPane(firstNodeName);
+    //      selectStatusButton(firstNodeName);
+    //    }
   }
 
   /**

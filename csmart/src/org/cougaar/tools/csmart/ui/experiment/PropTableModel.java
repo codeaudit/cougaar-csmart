@@ -27,17 +27,23 @@ public class PropTableModel extends PropTableModelBase {
         }
     }
 
+  /**
+   * Add experiment values to bindings.
+   */
+
     public void addProperty(Property prop) {
-      if (prop.getExperimentValues() == null)
-	bindings.put(prop.getName(), prop.getDefaultValue());
-      else
-	bindings.put(prop.getName(), prop.getExperimentValues());
-      //        bindings.put(prop.getName(), prop.getDefaultValue());
-        super.addProperty(prop);
+      bindings.put(prop.getName(), prop.getExperimentValues());
+      super.addProperty(prop);
     }
+
+  /**
+   * Render null experiment values as "<not set>".
+   */
 
     protected String render(Property prop) {
         Object o = bindings.get(prop.getName());
+	if (o == null)
+	  return "<not set>";
         if (o.getClass().isArray()) {
             StringBuffer buf = new StringBuffer();
             buf.append('{');
@@ -52,7 +58,20 @@ public class PropTableModel extends PropTableModelBase {
         }
     }
 
+  /**
+   * If new value is an empty string, then delete the previous
+   * experiment values (set to null).
+   */
+
     public void setValue(Property prop, Object newValue) {
+      // treat empty string as null, delete previous experiment values
+      if (newValue instanceof String && ((String)newValue).length() == 0) {
+	bindings.put(prop.getName(), null);
+	prop.setExperimentValues(null);
+	// notify table model listeners
+	fireTableCellUpdated(getRowForProperty(prop), 1);
+	return;
+      }
         Class cls = prop.getPropertyClass();
         String[] values =
             (String[]) PropertyHelper.convertStringToArray(newValue.toString());
@@ -69,7 +88,7 @@ public class PropTableModel extends PropTableModelBase {
                 }
             }
         }
-        System.out.println("newValue " + newValue);
+	//        System.out.println("newValue " + newValue);
         bindings.put(prop.getName(), newValue);
 	// set new values as experiment values in property
 	prop.setExperimentValues(Arrays.asList((Object [])newValue));
