@@ -144,6 +144,18 @@ public class DBUtils {
    * @return valid db connection
    */
   public static Connection getConnection() throws SQLException {
+    return getConnection(QUERY_FILE);
+  }
+
+  /**
+   * Gets a connection from the Connection Pool.
+   * Connection is established to the database
+   * defined in the <code>CSMART.q</code> file.
+   *
+   * @param queryFile to get the database connection information from
+   * @return valid db connection
+   */
+  public static Connection getConnection(String queryFile) throws SQLException {
     DBProperties dbProps;
     String database;
     String username;
@@ -152,7 +164,7 @@ public class DBUtils {
 
     if(isValidRCFile()) {
       try {	
-	dbProps = DBProperties.readQueryFile(QUERY_FILE);
+	dbProps = DBProperties.readQueryFile(queryFile);
 	database = dbProps.getProperty("database");
 	username = dbProps.getProperty("username");
 	password = dbProps.getProperty("password");
@@ -177,12 +189,16 @@ public class DBUtils {
   }
 
   public static String getQuery(String query, Map substitutions) {
+    return DBUtils.getQuery(query, substitutions, QUERY_FILE);
+  }
+
+  public static String getQuery(String query, Map substitutions, String qFile) {
     DBProperties dbProps;
     String result = null;
 
     if(isValidRCFile()) {
       try {
-	dbProps = DBProperties.readQueryFile(QUERY_FILE);
+	dbProps = DBProperties.readQueryFile(qFile);
 	result = dbProps.getQuery(query, substitutions);
       } catch(IOException e) {}      
     }
