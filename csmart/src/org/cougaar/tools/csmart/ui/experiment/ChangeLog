@@ -1,5 +1,11 @@
 2001-11-20  Ray Tomlinson  <RTomlinson@bbn.com>
 
+	* HostConfigurationBuilder.java:
+	Initialize hosts, nodes, agents regardless of whether the
+	experiment has a society or not. This was probably some ancient
+	idea that might have been a good one at the time, but is
+	irrelevant (and wrong) now.
+
 	* ExperimentBuilder.java:
 	Don't manipulate the editable and runnable flags of an experiment;
 	that constitutes a change of the experiment and merely starting to
