@@ -246,8 +246,9 @@ public class AgentDBComponent
           PluginBase plugin = new PluginBase(pluginName, pluginClassName, priority);
           plugin.initProperties();
           String alibId = rs.getString(2);
-          // does this need to be preserved in the plugin? FIXME
-          // plugin.setAlibID(alibId);
+          String libId = rs.getString(3);
+          plugin.setAlibID(alibId);
+          plugin.setLibID(libId);
           substitutions.put(":comp_alib_id", alibId);
           substitutions.put(":comp_id", rs.getString(3));
           Statement stmt2 = conn.createStatement();
@@ -307,9 +308,11 @@ public class AgentDBComponent
           BinderBase binder = new BinderBase(binderName, binderClassName, priority);
           binder.initProperties();
 	  //binder.setBinderType(ComponentData.AGENTBINDER);
-          String alibId =rs.getString(2);
-          // does this need to be preserved in the binder?
-          // binder.setAlibID(alibId);
+          String alibId = rs.getString(2);
+          String libId = rs.getString(3);
+          binder.setAlibID(alibId);
+          binder.setLibID(libId);
+
           substitutions.put(":comp_alib_id", alibId);
           substitutions.put(":comp_id", rs.getString(3));
           Statement stmt2 = conn.createStatement();
@@ -382,9 +385,11 @@ public class AgentDBComponent
           ComponentBase binder = new ComponentBase(binderName, binderClassName, priority);
           binder.initProperties();
 	  binder.setComponentType(rs.getString(5));
-          String alibId =rs.getString(2);
-          // does this need to be preserved in the binder?
-          // binder.setAlibID(alibId);
+          String alibId = rs.getString(2);
+          String libId = rs.getString(3);
+          binder.setAlibID(alibId);
+          binder.setLibID(libId);
+
           substitutions.put(":comp_alib_id", alibId);
           substitutions.put(":comp_id", rs.getString(3));
           Statement stmt2 = conn.createStatement();

@@ -58,6 +58,9 @@ public class ComponentBase
 
   protected String folderLabel = "Other Components";
 
+  private String alibID = null;
+  private String libID = null;
+
   public static final String PROP_PARAM = "param-";
   protected int nParameters = 0;
   protected String classname = "";
@@ -147,6 +150,8 @@ public class ComponentBase
 
     self.setClassName(getComponentClassName());
     self.setPriority(getPriority());
+    self.setAlibID(getAlibID());
+    self.setLibID(getLibID());
 
     Iterator names = getSortedLocalPropertyNames();
     while (names.hasNext()) {
@@ -187,8 +192,13 @@ public class ComponentBase
       return data;
     }
 
-    self.setName(GenericComponentData.getSubComponentUniqueName(data, self));
-
+    if(getAlibID() != null) {
+      self.setName(getAlibID());
+      self.setName(GenericComponentData.getSubComponentUniqueName(data, self));
+    } else {
+      self.setName(GenericComponentData.getSubComponentUniqueName(data, self));
+    }
+        
     data.addChildDefaultLoc(self);
     return data;
   }
@@ -317,4 +327,22 @@ public class ComponentBase
   public Property addParameter(Property prop) {
     return addProperty(new PropertyAlias(this, PROP_PARAM + nParameters++, prop));
   }
+
+  public void setAlibID(String alibID) {
+    this.alibID = alibID;
+  }
+
+  public String getAlibID() {
+    return this.alibID;
+  }
+
+  public void setLibID(String libID) {
+    this.libID = libID;
+  }
+
+  public String getLibID() {
+    return this.libID;
+  }
+
+
 } // End of ComponentBase
