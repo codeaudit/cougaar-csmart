@@ -174,7 +174,7 @@ public class PopulateDb extends PDbBase {
   public PopulateDb(String cmtType, String hnaType, String csmiType, String experimentName,
 		    String exptId, String trialId, DBConflictHandler ch, String societyId)
     throws SQLException, IOException
-   {
+  {
     super();
     createLogger();
     // FIXME: I'm not using these types, why require them?
@@ -246,7 +246,7 @@ public class PopulateDb extends PDbBase {
 
     // Make sure all the necessary assembly IDs are created, saved
     setNewAssemblyIds();
-   } // End of constructor for saving an experiment
+  } // End of constructor for saving an experiment
 
   /**
    * A trivial constructor for use basically only when you want
@@ -306,23 +306,29 @@ public class PopulateDb extends PDbBase {
   // Get the name of the experiment with the ID already put in the substitutions
   // table
   private String getOldExperimentName() throws SQLException {
+    Statement stmt = getStatement();
     ResultSet rs = executeQuery(stmt, dbp.getQuery("queryExptName", substitutions));
+    String ret = "";
     if (rs.next()) {
-      return rs.getString(1);
+      ret = rs.getString(1);
     }
-    return "";
+    rs.close();
+    stmt.close();
+    return ret;
   }
 
   // Get the current description of the assembly given from the DB,
   // empty String if not found
   private String getAssemblyDesc(String assemblyId) throws SQLException {
     substitutions.put(":assembly_id:", sqlQuote(assemblyId));
+    
+    Statement stmt = getStatement();
     ResultSet rs = executeQuery(stmt, dbp.getQuery("queryAssemblyDesc", substitutions));
     String desc = "";
     if (rs.next()) {
       desc = rs.getString(1);
     }
-    rs.close();
+    stmt.close();
     return desc;
   }
 
@@ -365,6 +371,7 @@ public class PopulateDb extends PDbBase {
     if (log.isDebugEnabled()) {
       log.debug("cleanOldConfigSoc with subs " + substitutions);
     }
+    Statement stmt = getStatement();
     ResultSet rs =
       executeQuery(stmt, dbp.getQuery("queryOldSocietyConfigAssembliesToClean", substitutions));
     while (rs.next()) {
@@ -386,6 +393,7 @@ public class PopulateDb extends PDbBase {
 	cleanAssembly(asb);
     }
     rs.close();
+    stmt.close();
   }
 
   /**
@@ -396,6 +404,7 @@ public class PopulateDb extends PDbBase {
    * @exception SQLException if an error occurs
    */
   private void cleanOldRuntimeSocietyAssemblies() throws SQLException {
+    Statement stmt = getStatement();
     ResultSet rs =
       executeQuery(stmt, dbp.getQuery("queryOldSocietyRuntimeAssembliesToClean", substitutions));
     while (rs.next()) {
@@ -421,6 +430,7 @@ public class PopulateDb extends PDbBase {
 	cleanAssembly(asb);
     }
     rs.close();
+    stmt.close();
   }
 
   /**
@@ -458,8 +468,20 @@ public class PopulateDb extends PDbBase {
     // do what I need already? No: It removes from the config/runtime table
     // _all_ CSA & CMT assemblies. I could do that after most of this,
     // and then re-insert the real society into the runtime, I suppose.
-    ResultSet rs =      
+    if (log.isDebugEnabled()) {
+      log.debug("clnTrial subs: " + substitutions);
+    }
+    Statement stmt = getStatement();
+    ResultSet ctrs =      
       executeQuery(stmt, dbp.getQuery("queryAssembliesToClean", substitutions));
+    if (log.isDebugEnabled()) {
+      while (ctrs.next()) {
+	log.debug("clnTrial asbtoCln: " + ctrs.getString(1));
+      }
+      ctrs.close();
+      ctrs = executeQuery(stmt, dbp.getQuery("queryAssembliesToClean", substitutions));
+    }
+
     boolean first = true;
     StringBuffer assembliesToDelete = new StringBuffer();
     assembliesToDelete.append("(");
@@ -468,13 +490,14 @@ public class PopulateDb extends PDbBase {
     boolean rfirst = true;
     String asb = null;
 
-    while (rs.next()) {
+    // Loop over the assemblies to clean up
+    while (ctrs.next()) {
       if (first) {
 	first = false;
       } else {
 	assembliesToDelete.append(", ");
       }
-      asb = rs.getString(1);
+      asb = ctrs.getString(1);
       assembliesToDelete.append(sqlQuote(asb));
 
       // if asb not used other than the current trial
@@ -497,8 +520,14 @@ public class PopulateDb extends PDbBase {
       if (asb.equals("CSMI-0001") && log.isErrorEnabled()) {
 	log.error("CleanTrial adding CSMI0001 to list of assemblies to remove from runtime. Subs: " + substitutions, new Throwable("Who did it?"));
       }
+      if (log.isDebugEnabled()) {
+	log.debug("About to go to top of loop with subs: " + substitutions);
+	log.debug("RS says to q, is this the last: " + ctrs.isLast());
+	log.debug("RS says to q, is this the first: " + ctrs.isFirst());
+      }
     } // done with loop over assemblies to clean up
-    rs.close();
+    ctrs.close();
+    stmt.close();
 
     if(log.isDebugEnabled()) {
       log.debug("cleanTrial Substitutions: " + substitutions);
@@ -659,6 +688,7 @@ public class PopulateDb extends PDbBase {
     substitutions.put(":cmt_type:", realcmtType);
     substitutions.put(":csa_type:", csaType);
     substitutions.put(":trial_id:", "");
+    Statement stmt = getStatement();
     ResultSet rs = executeQuery(stmt, dbp.getQuery("queryNonSocietyAssemblies", substitutions));
     String assid = null;
 
@@ -673,6 +703,18 @@ public class PopulateDb extends PDbBase {
 	}
 	continue;
       }
+      if (assemblyInRuntime(assid)) {
+	if (log.isDebugEnabled()) {
+	  log.debug("removeOrphan found asb in runtime not in local var: will skip: " + assid);
+	}
+	continue;
+      } 
+      if (assemblyInConfig(assid)) {
+	if (log.isDebugEnabled()) {
+	  log.debug("removeOrphan found asb in configtime not in local var: will skip: " + assid);
+	}
+	continue;
+      }
       // for each such assembly
       // FIXME: This will not delete a CSHNA or CSMI assembly that in the DB
       // is associated with this Trial, but whose assId we don't have
@@ -681,6 +723,7 @@ public class PopulateDb extends PDbBase {
 	cleanAssembly(assid);
     }
     rs.close();
+    stmt.close();
   }
 
   // Create the HNA and CSMI assemly IDs if necessary, 
@@ -699,9 +742,14 @@ public class PopulateDb extends PDbBase {
   // Grab all the RUNTIME assemblies in the experiment
   // and set up the :assembly_match: substition with them
   private void setAssemblyMatch() throws SQLException {
+    Statement stmt = getStatement();
     ResultSet rs = executeQuery(stmt, dbp.getQuery("queryTrialAssemblies", substitutions));
     StringBuffer q = new StringBuffer();
     boolean first = true;
+    boolean hadcmt = (cmtAssemblyId == null);
+    boolean hadcsa = (csaAssemblyId == null);
+    boolean hadhna = (hnaAssemblyId == null);
+    boolean hadcsmi = (csmiAssemblyId == null);
     q.append("in (");
     while (rs.next()) {
       if (first) {
@@ -709,7 +757,34 @@ public class PopulateDb extends PDbBase {
       } else {
 	q.append(", ");
       }
+      if (log.isDebugEnabled()) {
+	if (! rs.getString(1).equals(cmtAssemblyId) && ! rs.getString(1).equals(csaAssemblyId) && ! rs.getString(1).equals(hnaAssemblyId) && ! rs.getString(1).equals(csmiAssemblyId)) {
+	  log.debug("setAsbMatch got asb " + rs.getString(1) + " thats not in local vars");
+	}
+	if (rs.getString(1).equals(cmtAssemblyId))
+	  hadcmt = true;
+	if (rs.getString(1).equals(csaAssemblyId))
+	  hadcsa = true;
+	if (rs.getString(1).equals(hnaAssemblyId))
+	  hadhna = true;
+	if (rs.getString(1).equals(csmiAssemblyId))
+	  hadcsmi = true;
+      } // end of debug block
+
       q.append("'").append(rs.getString(1)).append("'");
+    } // end of query loop
+    rs.close();
+    stmt.close();
+
+    if (log.isDebugEnabled()) {
+      if (! hadcmt)
+	log.debug("Didnt find cmt " + cmtAssemblyId);
+      if (! hadcsa)
+	log.debug("Didnt find csa " + csaAssemblyId);
+      if (! hadhna)
+	log.debug("Didnt find hna " + hnaAssemblyId);
+      if (! hadcsmi)
+	log.debug("Didnt find csmi " + csmiAssemblyId);
     }
     q.append(')');
     if (first) {            // No matches
@@ -728,12 +803,16 @@ public class PopulateDb extends PDbBase {
     throws SQLException
   {
     String exptIdPrefix = idType + "-";
+    Statement stmt = getStatement();
     ResultSet rs = executeQuery(stmt, dbp.getQuery("queryExptCFWGroupId", substitutions));
     if (rs.next()) {
       substitutions.put(":cfw_group_id:", rs.getString(1));
     } else {
       substitutions.put(":cfw_group_id:", "unknown");
     }
+    rs.close();
+    stmt.close();
+
     substitutions.put(":expt_type:", idType);
     substitutions.put(":expt_name:", experimentName);
     substitutions.put(":description:", description);
@@ -832,14 +911,17 @@ public class PopulateDb extends PDbBase {
   private boolean assemblyInConfig(String assembly_id) throws SQLException {
     substitutions.put(":assembly_id:", sqlQuote(assembly_id));
     substitutions.put(":trial_id:", trialId);
+    Statement stmt = getStatement();
     ResultSet rs = executeQuery(stmt, dbp.getQuery("checkThisConfigUsesAssembly",
-					     substitutions));
+						   substitutions));
     // If not
     if (!rs.next()) { 
       rs.close();
+      stmt.close();
       return false;
     }
     rs.close();
+    stmt.close();
     return true;
   }
 
@@ -853,14 +935,17 @@ public class PopulateDb extends PDbBase {
   private boolean assemblyInRuntime(String assembly_id) throws SQLException {
     substitutions.put(":assembly_id:", sqlQuote(assembly_id));
     substitutions.put(":trial_id:", trialId);
+    Statement stmt = getStatement();
     ResultSet rs = executeQuery(stmt, dbp.getQuery("checkThisRuntimeUsesAssembly",
-					     substitutions));
+						   substitutions));
     // If not
     if (!rs.next()) { 
       rs.close();
+      stmt.close();
       return false;
     }
     rs.close();
+    stmt.close();
     return true;
   }
 
@@ -907,14 +992,17 @@ public class PopulateDb extends PDbBase {
     // See if anyone uses this assembly ID anywhere
     substitutions.put(":assembly_id:", sqlQuote(assembly_id));
     substitutions.put(":trial_id:", trialId);
+    Statement stmt = getStatement();
     ResultSet rs = executeQuery(stmt, dbp.getQuery("checkUsedAssembly",
-					     substitutions));
+						   substitutions));
     // If not
     if (!rs.next()) { 
       rs.close();
+      stmt.close();
       return false;
     }
     rs.close();
+    stmt.close();
     return true;
   }
 
@@ -1011,6 +1099,7 @@ public class PopulateDb extends PDbBase {
     // --- find any HNA in config
     // Use queryConfigTrialAssemblies and loop through? (returns assembly_ids
     // and just uses the trial_id)
+    Statement stmt = getStatement();
     ResultSet rs = executeQuery(stmt, dbp.getQuery("queryConfigTrialAssemblies", substitutions));
     String assid;
     
@@ -1460,6 +1549,7 @@ public class PopulateDb extends PDbBase {
       } // end of block for unknown soc type
     } // end of loop over runtime assemblies
     rs.close();
+    stmt.close();
 
     // Should have neither if config-time had neither
     // if config had and runtime does not: this will not
@@ -1540,10 +1630,35 @@ public class PopulateDb extends PDbBase {
     if (log.isDebugEnabled()) {
       log.debug("populateHNA saving into " + hnaAssemblyId);
     }
+    boolean added = false;
 
+    try {
+      // Incrementally save
+      // so that later recipes have the benefit
+      // of the earlier modifications
+      added = populate(data, 1f, hnaAssemblyId);
+    } catch (IllegalArgumentException iae) {
+      if (! componentWasRemoved) 
+	throw iae;
+      if (log.isInfoEnabled()) {
+	log.info("Caught iae " + iae.toString() + " while saving HNA. Must redo as a CSA");
+      }
+
+      // Clean out the current hnaAssemblyId
+      removeRuntimeAssembly(hnaAssemblyId);
+      removeConfigAssembly(hnaAssemblyId);
+      if (! isAssemblyUsed(hnaAssemblyId))
+	cleanAssembly(hnaAssemblyId);
+      hnaAssemblyId = null;
+      setAssemblyMatch();
+
+      added = populateCSA(data);
+    }
+
+    return added;
     // Maybe wrap this in a try/catch to note unexpected modifications,
     // and when I get one, remove any old HNA and try again?
-    return populate(data, 1f, hnaAssemblyId);
+    //    return populate(data, 1f, hnaAssemblyId);
   }
 
   /**
@@ -1676,6 +1791,7 @@ public class PopulateDb extends PDbBase {
     if (oldArgs == null) {  // Don't know what the current args are
       insureAlib();       // Insure that the alib and lib components are defined
 
+      Statement stmt = getStatement();
       ResultSet rs;
       rs = executeQuery(stmt, dbp.getQuery("queryComponentArgs", substitutions));
       oldArgs = new TreeSet();
@@ -1683,6 +1799,7 @@ public class PopulateDb extends PDbBase {
 	oldArgs.add(new Argument(rs.getString(1), rs.getFloat(2)));
       }
       rs.close();
+      stmt.close();
       if (parent != null) {
 
 	// Is given component in runtime hierarchy?
@@ -1690,6 +1807,7 @@ public class PopulateDb extends PDbBase {
 	if (log.isDebugEnabled()) {
 	  log.debug("populate for assembly " + assemblyId + " and alib_id " + id + ": Doing query: " + cchq);
 	}
+	stmt = getStatement();
 	rs = executeQuery(stmt, cchq);
 	// If not, add it
 	if (!rs.next()) {
@@ -1713,6 +1831,7 @@ public class PopulateDb extends PDbBase {
 	  result = true; // Modified the experiment in the database 
 	}
 	rs.close();
+	stmt.close();
       }
       componentArgs.put(id, oldArgs); // Avoid doing this again
     }
@@ -1739,8 +1858,8 @@ public class PopulateDb extends PDbBase {
     if (excess < 0) {
       if (log.isInfoEnabled()) {
 	log.info("Attempt to remove "	 + (-excess)
-					 + " args from "
-					 + data);
+		 + " args from "
+		 + data);
       }
       // Throw something I'll recognize
       // Catch it in the Experiment, so I know to call populateCSA
@@ -1885,6 +2004,7 @@ public class PopulateDb extends PDbBase {
     // Only put in the PGs if the Agent is new
     if (isAdded) {
       // finish populating a new agent
+      Statement stmt = getStatement();
       ResultSet rs = executeQuery(stmt, dbp.getQuery("checkAgentOrg", substitutions));
       if (!rs.next()) {
 	if (log.isDebugEnabled()) {
@@ -1893,6 +2013,8 @@ public class PopulateDb extends PDbBase {
 	executeUpdate(dbp.getQuery("insertAgentOrg", substitutions));
       }
       rs.close();
+      stmt.close();
+      stmt = getStatement();
       rs = executeQuery(stmt, dbp.getQuery("checkAsbAgent", substitutions));
       if (!rs.next()) {
 	if (log.isDebugEnabled()) {
@@ -1901,6 +2023,7 @@ public class PopulateDb extends PDbBase {
 	executeUpdate(dbp.getQuery("insertAsbAgent", substitutions));
       }
       rs.close();
+      stmt.close();
 
       // Now the Property Groups
       PropGroupData[] pgs = assetData.getPropGroups();
@@ -1952,13 +2075,15 @@ public class PopulateDb extends PDbBase {
 	      substitutions.put(":attribute_order:", String.valueOf(k));
 
 	      // if val not already there for this runtime configuration
+	      stmt = getStatement();
 	      ResultSet rschck = executeQuery(stmt, dbp.getQuery("checkAttribute", substitutions));
 	      if (! rschck.next()) {
 		// Query the values for this PG slot that have order of 0
 		// If there is more than one,
 		// and one of the values is this one,
 		// then dont insert it again - CMT asbs do this
-		ResultSet rschck2 = executeQuery(stmt, dbp.getQuery("queryAttributeValueZeroOrder", substitutions));
+		Statement stmt2 = getStatement();
+		ResultSet rschck2 = executeQuery(stmt2, dbp.getQuery("queryAttributeValueZeroOrder", substitutions));
 		int count = 0; // Number of values at order 0
 		boolean hasval = false; // this value already in DB
 		while (rschck2.next()) {
@@ -1967,6 +2092,7 @@ public class PopulateDb extends PDbBase {
 		    hasval = true; // the value we were inserting is there
 		}
 		rschck2.close();
+		stmt2.close();
 
 		// If the only value is already there,
 		// or if there are multiple values
@@ -1985,6 +2111,7 @@ public class PopulateDb extends PDbBase {
 		} // end of block to really insert multival again
 	      } // end of loop where this multival not there yet
 	      rschck.close();
+	      stmt.close();
 	    }
 	  } else {
 
@@ -1993,16 +2120,18 @@ public class PopulateDb extends PDbBase {
 					 + propInfo.toString());
 	    substitutions.put(":attribute_value:", sqlQuote(prop.getValue().toString()));
 	    substitutions.put(":attribute_order:", "0");
-	      // if val not already there for this runtime
-	      // if val not already there for this runtime
-	      ResultSet rschck = executeQuery(stmt, dbp.getQuery("checkAttribute", substitutions));
-	      if (! rschck.next()) {
-		if (log.isDebugEnabled()) {
-		  log.debug("pagent " + data.getName() + " inserting pgval under pgattid " + propInfo.getAttributeLibId() + ", val " + prop.getValue().toString() + " into assembly " + substitutions.get(":assembly_id:"));
-		}
-		executeUpdate(dbp.getQuery("insertAttribute", substitutions));
+	    // if val not already there for this runtime
+	    // if val not already there for this runtime
+	    stmt = getStatement();
+	    ResultSet rschck = executeQuery(stmt, dbp.getQuery("checkAttribute", substitutions));
+	    if (! rschck.next()) {
+	      if (log.isDebugEnabled()) {
+		log.debug("pagent " + data.getName() + " inserting pgval under pgattid " + propInfo.getAttributeLibId() + ", val " + prop.getValue().toString() + " into assembly " + substitutions.get(":assembly_id:"));
 	      }
-	      rschck.close();
+	      executeUpdate(dbp.getQuery("insertAttribute", substitutions));
+	    }
+	    rschck.close();
+	    stmt.close();
 	  }
 	} // loop over properties in pg
       } // loop over PGs
@@ -2055,6 +2184,7 @@ public class PopulateDb extends PDbBase {
 	  pstmt2.close();
 	}
       }
+      rs.close();
       pstmt.close();
     }
   }
@@ -2076,7 +2206,6 @@ public class PopulateDb extends PDbBase {
                 propType+", "+propSubtype+")");
     }
 
-    Statement stmt = dbConnection.createStatement();
     substitutions.put(":attribute_lib_id:", sqlQuote(pgName + "|" + propName));
     substitutions.put(":pg_name:", sqlQuote(pgName));
     substitutions.put(":attribute_name:", sqlQuote(propName));
@@ -2265,6 +2394,7 @@ public class PopulateDb extends PDbBase {
     if (log.isDebugEnabled()) {
       log.debug("insureAlib doing query " + query1);
     }
+    Statement stmt = getStatement();
     ResultSet rs = executeQuery(stmt, query1);
     if (!rs.next()) {
       if (log.isDebugEnabled()) {
@@ -2295,6 +2425,7 @@ public class PopulateDb extends PDbBase {
     }
     alibComponents.add(id); // Avoid re-querying later
     rs.close();
+    stmt.close();
   }
 
   /**
@@ -2305,6 +2436,7 @@ public class PopulateDb extends PDbBase {
    * @exception SQLException if an error occurs
    */
   private void insureLib() throws SQLException {
+    Statement stmt = getStatement();
     ResultSet rs = executeQuery(stmt, dbp.getQuery("checkLibComponent", substitutions));
     if (!rs.next()) {
       executeUpdate(dbp.getQuery("insertLibComponent", substitutions));
@@ -2331,6 +2463,7 @@ public class PopulateDb extends PDbBase {
       }
     }
     rs.close();
+    stmt.close();
   }
 
   /**
