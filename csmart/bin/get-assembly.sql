@@ -4,6 +4,10 @@
 -- there will be problems.
 -- Used by switchPlugin-class.sh
 
+-- FIXME: This wont find the assembly(ies)
+-- Used for config and not runtime
+-- And of course the caller still only
+-- Likes getting one assembly
 SELECT DISTINCT AA.ASSEMBLY_ID
  FROM V4_ASB_COMPONENT_HIERARCHY AA,
      V4_EXPT_EXPERIMENT E,
