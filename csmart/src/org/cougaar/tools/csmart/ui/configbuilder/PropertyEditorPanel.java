@@ -796,7 +796,7 @@ public class PropertyEditorPanel extends JPanel
     // relationship configurable components are created from relationship data
     RelationshipData relData = new RelationshipData();
     relData.setSupported(relName);
-    relData.setItem(relName);
+    relData.setItemId(relName);
     relData.setType("");
     relData.setRole("");
     RelationshipComponent relationship = new RelationshipBase(relData);
