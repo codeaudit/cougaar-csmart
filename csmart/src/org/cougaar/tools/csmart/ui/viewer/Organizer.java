@@ -43,6 +43,7 @@ import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.db.DBUtils;
 import org.cougaar.tools.csmart.core.db.ExperimentDB;
 import org.cougaar.tools.csmart.core.db.PDbBase;
+import org.cougaar.tools.csmart.core.db.PopulateDb;
 import org.cougaar.tools.csmart.core.db.DBConflictHandler;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
@@ -1183,7 +1184,18 @@ public class Organizer extends JScrollPane {
                                     "Delete Society",
                                     JOptionPane.YES_NO_OPTION);
     if (answer == JOptionPane.YES_OPTION) {
-      System.out.println("Organizer: WARNING delete society from database not implemented.");
+      if (log.isWarnEnabled()) {
+	log.warn("Organizer: WARNING delete society from database not implemented.");
+      }
+      try {
+	// Will only actually do the delete
+	// if no-one uses it
+	PopulateDb.deleteSociety(society.getAssemblyId());
+      } catch (Exception e) {
+	if (log.isErrorEnabled()) {
+	  log.error("Exception deleting society " + society.getSocietyName() + " from db", e);
+	}
+      }
     }
     societyNames.remove(society.getSocietyName());
   }
