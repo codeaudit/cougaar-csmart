@@ -1,4 +1,17 @@
+2001-11-20  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ConsoleInternalFrame.java:
+	Move initial position code out of here. Only the desktop has
+	enough information to determine where to put the frame.
+
+	* ConsoleDesktop.java:
+	Set initial positions of frames to be on screen. This is in
+	addition to watching the components move.
+
 2001-11-19  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* CSMARTConsole.java:
+	Pass "arguments" to appserver.
 
 	* NodeArgumentDialog.java:
 	Add JTextArea for collection command line arguments. Add column

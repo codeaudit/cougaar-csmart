@@ -85,8 +85,6 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private static final String NOTIFY_NEXT_ACTION = "Find Next Notification";
   private static final String RESET_NOTIFY_ACTION = "Reset Notification";
 
-  private static int openFrameCount = 0;
-  private static final int xOffset = 30, yOffset = 30;
   private NodeComponent node;
   private ConsoleNodeListener listener;
   private ConsoleTextPane consoleTextPane;
@@ -314,11 +312,8 @@ public class ConsoleInternalFrame extends JInternalFrame {
     menuBar.add(notifyMenu);
     getRootPane().setJMenuBar(menuBar);
     initKeyMap(consoleTextPane);
-    openFrameCount++;
     getContentPane().add(pane);
     setSize(300,300);
-    //Set the window's location.
-    setLocation(xOffset*openFrameCount, yOffset*openFrameCount);
   }
 
   /**

@@ -39,6 +39,8 @@ import org.cougaar.tools.server.NodeServesClient;
 
 public class ConsoleDesktop extends JDesktopPane {
   private static final int M = 20;
+  private static final int frameXOffset = 20, frameYOffset = 20;
+  private int frameCount = 0;
   Hashtable myFrames = new Hashtable();
   ComponentListener myComponentListener = new ComponentAdapter() {
     public void componentMoved(ComponentEvent e) {
@@ -72,6 +74,14 @@ public class ConsoleDesktop extends JDesktopPane {
     JInternalFrame frame = 
       new ConsoleInternalFrame(node, listener, pane,
                                statusButton, logFileName, nsc, console);
+    //Set the window's location.
+    frameCount++;
+    Insets insets = this.getInsets();
+    int dx = getWidth() - insets.left - insets.right - frame.getWidth();
+    int dy = getHeight() - insets.top - insets.bottom - frame.getHeight();
+    int x = (dx <= 0) ? 0 : ((frameXOffset * frameCount) % dx);
+    int y = (dy <= 0) ? 0 : ((frameYOffset * frameCount) % dy);
+    frame.setLocation(x, y);
     frame.addInternalFrameListener(frameListener);
     addFrame(frame, true);
     myFrames.put(node.getShortName(), frame);
