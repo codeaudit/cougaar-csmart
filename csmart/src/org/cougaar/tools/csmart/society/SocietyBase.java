@@ -57,6 +57,7 @@ import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
  * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
  * @version 1.0
  */
+
 public abstract class SocietyBase 
   extends ModifiableConfigurableComponent
   implements SocietyComponent, PropertiesListener {
@@ -479,10 +480,10 @@ public abstract class SocietyBase
    * are built-up from the database information, and thus the society
    * appears to be modified.
    */
-  public void resetModified() {
-    modified = false;
-    // tell listeners society is now saved
-    fireModification(new ModificationEvent(this, SOCIETY_SAVED));
-  }
+//    public void resetModified() {
+//      modified = false;
+//      // tell listeners society is now saved
+//      fireModification(new ModificationEvent(this, SOCIETY_SAVED));
+//    }
 
 }// SocietyBase

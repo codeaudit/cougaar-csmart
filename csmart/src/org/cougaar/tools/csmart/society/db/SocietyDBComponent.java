@@ -111,7 +111,9 @@ public class SocietyDBComponent
 	throw new RuntimeException("Error" + e);
       }
       // After reading the soc from the DB, it is not modified.
+      //      modified = false;
       modified = false;
+      fireModification(new ModificationEvent(this, SOCIETY_SAVED));
     }    
   }
 
