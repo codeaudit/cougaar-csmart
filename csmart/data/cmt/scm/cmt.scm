@@ -48,15 +48,6 @@
   )
 
 
-;; for BBN Eiger access
-(define (use-eiger user password)
-  (set! refDBDriver   "oracle.jdbc.driver.OracleDriver")
-  (set! refDBConnURL  "jdbc:oracle:thin:@eiger.alpine.bbn.com:1521:alp")
-  (set! refDBUser     user)
-  (set! refDBPasswd   password)
-  (initialize)
-  )
-
 (define (use-database database user password)
   (set! refDBDriver   "oracle.jdbc.driver.OracleDriver")
   (set! refDBConnURL  database)
