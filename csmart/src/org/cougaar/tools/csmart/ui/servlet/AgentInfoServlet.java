@@ -58,17 +58,16 @@ import java.io.ObjectOutputStream;
 /**
  * This Servlet gathers information about agents and their relationships.
  * The information is encoded in name/value pairs stored in PropertyTree
- * objects which are serialized to the client. <ul>
+ * objects which are serialized to the client. <br>
  *
  * <p>
- * Can be loaded manually by including this line in an agent's .ini configuration file: <ul>
+ * Can be loaded manually by including this line in an agent's .ini configuration file: <pre/>
  *   plugin = org.cougaar.core.servlet.SimpleServletComponent(org.cougaar.tools.csmart.ui.servlet.AgentInfoServlet, 
- *   /CSMART_AgentInfoServlet) <ul>
+ *   /CSMART_AgentInfoServlet) </pre>
  *
  * <p>
- * Is loaded from a URL on a CSMART machine, on agent 'Agent': <ul>
+ * Is loaded from a URL on a CSMART machine, on agent 'Agent': <br>
  *   http://localhost:port/$Agent/CSMART_AgentInfoServlet
- *
  */
 public class AgentInfoServlet 
   extends HttpServlet 

@@ -55,12 +55,12 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
  * </pre>
  *
  * <p>
- * Can be loaded manually by including this line in an agent's .ini configuration file: <ul>
+ * Can be loaded manually by including this line in an agent's .ini configuration file: <br>
  *   plugin = org.cougaar.core.servlet.SimpleServletComponent(org.cougaar.tools.csmart.ui.servlet.MetricsServlet, 
  *   /CSMART_MetricsServlet)
  *
  * <p>
- * Is loaded from a URL on a CSMART machine, on agent 'Agent': <ul>
+ * Is loaded from a URL on a CSMART machine, on agent 'Agent': <br>
  *   http://localhost:port/$Agent/CSMART_MetricsServlet
  *
  */

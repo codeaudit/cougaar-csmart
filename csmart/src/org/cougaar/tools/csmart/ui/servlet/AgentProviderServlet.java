@@ -50,17 +50,15 @@ import java.io.ObjectOutputStream;
  * Invoke as: CMART_AgentProviderServlet
  * Returns: URLs, serialized Vector of Strings
  * </pre>
- * <ul>
  *
  * <p>
- * Can be loaded manually by including this line in an agent's .ini configuration file: <ul>
+ * Can be loaded manually by including this line in an agent's .ini configuration file:
  *   plugin = org.cougaar.core.servlet.SimpleServletComponent(org.cougaar.tools.csmart.ui.servlet.AgentProviderServlet,
- *    /CSMART_AgentProviderServlet) <ul>
+ *    /CSMART_AgentProviderServlet)
  *
  * <p>
- * Is loaded from a URL on a CSMART machine, on agent 'Agent': <ul>
+ * Is loaded from a URL on a CSMART machine, on agent 'Agent':
  *   http://localhost:port/$Agent/CSMART_AgentProviderServlet
- *
  */
 public class AgentProviderServlet 
   extends HttpServlet

@@ -51,18 +51,16 @@ import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
- * <pre>
  * Expects no input
  * Returns agent name and community name from Entity object
- * </pre>
  *
  * <p>
- * Can be loaded manually by including this line in an agent's .ini configuration file: <ul>
+ * Can be loaded manually by including this line in an agent's .ini configuration file: <pre/>
  *   plugin = org.cougaar.core.servlet.SimpleServletComponent(org.cougaar.tools.csmart.ui.servlet.CommunityProviderServlet, 
- *   /CSMART_CommunityProviderServlet) <ul>
+ *   /CSMART_CommunityProviderServlet) </pre>
  *
  * <p>
- * Is loaded from a URL on a CSMART machine, on agent 'Agent': <ul>
+ * Is loaded from a URL on a CSMART machine, on agent 'Agent':
  *   http://localhost:port/$Agent/CSMART_CommunityProviderServlet
  */
 public class CommunityProviderServlet 
