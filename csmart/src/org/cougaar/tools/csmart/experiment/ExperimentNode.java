@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
+import java.util.Enumeration;
 
 /**
  * Maintains information about a node and generates the
@@ -166,9 +167,24 @@ public class ExperimentNode
    * Set arguments.
    */
 
-//    public void setArguments(Properties arguments) {
-//      this.arguments = arguments;
-//    }
+  public void setArguments(Properties arguments) {
+    Enumeration keys = arguments.keys();
+    while (keys.hasMoreElements()) {
+      String key = (String) keys.nextElement();
+      this.arguments.setReadOnlyProperty(key, arguments.getProperty(key));
+    }
+  }
+
+  public void addArgument(String name, Object value) {
+    if(this.arguments.containsKey(name) && this.arguments.get(name) == value) {
+      if (log.isDebugEnabled()) {
+        log.debug("Value already exists, skipping.");
+      }
+
+    } else {
+      this.arguments.setReadOnlyProperty(name, (String)value);
+    }
+  }
 
   /**
    * Get arguments.
