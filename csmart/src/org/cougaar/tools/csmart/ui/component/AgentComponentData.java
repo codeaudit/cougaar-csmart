@@ -167,9 +167,9 @@ public class AgentComponentData extends GenericComponentData {
   /**
    * Sets the Relationship information for this agent.
    *
-   * @param RelationshipTimePhasedData[] array of relationship objects.
+   * @param RelationshipData[] array of relationship objects.
    */
-  public void setRelationshipData(RelationshipTimePhasedData[] relationships) {
+  public void setRelationshipData(RelationshipData[] relationships) {
     this.relationships.clear();
     for(int i=0; i < relationships.length; i++) {
       this.relationships.add(relationships[i]);
@@ -181,7 +181,7 @@ public class AgentComponentData extends GenericComponentData {
    *
    * @param RelationshipTimePhasedData relationship
    */
-  public void addRelationship(RelationshipTimePhasedData relationship) {
+  public void addRelationship(RelationshipData relationship) {
     this.relationships.add(relationship);
   }
 
@@ -190,9 +190,9 @@ public class AgentComponentData extends GenericComponentData {
    * at this index.
    *
    * @param int index for relationship
-   * @param RelationshipTimePhasedData  relationship
+   * @param RelationshipData  relationship
    */
-  public void setRelationship(int index, RelationshipTimePhasedData relationship) 
+  public void setRelationship(int index, RelationshipData relationship) 
                         throws IndexOutOfBoundsException {
     this.relationships.set(index, relationship);
   }
@@ -218,9 +218,9 @@ public class AgentComponentData extends GenericComponentData {
   /**
    * Returns an array of relationship data for this agent.
    *
-   * @return RelationshipTimePhasedData
+   * @return RelationshipData
    */
-  public RelationshipTimePhasedData[] getRelationshipData() {
-    return (RelationshipTimePhasedData[])relationships.toArray(new RelationshipTimePhasedData[relationships.size()]);
+  public RelationshipData[] getRelationshipData() {
+    return (RelationshipData[])relationships.toArray(new RelationshipData[relationships.size()]);
   }
 }
