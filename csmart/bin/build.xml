@@ -74,7 +74,6 @@
 	<!-- Change name of this path to match the module name as approp -->
 	<path id="csmart.classpath">
            <pathelement location="${lib}/core.jar" />
-	   <pathelement location="${lib}/planserver.jar" />
 	   <pathelement location="${lib}/glm.jar" />
 	   <pathelement location="${lib}/scalability.jar" />
 	   <pathelement location="${lib}/server.jar" />
