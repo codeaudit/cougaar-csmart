@@ -87,7 +87,7 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/oplan_stage.csv.tmp'
 DROP TABLE IF EXISTS oplan_active_stage;
 CREATE TABLE oplan_active_stage (
   OPLAN_ID char(50) binary NOT NULL default '',
-  ORG_ID char(50) binary NOT NULL default '',
+  ORG_ID char(100) binary NOT NULL default '',
   STAGE_NUM      decimal(68,30)         default NULL
 ) TYPE=MyISAM;
 
@@ -163,8 +163,8 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/alploc.csv.tmp'
 
 DROP TABLE IF EXISTS lib_organization;
 CREATE TABLE lib_organization (
-  ORG_ID VARCHAR(50) BINARY NOT NULL DEFAULT '',
-  ORG_NAME VARCHAR(50) BINARY DEFAULT NULL,
+  ORG_ID VARCHAR(100) BINARY NOT NULL DEFAULT '',
+  ORG_NAME VARCHAR(100) BINARY DEFAULT NULL,
   UIC VARCHAR(50) BINARY DEFAULT NULL,
   ORG_CLASS VARCHAR(50) BINARY DEFAULT NULL,
   UNIQUE KEY pk_lib_organization (ORG_ID),
