@@ -225,7 +225,7 @@ public class ABCSocietyComponent
     return null;
   }
 
-  public FileFilter getMetricsFileFilter() {
+  public FileFilter getResultFileFilter() {
     return metricsFileFilter;
   }
 

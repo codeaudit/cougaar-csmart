@@ -36,7 +36,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   private List impacts = new ArrayList();
   private List metrics = new ArrayList();
   private transient List listeners = null;
-  private File metricsDirectory; // where to store metrics
+  private File resultDirectory; // where to store results
   private int numberOfTrials = 1;
   private List trials = new ArrayList();
   private boolean hasValidTrials = false;
@@ -450,12 +450,12 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     return (HostComponent[]) hosts.toArray(new HostComponent[hosts.size()]);
   }
 
-  public File getMetricsDirectory() {
-    return metricsDirectory;
+  public File getResultDirectory() {
+    return resultDirectory;
   }
 
-  public void setMetricsDirectory(File metricsDirectory) {
-    this.metricsDirectory = metricsDirectory;
+  public void setResultDirectory(File resultDirectory) {
+    this.resultDirectory = resultDirectory;
     fireModification();
   }
 

@@ -766,7 +766,7 @@ public class ABCSociety
    * the metrics files for this experiment.
    * @return file filter to get metrics files for this experiment
    */
-  public FileFilter getMetricsFileFilter() {
+  public FileFilter getResultFileFilter() {
     return metricsFileFilter;
   }
 

@@ -1107,32 +1107,42 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    * Creating a new File from the filename works because acceptFile
    * just looks at the filename.
    */
-  private boolean isMetricFile(String filename) {
+  private boolean isResultFile(String filename) {
     File thisFile = new java.io.File(filename);
     // FIXME!!! Add stuff to check metrics too!!!
     int n = experiment.getSocietyComponentCount();
     for (int i = 0; i < n; i++) {
       SocietyComponent societyComponent = experiment.getSocietyComponent(i);
-      java.io.FileFilter fileFilter = societyComponent.getMetricsFileFilter();
+      java.io.FileFilter fileFilter = societyComponent.getResultFileFilter();
       if (fileFilter == null)
-	return false;
-      return fileFilter.accept(thisFile);
+	continue;
+      if(fileFilter.accept(thisFile))
+	return true;
     }
+//      int n = experiment.getMetricCount();
+//      for (int i = 0; i < n; i++) {
+//        MetricComponent metricComponent = experiment.getMetric(i);
+//        java.io.FileFilter fileFilter = metricComponent.getResultFileFilter();
+//        if (fileFilter == null)
+//  	continue;
+//        if(fileFilter.accept(thisFile))
+//  	return true;
+//      }
     return false;
   }
 
   /**
    * Read remote files and copy to directory specified by experiment.
    */
-  private void copyMetricsFiles(HostServesClient hostInfo,
+  private void copyResultFiles(HostServesClient hostInfo,
 				String dirname) {
     char[] cbuf = new char[1000];
     try {
       String[] filenames = hostInfo.list("./");
       for (int i = 0; i < filenames.length; i++) {
-	if (!isMetricFile(filenames[i]))
+	if (!isResultFile(filenames[i]))
 	  continue;
-	File newMetricsFile = 
+	File newResultFile = 
 	  new File(dirname + File.separator + filenames[i]);
 	//	System.out.println("CSMARTConsole: saving results in: " +
 	//			   dirname + File.separatorChar + 
@@ -1141,7 +1151,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 	BufferedReader reader = 
 	  new BufferedReader(new InputStreamReader(is), 1000);
 	BufferedWriter writer =
-	  new BufferedWriter(new FileWriter(newMetricsFile));
+	  new BufferedWriter(new FileWriter(newResultFile));
 	int len = 0;
 	while ((len = reader.read(cbuf, 0, 1000)) != -1) {
 	  writer.write(cbuf, 0, len);
@@ -1150,7 +1160,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 	writer.close();
       }
     } catch (Exception e) {
-      System.out.println("Analyzer: copyMetricsFiles: " + e);
+      System.out.println("Analyzer: copyResultFiles: " + e);
       e.printStackTrace();
     }
   }
@@ -1160,21 +1170,20 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    * If no directory is set, then display a file chooser, initted
    * to the cougaar install path, for the user to choose a directory.
    */
+  private File getResultDir() {
+    File resultDir = experiment.getResultDirectory();
+    if (resultDir != null)
+      return resultDir;
 
-  private File getMetricsDir() {
-    File metricsDir = experiment.getMetricsDirectory();
-    if (metricsDir != null)
-      return metricsDir;
-
-    String metricsDirName = ".";
+    String resultDirName = ".";
     try {
-      metricsDirName = System.getProperty("org.cougaar.install.path");
+      resultDirName = System.getProperty("org.cougaar.install.path");
     } catch (RuntimeException e) {
       // just use default
     }
-    if (metricsDirName == null)
-      metricsDirName = ".";
-    JFileChooser chooser = new JFileChooser(metricsDirName);
+    if (resultDirName == null)
+      resultDirName = ".";
+    JFileChooser chooser = new JFileChooser(resultDirName);
     chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     chooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
 	public boolean accept (File f) {
@@ -1182,14 +1191,14 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 	}
 	public String getDescription() {return "All Directories";}
       });
-    int result = chooser.showDialog(this, "Select Metrics Storage Directory");
+    int result = chooser.showDialog(this, "Select Results (Metrics) Storage Directory");
     if (result != JFileChooser.APPROVE_OPTION)
       return null;
-    metricsDir = chooser.getSelectedFile();
-    experiment.setMetricsDirectory(metricsDir);
+    resultDir = chooser.getSelectedFile();
+    experiment.setResultDirectory(resultDir);
     // TODO: shouldn't save happen automatically whenever an experiment is changed?
     csmart.saveWorkspace(); // force csmart to save the change
-    return metricsDir;
+    return resultDir;
   }
 
   /**
@@ -1199,15 +1208,14 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    *    <TrialName>
    *       Results-<Timestamp>.results
    */
-
   private void saveResults() {
     if (currentTrial < 0)
       return; // nothing to save
-    File metricsDir = getMetricsDir();
-    if (metricsDir == null)
+    File resultDir = getResultDir();
+    if (resultDir == null)
       return; // can't save, user didn't specify metrics directory
     Trial trial = experiment.getTrials()[currentTrial];
-    String dirname = metricsDir.getAbsolutePath() + File.separatorChar + 
+    String dirname = resultDir.getAbsolutePath() + File.separatorChar + 
       experiment.getExperimentName() + File.separatorChar +
       trial.getShortName() + File.separatorChar +
       "Results-" + fileDateFormat.format(new Date());
@@ -1248,7 +1256,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 				      JOptionPane.WARNING_MESSAGE);
 	continue;
       }
-      copyMetricsFiles(hostInfo, dirname);
+      copyResultFiles(hostInfo, dirname);
     }
   }
   

@@ -124,14 +124,14 @@ public class Analyzer extends JFrame implements ActionListener {
    */
 
   private void showExcelFile() {
-    File metricsDir = experiment.getMetricsDirectory();
-    if (metricsDir == null) {
-        JOptionPane.showMessageDialog(this, "No Metrics Directory for Experiment",
-  				    "No Metrics Directory", 
+    File resultsDir = experiment.getResultDirectory();
+    if (resultsDir == null) {
+        JOptionPane.showMessageDialog(this, "No Results (Metrics) Directory for Experiment",
+  				    "No Results Directory", 
   				    JOptionPane.WARNING_MESSAGE);
         return;
     }
-    JFileChooser fileChooser = new JFileChooser(metricsDir);
+    JFileChooser fileChooser = new JFileChooser(resultsDir);
     fileChooser.setFileFilter(new MyFileFilter(experiment));
     int result = fileChooser.showOpenDialog(this);
     if (result != JFileChooser.APPROVE_OPTION) 
@@ -191,7 +191,7 @@ public class Analyzer extends JFrame implements ActionListener {
 
   class MyFileFilter extends javax.swing.filechooser.FileFilter {
     Experiment experiment;
-    static final String description = "metrics files";
+    static final String description = "results files";
 
     MyFileFilter(Experiment experiment) {
       this.experiment = experiment;
@@ -200,19 +200,27 @@ public class Analyzer extends JFrame implements ActionListener {
     /**
      * Accept any file accepted by any society in this experiment.
      */
-
     public boolean accept(File f) {
       if (f.isDirectory())
 	return true; // allow user to go up/down through directory tree
       int n = experiment.getSocietyComponentCount();
       for (int i = 0; i < n; i++) {
 	SocietyComponent societyComponent = experiment.getSocietyComponent(i);
-	java.io.FileFilter fileFilter = societyComponent.getMetricsFileFilter();
+	java.io.FileFilter fileFilter = societyComponent.getResultFileFilter();
 	if (fileFilter == null)
 	  continue;
 	if (fileFilter.accept(f))
 	  return true;
       }
+//        int n = experiment.getMetricCount();
+//        for (int i = 0; i < n; i++) {
+//  	MetricComponent metricComponent = experiment.getMetric(i);
+//  	java.io.FileFilter fileFilter = metricComponent.getResultFileFilter();
+//  	if (fileFilter == null)
+//  	  continue;
+//  	if (fileFilter.accept(f))
+//  	  return true;
+//        }
       return false;
     }
 
