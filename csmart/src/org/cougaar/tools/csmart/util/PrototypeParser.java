@@ -334,6 +334,16 @@ public class PrototypeParser {
 
           newVal = tokens.nextToken();
           member = tokens.sval;
+
+	  // HACK for 10.0 ClusterIdentifier->MessageAddress
+	  if (propData.getName().equals("ClusterIdentifier")) {
+	    if (log.isWarnEnabled()) {
+	      log.warn("ClusterIdentifier obsolete. Replacing with MessageAddress.");
+	    }
+	    propData.setName("MessageAddress");
+	    propData.setType("MessageAddress");
+	  }
+
           pgData.addProperty(propData);
         } else {
           // Reached a left bracket "[", want to exit block
