@@ -290,7 +290,6 @@ public class ABCAgent
 //     PrintWriter writer = new PrintWriter(new FileWriter(taskFile));
   
   public void writePrototypeIniFile(PrintWriter writer) {
-    System.out.println("*** Im here");
 
     try {
       writer.println("[Prototype] Entity");
