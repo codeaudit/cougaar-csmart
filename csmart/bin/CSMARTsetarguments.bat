@@ -53,6 +53,6 @@ SET MYPROPERTIES=%MYPROPERTIES% -Dorg.cougaar.config.path=%MYCONFIG% -Dorg.couga
 
 REM To collect statistics on Message Transport, the following is required
 REM This may only work with RMI Transport
-SET MYPROPERTIES=-server -Xbootclasspath/p:%COUGAAR_INSTALL_PATH%\lib\javaiopatch.jar %MYPROPERTIES% -Dorg.cougaar.message.transport.aspects=org.cougaar.core.mts.StatisticsAspect
+SET MYPROPERTIES=-Xbootclasspath/p:%COUGAAR_INSTALL_PATH%\lib\javaiopatch.jar %MYPROPERTIES% -Dorg.cougaar.message.transport.aspects=org.cougaar.core.mts.StatisticsAspect
 
 SET MYMEMORY=-Xms100m -Xmx300m
