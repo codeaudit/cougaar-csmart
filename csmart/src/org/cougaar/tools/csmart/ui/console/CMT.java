@@ -39,6 +39,8 @@ import org.cougaar.util.Parameters;
 import org.cougaar.util.DBProperties;
 import org.cougaar.util.DBConnectionPool;
 
+import org.cougaar.tools.csmart.societies.database.DBUtils;
+
 public class CMT {
 
     public static boolean execute = true; // do go to db
@@ -117,7 +119,7 @@ public class CMT {
 	//System.out.println("hasRows: "+dbQuery);
 	int count=0;
 	try {
-	    Connection conn = getConnection();
+	    Connection conn = DBUtils.getConnection(QUERY_FILE);
 	    try {
 		Statement stmt = conn.createStatement();	
 		count = stmt.executeUpdate(dbQuery);
@@ -531,147 +533,6 @@ public class CMT {
 	}
     }
 
-
-
-    // Utility code
-    /**
-     * Determines if a valid RC file exists.  It
-     * first checks for <code>$HOME/.cougaarrc</code>
-     * it then searches the config path for <code>cougaar.rc</code>.
-     * Once a file is found, it is parsed to ensure that
-     * it is a valid file.  
-     * A valid file requires the following parameters in the rc file:
-     * <ul>
-     *   <li>org.cougaar.configuration.database</li>
-     *   <li>org.cougaar.configuration.user</li>
-     *   <li>org.cougaar.configuration.password<.li>
-     * </ul>
-     *
-     * @return boolean indicating a valid rc file.
-     */
-    public static boolean isValidRCFile() {
-
-	boolean valid = false;
-
-	valid = (Parameters.findParameter(DATABASE) == null) ? false : true;
-	valid &= (Parameters.findParameter(USER) == null) ? false : true;
-	valid &= (Parameters.findParameter(PASSWORD) == null) ? false : true;
-	return valid;
-    }
-
-    /**
-     * Tests database connection to ensure it is valid.
-     * This is done by running a simple query on the database.
-     *
-     * This test requires a <code>CSMART.q</code> and
-     * the querySocieties Statment within that file.
-     *
-     * The Query run is:
-     * <code> 
-     *   SELECT ASSEMBLY_ID, ASSEMBLY_TYPE, DESCRIPTION
-     *   FROM V3_ASB_ASSEMBLY WHERE ASSEMBLY_TYPE = 'CMT'
-     * </code>
-     * 
-     * @return boolean indicating valid connection
-     */
-    public static boolean isValidDBConnection() {
-	DBProperties dbProps;
-	String database;
-	String username;
-	String password;
-
-	boolean valid = false;
-	Map substitutions = new HashMap();
-
-	if(isValidRCFile()) {
-	    try {
-		dbProps = DBProperties.readQueryFile(QUERY_FILE);
-		substitutions.put(":assembly_type", "CMT");
-		try {
-		    String dbtype = dbProps.getDBType();
-		    String driverParam = "driver." + dbtype;
-		    String driverClass = Parameters.findParameter(driverParam);
-		    if (driverClass != null) {
-
-			Class.forName(driverClass);
-			Connection conn = getConnection();
-			try {
-			    Statement stmt = conn.createStatement();
-			    String query = dbProps.getQuery(ASSEMBLYID_QUERY, substitutions);
-			    ResultSet rs = stmt.executeQuery(query);
-			    String assemblyId;
-			    String description;
-			    if (rs.next()) {
-				valid = true;
-			    }
-			    rs.close();
-			    stmt.close();
-			} finally {
-			    conn.close();
-			}
-		    }
-		} catch (ClassNotFoundException e) {
-		    System.err.println("Class not found: " + e);
-		} catch (SQLException se) {
-		    System.err.println("Sql exception: " + se);
-		}
-	    } catch(IOException e) {
-		System.err.println("IO exception: " + e);
-	    }
-	}
-	return valid;
-    }
-
-    /**
-     * Gets a connection from the Connection Pool.
-     * Connection is established to the database
-     * defined in the <code>CSMART.q</code> file.
-     *
-     * @return valid db connection
-     */
-    public static Connection getConnection() throws SQLException {
-	DBProperties dbProps;
-	String database;
-	String username;
-	String password;
-	Connection conn = null;
-	if(isValidRCFile()) {
-	    try {	
-		dbProps = DBProperties.readQueryFile(QUERY_FILE);
-		database = dbProps.getProperty("database");
-		username = dbProps.getProperty("username");
-		password = dbProps.getProperty("password");
-		String dbtype = dbProps.getDBType();
-		String driverParam = "driver." + dbtype;
-		String driverClass = Parameters.findParameter(driverParam);
-		if(driverClass == null) 
-		    throw new SQLException("Unknown driver " + driverParam);
-		Class.forName(driverClass);
-		conn = DBConnectionPool.getConnection(database, username, password);
-	    } catch(IOException e) {
-		// Need to log something here.
-	    } catch(ClassNotFoundException ce) {
-		// Need to log something here.
-	    }
-	}    
-
-	return conn;
-    }
-
-    public static String getQuery(String query, Map substitutions) {
-	DBProperties dbProps;
-	String result = null;
-
-	if(isValidRCFile()) {
-	    try {
-		dbProps = DBProperties.readQueryFile(QUERY_FILE);
-		result = dbProps.getQuery(query, substitutions);
-	    } catch(IOException e) {}      
-	}
-      
-	return result;
-    }
-
     public static void iterateUpdate(String op, String subs, Set items){
 	Iterator i = items.iterator();
 	Map m = new HashMap();
@@ -680,15 +541,15 @@ public class CMT {
 	}
     }
 
-
     public static int deleteItems(String table, String column, String val){
-	String dbQuery = "delete from "+table+" where "+column+"="+val;
+	String dbQuery = "delete from "+ table.toUpperCase() +" where "+column+"="+val;
 	int count=0;
 	try {
-	    Connection conn = getConnection();
+	    Connection conn = DBUtils.getConnection(QUERY_FILE);
 	    if(execute){
 		try {
 		    Statement stmt = conn.createStatement();	
+                    //System.out.println("Query: " + dbQuery);
 		    count = stmt.executeUpdate(dbQuery);
 		    //  		    System.out.println("Deleted "+count+" items from the database");
 		    stmt.close();
@@ -706,10 +567,10 @@ public class CMT {
     }
 
     public static Set querySet(String query, Map substitutions){
-	String dbQuery = getQuery(query, substitutions);
+	String dbQuery = DBUtils.getQuery(query, substitutions, QUERY_FILE);
 	Set s = new HashSet();
 	try {
-	    Connection conn = getConnection();
+	    Connection conn = DBUtils.getConnection(QUERY_FILE);
 	    try {
 		Statement stmt = conn.createStatement();	
 		ResultSet rs = stmt.executeQuery(dbQuery);
@@ -731,11 +592,15 @@ public class CMT {
 
 
     public static SortedMap queryHT(String query, Map substitutions){
-	String dbQuery = getQuery(query, substitutions);
+	String dbQuery = DBUtils.getQuery(query, substitutions, QUERY_FILE);
         Connection conn = null;
 	Map ht = new TreeMap();
 	try {
-	    conn = getConnection();
+	    conn = DBUtils.getConnection(QUERY_FILE);
+	    if (conn == null) {
+	      System.out.println("CMT:queryHT: Got no connection");
+	      return (SortedMap)ht;
+	    }
 	    try {
 		Statement stmt = conn.createStatement();	
 		ResultSet rs = stmt.executeQuery(dbQuery);
@@ -759,11 +624,11 @@ public class CMT {
 
 
     public static String query1String(String query, Map substitutions){
-	String dbQuery = getQuery(query, substitutions);
+	String dbQuery = DBUtils.getQuery(query, substitutions, QUERY_FILE);
 
 	String res = null;
 	try {
-	    Connection conn = getConnection();
+	    Connection conn = DBUtils.getConnection(QUERY_FILE);
 	    try {
 		Statement stmt = conn.createStatement();	
 		ResultSet rs = stmt.executeQuery(dbQuery);
@@ -786,10 +651,10 @@ public class CMT {
     }
 
     public static Integer query1Int(String query, Map substitutions){
-	String dbQuery = getQuery(query, substitutions);
+	String dbQuery = DBUtils.getQuery(query, substitutions, QUERY_FILE);
 	Integer res = null;
 	try {
-	    Connection conn = getConnection();
+	    Connection conn = DBUtils.getConnection(QUERY_FILE);
 	    try {
 		Statement stmt = conn.createStatement();	
 		ResultSet rs = stmt.executeQuery(dbQuery);
@@ -820,11 +685,11 @@ public class CMT {
     }
 
     public static int dbInsert(String query, Map substitutions){
-	String dbQuery = getQuery(query, substitutions);
+	String dbQuery = DBUtils.getQuery(query, substitutions, QUERY_FILE);
 
 	int count=0;
 	try {
-	    Connection conn = getConnection();
+	    Connection conn = DBUtils.getConnection(QUERY_FILE);
 	    // for first test
 	    if(execute){
 		try {
@@ -846,10 +711,10 @@ public class CMT {
     }
 
     public static int dbUpdate(String query, Map substitutions){
-	String dbQuery = getQuery(query, substitutions);
+	String dbQuery = DBUtils.getQuery(query, substitutions, QUERY_FILE);
 	int count=0;
 	try {
-	    Connection conn = getConnection();
+	    Connection conn = DBUtils.getConnection(QUERY_FILE);
 	    if(execute){
 		try {
 		    Statement stmt = conn.createStatement();	
@@ -872,10 +737,10 @@ public class CMT {
 
 
     public static int dbDelete(String query, Map substitutions){
-	String dbQuery = getQuery(query, substitutions);
+	String dbQuery = DBUtils.getQuery(query, substitutions, QUERY_FILE);
 	int count=0;
 	try {
-	    Connection conn = getConnection();
+	    Connection conn = DBUtils.getConnection(QUERY_FILE);
 	    if(execute){
 		try {
 		    Statement stmt = conn.createStatement();	
