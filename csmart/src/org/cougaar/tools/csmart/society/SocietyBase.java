@@ -277,7 +277,7 @@ public abstract class SocietyBase
    */
   public boolean saveToDatabase() {
     if(log.isInfoEnabled()) {
-      log.info("saveToDatabase society (" + getSocietyName() + " with asb: " + getAssemblyId());
+      log.info("saveToDatabase society (" + getSocietyName() + ") with asb: " + getAssemblyId());
     }
 
     // TODO:
@@ -287,12 +287,16 @@ public abstract class SocietyBase
     
     String oldCMTAsbid = oldAssemblyId;
     String currAssID = getAssemblyId();
+    String name = getSocietyName();
 
     if (currAssID != null && currAssID.startsWith("CMT")) {
       if (log.isDebugEnabled()) {
-	log.debug("saveToDB not saving CMT society (" + getSocietyName() + ") with id " + currAssID + " and old ID " + oldCMTAsbid);
+	log.debug("saveToDB not saving CMT society (" + getSocietyName() + ") with id " + currAssID + " and old ID " + oldCMTAsbid + " into same ID. Will create new one and new name -- like a copy, except done in place");
       }
-      return false;
+      oldCMTAsbid = currAssID;
+      currAssID = null;
+      name = name + " edited";
+      //      return false;
     }
 
     // And what is my current assemblyID?
@@ -303,7 +307,7 @@ public abstract class SocietyBase
     // Or does it hurt to pass it in?
     try {
       // FIXME: Is there a non-gui conflict handler I should use?
-      PopulateDb pdb = new PopulateDb(oldCMTAsbid, getSocietyName(), currAssID, GUIUtils.createSaveToDbConflictHandler(null));
+      PopulateDb pdb = new PopulateDb(oldCMTAsbid, name, currAssID, GUIUtils.createSaveToDbConflictHandler(null));
       pdb.populateCSA(SocietyComponentCreator.getComponentData(this));
       // Set the new CSA assembly ID on the society - get it from the PDB
       setAssemblyId(pdb.getCMTAssemblyId());
