@@ -87,7 +87,7 @@ implements PlanServiceProvider, UISubscriber, UseDirectSocketOutputStream
       if ((startUIDs == null) &&
           (optUID != null)) {
         startUIDs = new HashSet(1);
-        UID uid = new UID(optUID);  // okay if deprecated
+        UID uid = UID.toUID(optUID);
         startUIDs.add(uid);
       }
     } catch (Exception e) {
@@ -278,7 +278,7 @@ implements PlanServiceProvider, UISubscriber, UseDirectSocketOutputStream
             "POSTED List["+i+"] contains a non-String:"+
             ((oi != null) ? oi.getClass().getName() : "null"));
       }
-      UID ui = new UID((String)oi);  // okay if deprecated
+      UID ui = UID.toUID((String)oi);
       toSet.add(ui);
     }
 
