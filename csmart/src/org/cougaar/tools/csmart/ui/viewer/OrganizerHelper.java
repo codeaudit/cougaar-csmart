@@ -62,6 +62,9 @@ public class OrganizerHelper {
 
   private transient Logger log;
 
+  private static final String CMT_START_STRING = "CMT";
+  private static final String CSA_START_STRING = "CSA";
+
   private DBConflictHandler saveToDbConflictHandler =
     GUIUtils.createSaveToDbConflictHandler(null);
 
@@ -85,10 +88,24 @@ public class OrganizerHelper {
     //    CMTSociety soc = null;
     SocietyDBComponent soc = null;
     if (assemblyIds.size() != 0) {
-      //      soc = new CMTSociety(experimentName, assemblyIds);      
-      String societyName = DBUtils.getSocietyName(assemblyIds);
-      soc = new SocietyDBComponent(societyName, assemblyIds);
-      soc.initProperties();
+      // Get the Society Assembly Id (CMT or CSA).
+      String id = null;
+      Iterator iter = assemblyIds.iterator();
+      while(iter.hasNext()) {
+        id = (String)iter.next();
+        if(id.startsWith(CMT_START_STRING) || id.startsWith(CSA_START_STRING)) {
+          break;
+        }
+      }
+      
+      if(id != null) {
+        String societyName = DBUtils.getSocietyName(id);
+        soc = new SocietyDBComponent(societyName, assemblyIds);
+        soc.initProperties();
+        soc.setAssemblyId(id);
+      } else {
+        soc = null;
+      }
     } else { // We need to create a new trial.
       // Need to have the experiment id, trial id, and multiplicity
       // for the call that will generate the assembly here.
