@@ -243,6 +243,10 @@ public abstract class SocietyBase
 	    child.setOwner(this);
             // and add the component data
 	    agent.addComponentData(child);
+	    //	    child.resetModified();
+	    // Dont do above cause it leaves the HNA open, but it
+	    // would at least ensure that if other recipe snuck in earlier,
+	    // this worked OK.
 	  }
 	}		
       } else {
@@ -256,6 +260,8 @@ public abstract class SocietyBase
     // and only recipe changes will appear in the tree
     // see comment in Experiment.save
     data.resetModified();
+    // Note that this resets everything. So the HNA must be in the DB.
+    // And all recipe addCDatas must come after the society addCData
     return data;
   }
 
