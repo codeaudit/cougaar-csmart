@@ -332,9 +332,9 @@ public class CommunityPanel extends JPanel {
     if (communityName == null || communityName.length() == 0)
       return;
     // TODO: check that name is unique
-    String[] communityTypes = new String[] { "Domain", "Robustness" };
+    String[] communityTypes = new String[] { "Domain", "Robustness", "Security", "Restart" };
     JComboBox cb = new JComboBox(communityTypes);
-    cb.setEditable(false);
+    cb.setEditable(true);
     JPanel panel = new JPanel();
     panel.add(new JLabel("Community Type:"));
     panel.add(cb);
@@ -581,9 +581,9 @@ public class CommunityPanel extends JPanel {
   // put the community in the tree and display info about it
   // disable tree model listener so it doesn't try to update the database
   private void displayCommunityInformation() {
-    if (log.isDebugEnabled()) {
-      log.debug("displayCommunityInformation called");
-    }
+//     if (log.isDebugEnabled()) {
+//       log.debug("displayCommunityInformation called");
+//     }
     String communityName = selectCommunityToDisplay();
     if (communityName == null)
       return;
@@ -612,9 +612,9 @@ public class CommunityPanel extends JPanel {
       String communityName = (String)iter.next();
       communityName = communityName.trim();
       if (communityName.length() > 0) {
-	if (log.isDebugEnabled()) {
-	  log.debug("putAllComms adding " + communityName);
-	}
+// 	if (log.isDebugEnabled()) {
+// 	  log.debug("putAllComms adding " + communityName);
+// 	}
 	// This first argument must point to the tree root
 	addToTree(communityTree.addNode((DefaultMutableTreeNode)communityTree.getModel().getRoot(), communityName, "Community", null),
 		  communityName);
