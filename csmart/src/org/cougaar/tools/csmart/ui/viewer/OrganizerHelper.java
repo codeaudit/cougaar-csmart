@@ -188,7 +188,7 @@ public class OrganizerHelper {
     // copy over the recipes that came with the base
     if (origExperimentId != null && ! origExperimentId.equals(experimentId)) {
       if (log.isDebugEnabled()) {
-	log.debug("Combining old expts recipes with those from this");
+	log.debug("Combining old expts recipes with those from this and grabbing Comm info from orig expt");
       }
       recipes.addAll(defaultRecipes);
 
@@ -217,7 +217,7 @@ public class OrganizerHelper {
       }
     } else if (origExperimentId != null && origExperimentId.equals(experimentId)) {
       if (log.isDebugEnabled()) {
-	log.debug("createExpt had no orig or orig same as this. Try reading previous comm ASB from db");
+	log.debug("createExpt had orig same as this. Try reading previous comm ASB from db");
       }
 
       // just loading a previous experiment from the DB.
