@@ -319,6 +319,7 @@ public class CMT {
     subs.put(":trial_id",trial_id);
     subs.put(":assembly_id",assemblyId);
     DBUtils.executeQuerySet("addAssembly",subs, QUERY_FILE);
+    DBUtils.executeQuerySet("addRuntimeAssembly",subs, QUERY_FILE);
     return trial_id;
   }
 
@@ -614,7 +615,9 @@ public class CMT {
     DBUtils.executeQuerySet("cloneExperimentEXPT_TRIAL",subs, QUERY_FILE);
     DBUtils.executeQuerySet("cloneExperimentEXPT_TRIAL_THREAD",subs, QUERY_FILE);
     DBUtils.executeQuerySet("cloneExperimentEXPT_TRIAL_ORG_MULT",subs, QUERY_FILE);
+    // do both runtime & config!!
     DBUtils.executeQuerySet("cloneExperimentEXPT_TRIAL_ASSEMBLY",subs, QUERY_FILE);
+    DBUtils.executeQuerySet("cloneExperimentEXPT_TRIAL_CONFIG_ASSEMBLY",subs, QUERY_FILE);
     return new_expt_id;
   }
   
@@ -713,8 +716,8 @@ public class CMT {
     // this query is legal in both Oracle and mySQL
     DBUtils.dbUpdate("updateCMTAssembly",subs, QUERY_FILE);
 
-    // FIXME: Also update the CMT assembly in the runtime table?
-    //DBUtils.dbUpdate("updateRuntimeCMTAssembly",subs, QUERY_FILE);
+    //Also update the CMT assembly in the runtime table
+    DBUtils.dbUpdate("updateRuntimeCMTAssembly",subs, QUERY_FILE);
 
     DBUtils.dbUpdate("updateAssemblyIDOnExpt",subs, QUERY_FILE);
     DBUtils.dbUpdate("updateRuntimeAssemblyIDOnExpt",subs, QUERY_FILE);
