@@ -33,6 +33,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 
+import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.name.ComponentName;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
@@ -1099,7 +1100,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     } else if (agentTree.getModel().equals(source)) {
       treeNodesInsertedInAgentTree(e.getChildren());
     }
-    experimentBuilder.setModified(true);
   }
 
   /**
@@ -1215,35 +1215,37 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 
   /**
    * Called if user edits the name of a host or a node.
+   * Does nothing because the host or node is updated
+   * in the tree model when the user makes the change.
    */
 
   public void treeNodesChanged(TreeModelEvent e) {
-    Object source = e.getSource();
-    // handle user editing the name of a host in the host tree
-    if (hostTree.getModel().equals(source)) {
-      DefaultMutableTreeNode parent = 
-        (DefaultMutableTreeNode)e.getTreePath().getLastPathComponent();
-      if (((ConsoleTreeObject)parent.getUserObject()).isRoot()) {
-        experimentBuilder.setModified(true);
-        return;
-      }
-    }
-    // handle user editing the name of a node in the host or node tree
-    if (hostTree.getModel().equals(source) || 
-        nodeTree.getModel().equals(source)) {
-      Object[] children = e.getChildren();
-      if (children != null && children.length > 0) {
-        DefaultMutableTreeNode firstChild = 
-          (DefaultMutableTreeNode)children[0];
-        ConsoleTreeObject changedNode =
-          (ConsoleTreeObject)firstChild.getUserObject();
-        if (changedNode.isNode()) {
-          ((ExperimentNode)changedNode.getComponent()).rename(changedNode.getName());
-          experimentBuilder.setModified(true);
-          return;
-        }
-      }
-    }
+//      Object source = e.getSource();
+//      // handle user editing the name of a host in the host tree
+//      if (hostTree.getModel().equals(source)) {
+//        DefaultMutableTreeNode parent = 
+//          (DefaultMutableTreeNode)e.getTreePath().getLastPathComponent();
+//        if (((ConsoleTreeObject)parent.getUserObject()).isRoot()) {
+//          experimentBuilder.setModified(true);
+//          return;
+//        }
+//      }
+//      // handle user editing the name of a node in the host or node tree
+//      if (hostTree.getModel().equals(source) || 
+//          nodeTree.getModel().equals(source)) {
+//        Object[] children = e.getChildren();
+//        if (children != null && children.length > 0) {
+//          DefaultMutableTreeNode firstChild = 
+//            (DefaultMutableTreeNode)children[0];
+//          ConsoleTreeObject changedNode =
+//            (ConsoleTreeObject)firstChild.getUserObject();
+//          if (changedNode.isNode()) {
+//            ((ExperimentNode)changedNode.getComponent()).rename(changedNode.getName());
+//            experimentBuilder.setModified(true);
+//            return;
+//          }
+//        }
+//      }
   }
 
   /**
@@ -1435,7 +1437,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     dialog.setVisible(true);
     if (dialog.getValue() != JOptionPane.OK_OPTION)
       return; // user cancelled
-    experimentBuilder.setModified(dialog.updateProperties());
+    dialog.updateProperties();
   }
 
   /**
@@ -1450,7 +1452,10 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     dialog.setVisible(true);
     if (dialog.getValue() != JOptionPane.OK_OPTION)
       return; // user cancelled
-    experimentBuilder.setModified(dialog.updateProperties());
+    // tell experiment listeners that experiment has been modified
+    // TODO: experiment must register itself as a listener on its properties
+    dialog.updateProperties();
+    //    experiment.fireModification();
   }
 
   /**

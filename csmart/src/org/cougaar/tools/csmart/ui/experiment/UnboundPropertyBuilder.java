@@ -151,19 +151,15 @@ public class UnboundPropertyBuilder extends JPanel {
 
   private TreeModelListener myTreeModelListener = new TreeModelListener() {
     public void treeNodesChanged(TreeModelEvent e) {
-      experimentBuilder.setModified(true);
       reconcileExperimentNodes();
     }
     public void treeNodesInserted(TreeModelEvent e) {
-      experimentBuilder.setModified(true);
       reconcileExperimentNodes();
     }
     public void treeNodesRemoved(TreeModelEvent e) {
-      experimentBuilder.setModified(true);
       reconcileExperimentNodes();
     }
     public void treeStructureChanged(TreeModelEvent e) {
-      experimentBuilder.setModified(true);
       reconcileExperimentNodes();
     }
   };

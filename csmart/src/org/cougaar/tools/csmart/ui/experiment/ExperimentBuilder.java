@@ -31,8 +31,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.cougaar.tools.csmart.core.db.ExperimentDB;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
 import org.cougaar.tools.csmart.core.db.DBConflictHandler;
-import org.cougaar.tools.csmart.core.property.ModificationListener;
-import org.cougaar.tools.csmart.core.property.ModificationEvent;
 
 import org.cougaar.tools.csmart.experiment.Experiment;
 
@@ -67,7 +65,6 @@ public class ExperimentBuilder extends JFrame {
   private HostConfigurationBuilder hcb;
   private TrialBuilder trialBuilder;
   private ThreadBuilder threadBuilder;
-  private boolean modified = false;
   private JMenu findMenu;
   private DBConflictHandler saveToDbConflictHandler =
     GUIUtils.createSaveToDbConflictHandler(this);
@@ -315,7 +312,7 @@ public class ExperimentBuilder extends JFrame {
   }
 
   private void exit() {
-    saveSilently(); // if experiment from database was modified, save it
+    saveHelper(); // if experiment from database was modified, save it
     experiment.setEditInProgress(false);
     // display experiment components in organizer
     Organizer organizer = CSMART.getOrganizer();
@@ -330,7 +327,7 @@ public class ExperimentBuilder extends JFrame {
    * @param newExperiment the new experiment to edit
    */
   public void reinit(Experiment newExperiment) {
-    saveSilently();
+    saveHelper();
     // restore editable flag on previous experiment
     experiment.setEditInProgress(false);
     experiment = newExperiment;
@@ -344,19 +341,6 @@ public class ExperimentBuilder extends JFrame {
   }
 
   /**
-   * Called by <code>HostConfigurationBuilder</code> 
-   * or <code>UnboundPropertyBuilder</code>
-   * if they modify an experiment.
-   * Tell the experiment it's modified, 
-   * so when the <code>ExperimentBuilder</code>
-   * saves the experiment, the experiment writes itself to the database.
-   */
-  public void setModified(boolean modified) {
-    this.modified = modified;
-    experiment.modified(new ModificationEvent(this, 0));
-  }
-
-  /**
    * If the experiment was from the database and 
    * components were either added or removed or
    * the host-node-agent mapping was modified, then save it,
@@ -364,7 +348,7 @@ public class ExperimentBuilder extends JFrame {
    */
 
   private void save() {
-    if (!modified) {
+    if (!experiment.isModified()) {
       String[] msg = {
         "No modifications were made.",
         "Do you want to save this experiment anyway?"
@@ -375,23 +359,11 @@ public class ExperimentBuilder extends JFrame {
                                       JOptionPane.YES_NO_OPTION,
                                       JOptionPane.WARNING_MESSAGE);
       if (answer != JOptionPane.YES_OPTION) return;
-      setModified(true);
     }
     saveHelper();
   }
 
-  /**
-   * Silently save experiment from database if modified.
-   */
-
-  private void saveSilently() {
-    if (modified)
-      saveHelper();
-  }
-
   private void saveAs() {
-    if (!modified) 
-      setModified(true);
     // get unique name in both database and CSMART or
     // reuse existing name
     if (ExperimentDB.isExperimentNameInDatabase(experiment.getShortName())) {
@@ -407,11 +379,14 @@ public class ExperimentBuilder extends JFrame {
   // Dump out the ini files for the first trial to the local results directory
   private void dumpINIs() {
     experiment.dumpINIFiles();
-    modified = false;
   }
-  
+
+  /**
+   * Save the experiment.  If we get to this point, the user wants
+   * to save the experiment regardless of whether it's been modified.
+   */
+
   private void saveHelper() {
-    modified = false;
     final Component c = this;
     GUIUtils.timeConsumingTaskStart(c);
     GUIUtils.timeConsumingTaskStart(csmart);
