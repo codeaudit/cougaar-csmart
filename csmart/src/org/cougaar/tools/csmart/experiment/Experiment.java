@@ -80,7 +80,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     "org.cougaar.planning.ldm.lps.ComplainingLP.level";  
   public static final String TRANSPORT_ASPECTS = "org.cougaar.message.transport.aspects";
   public static final String CONTROL_PORT = "org.cougaar.control.port";
-  public static final String CONFIG_DATABASE = "org.coguaar.configuration.database";
+  public static final String CONFIG_DATABASE = "org.cougaar.configuration.database";
   public static final String CONFIG_USER = "org.cougaar.configuration.user";
   public static final String CONFIG_PASSWD = "org.cougaar.configuration.password";
   public static final String ENV_DISPLAY = "env.DISPLAY";
