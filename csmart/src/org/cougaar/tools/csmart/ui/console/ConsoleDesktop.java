@@ -39,7 +39,7 @@ public class ConsoleDesktop extends JDesktopPane {
   public void addNodeFrame(NodeComponent node, 
                            ConsoleNodeListener listener,
                            InternalFrameListener frameListener,
-                           ConsoleTextPane pane) {
+                           JScrollPane pane) {
     JInternalFrame frame = 
       new ConsoleInternalFrame(node, listener, pane);
     frame.addInternalFrameListener(frameListener);

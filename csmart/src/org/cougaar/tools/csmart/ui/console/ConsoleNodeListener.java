@@ -46,8 +46,6 @@ public class ConsoleNodeListener implements NodeEventListener {
   private NodeComponent nodeComponent;
   private String nodeName;
   private Writer logFile;
-  //  private StyledDocument userDisplay;
-  private ConsoleStyledDocument userDisplay;
   private SimpleAttributeSet[] atts;
   private StripChartFrame chartFrame;
   private JCChart chart;
@@ -56,12 +54,13 @@ public class ConsoleNodeListener implements NodeEventListener {
   private long firsttime = 0l;
   private String notifyCondition = null;
   private boolean haveError = false;
+  private ConsoleTextPane textPane;
 
   public ConsoleNodeListener(CSMARTConsole console,
 			     NodeComponent nodeComponent,
 			     String logFileName, 
-			     ConsoleStyledDocument userDisplay,
-			     JRadioButton statusButton) throws IOException {
+			     JRadioButton statusButton,
+                             ConsoleTextPane textPane) throws IOException {
 
     this.console = console;
     this.nodeComponent = nodeComponent;
@@ -73,8 +72,8 @@ public class ConsoleNodeListener implements NodeEventListener {
     // wrap and capture to a log
     this.logFile = new BufferedWriter(new FileWriter(logFileName));
 
-    // save the GUI output
-    this.userDisplay = userDisplay;
+    // save the GUI text pane
+    this.textPane = textPane;
 
     // create our attributes
     // stdout is black, stderr is red, heartbeat messages are green,
@@ -181,15 +180,15 @@ public class ConsoleNodeListener implements NodeEventListener {
     try {
       SwingUtilities.invokeLater(new Runnable() {
 	public void run() {
-	  try {
-	    if (nodeEventType == NodeEvent.IDLE_UPDATE) 
-	      handleIdleUpdate(idleTime, timestamp);
-	    else {
-	      updateStatus(myNodeEvent);
-              userDisplay.appendString(nodeEventDescription, style);
-	    } 
-	  } catch (Exception e) {
-	  }
+          if (nodeEventType == NodeEvent.IDLE_UPDATE) 
+            handleIdleUpdate(idleTime, timestamp);
+          else {
+            updateStatus(myNodeEvent);
+            if (textPane.appendString(nodeEventDescription, style)) {
+              colorStatusButton(CSMARTConsole.notifyStatus);
+              haveError = true;
+            }
+          }
 	}
       });
     } catch (RuntimeException e) {
@@ -261,22 +260,21 @@ public class ConsoleNodeListener implements NodeEventListener {
 	    } else if (nodeEventType == prevType) {
 	      prevDescription += description;
 	    } else {
-	      try {
-                userDisplay.appendString(prevDescription, 
-                                         getNodeEventStyle(prevType));
-	      } catch (Exception e) {
-		break;
-	      }
+              if (textPane.appendString(prevDescription, 
+                                        getNodeEventStyle(prevType))) {
+                colorStatusButton(CSMARTConsole.notifyStatus);
+                haveError = true;
+              }
 	      prevDescription = description;
 	      prevType = nodeEventType;
 	    }
 	  }
 	  // write the last batch of descriptions
-	  try {
-            userDisplay.appendString(prevDescription,
-                                     getNodeEventStyle(prevType));
-	  } catch (Exception e) {
-	  }
+          if (textPane.appendString(prevDescription,
+                                    getNodeEventStyle(prevType))) {
+            colorStatusButton(CSMARTConsole.notifyStatus);
+            haveError = true;
+          }
 	}
       });
     } catch (RuntimeException e) {
@@ -354,14 +352,6 @@ public class ConsoleNodeListener implements NodeEventListener {
       colorStatusButton(CSMARTConsole.stdErrStatus);
       haveError = true;
     }
-    else if ((nodeEventType == NodeEvent.STANDARD_OUT) &&
-             notifyCondition != null) {
-      String s = nodeEvent.getMessage().toLowerCase();
-      if (s.indexOf(notifyCondition) != -1) {
-        colorStatusButton(CSMARTConsole.notifyStatus);
-        haveError = true;
-      }
-    }
   }
 
   // color the node's status button according to type of node event received
@@ -371,21 +361,6 @@ public class ConsoleNodeListener implements NodeEventListener {
       statusButton.setIcon(new ColoredCircle(statusColor, 20));
       statusButton.setSelectedIcon(new SelectedColoredCircle(statusColor, 20));
     } 
-  }
-
-  /**
-   * Specify a string that this listener watches for; if the string
-   * is detected in the standard output stream, then the node status
-   * button color is set to blue and remains set until the user resets
-   * it via the reset menu item on the status button pop-up menu.
-   * @param s string to watch for in standard output
-   */
-
-  public void setNotifyCondition(String s) {
-    if (s == null)
-      notifyCondition = s;
-    else
-      notifyCondition = s.toLowerCase();
   }
 
   /**

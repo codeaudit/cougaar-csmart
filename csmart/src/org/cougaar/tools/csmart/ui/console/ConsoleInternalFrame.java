@@ -71,7 +71,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
 
   public ConsoleInternalFrame(NodeComponent node, 
                               ConsoleNodeListener listener,
-                              ConsoleTextPane consoleTextPane) {
+                              JScrollPane pane) {
     super("",   // title
           true, //resizable
           false, //not closable, because they can't be recreated
@@ -79,7 +79,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
           true);//iconifiable
     this.node = node;
     this.listener = listener;
-    this.consoleTextPane = consoleTextPane;
+    consoleTextPane = (ConsoleTextPane)pane.getViewport().getView();
     // get host component by getting the experiment and 
     // searching its hosts for one with this node.
     Experiment experiment = 
@@ -181,7 +181,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
     getRootPane().setJMenuBar(menuBar);
     initKeyMap(consoleTextPane);
     openFrameCount++;
-    getContentPane().add(consoleTextPane);
+    getContentPane().add(pane);
     setSize(300,300);
     //Set the window's location.
     setLocation(xOffset*openFrameCount, yOffset*openFrameCount);
@@ -357,9 +357,9 @@ public class ConsoleInternalFrame extends JInternalFrame {
    */
 
   public void display_actionPerformed() {
-    JTextPane textPane = (JTextPane)consoleTextPane.getViewport().getView();
-    int n =
-      ((ConsoleStyledDocument)textPane.getStyledDocument()).getBufferSize();
+    ConsoleStyledDocument doc = 
+      (ConsoleStyledDocument)consoleTextPane.getStyledDocument();
+    int n = doc.getBufferSize();
     String tmp = "";
     if (n != -1)
       tmp = String.valueOf(n);
@@ -375,7 +375,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
       System.out.println("Not a valid number: " + s);
       return;
     }
-    setBufferSize(n);
+    doc.setBufferSize(n);
   }
 
   /**
@@ -383,7 +383,9 @@ public class ConsoleInternalFrame extends JInternalFrame {
    */
 
   public void displayAll_actionPerformed() {
-    setBufferSize(-1);
+    ConsoleStyledDocument doc = 
+      (ConsoleStyledDocument)consoleTextPane.getStyledDocument();
+    doc.setBufferSize(-1);
   }
 
   /**
@@ -402,13 +404,9 @@ public class ConsoleInternalFrame extends JInternalFrame {
       notifyCondition = null;
     else
       notifyCondition = s;
-    listener.setNotifyCondition(notifyCondition);
+    consoleTextPane.setNotifyCondition(notifyCondition);
   }
 
-  private void setBufferSize(int n) {
-    JTextPane textPane = (JTextPane)consoleTextPane.getViewport().getView();
-    ((ConsoleStyledDocument)textPane.getStyledDocument()).setBufferSize(n);
-  }
 }
 
 

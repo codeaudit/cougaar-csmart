@@ -357,7 +357,6 @@ public class CSMARTConsole extends JFrame {
     jif.setLocation(310, 0);
     jif.setVisible(true);
     desktop.add(jif, JLayeredPane.DEFAULT_LAYER);
-
     panel.add(desktop,
 	      new GridBagConstraints(0, 2, 1, 1, 1.0, 1.0,
 				     GridBagConstraints.WEST,
@@ -386,7 +385,6 @@ public class CSMARTConsole extends JFrame {
 
     pack();
     setSize(700, 600);
-    //    splitPane.setDividerLocation(400);
     setVisible(true);
   }
 
@@ -483,14 +481,15 @@ public class CSMARTConsole extends JFrame {
   /**
    * Listener on the node status buttons.
    * Right click pops-up a menu with the "About" node menu item.
-   * Left double click opens the node standard out frame.
+   * Left click opens the node standard out frame.
    */
 
   private MouseListener myMouseListener = new MouseAdapter() {
     public void mouseClicked(MouseEvent e) {
       if (e.isPopupTrigger()) 
         doPopup(e);
-      else if (e.getClickCount() == 2) 
+      //      else if (e.getClickCount() == 2) 
+      else
         displayNodeFrame(e);
     }
     public void mousePressed(MouseEvent e) {
@@ -517,9 +516,21 @@ public class CSMARTConsole extends JFrame {
       notifyCondition = null;
     else
       notifyCondition = s;
-    Collection c = nodeListeners.values();
-    for (Iterator i = c.iterator(); i.hasNext(); )
-      ((ConsoleNodeListener)i.next()).setNotifyCondition(notifyCondition);
+    JInternalFrame[] frames = desktop.getAllFrames();
+    for (int i = 0; i < frames.length; i++) 
+      if (frames[i] instanceof ConsoleInternalFrame) {
+        Component[] components = frames[i].getContentPane().getComponents();
+        for (int j = 0; j < components.length; j++) {
+          if (components[j] instanceof JScrollPane) {
+            JScrollPane jsp = (JScrollPane)components[j];
+            Component c = jsp.getViewport().getView();
+            if (c instanceof ConsoleTextPane) {
+              ((ConsoleTextPane)c).setNotifyCondition(notifyCondition);
+              break;
+            }
+          }
+        }
+      }
   }
 
   /**
@@ -746,7 +757,6 @@ public class CSMARTConsole extends JFrame {
    * Stop all experiments.  Called before exiting CSMART.
    */
   public void stopExperiments() {
-    // TODO: kill the Console Node Listeners?
     stopAllNodes(); // stop the nodes
     destroyOldNodes(); // kill all their outputs
     unsetTrialValues(); // unset values from last trial
@@ -834,7 +844,8 @@ public class CSMARTConsole extends JFrame {
   }
 
   /**
-   * Called by ConsoleNodeListener when node has stopped.
+   * Called by ConsoleNodeListener when node has stopped;
+   * called within the Swing thread.
    * If all nodes are stopped, then trial is stopped.
    * Wait for this method to be called on each node before 
    * starting the next trial
@@ -941,6 +952,7 @@ public class CSMARTConsole extends JFrame {
     String uniqueNodeName = nodeName + currentTrial;
     ConsoleStyledDocument doc = new ConsoleStyledDocument();
     ConsoleTextPane stdoutPane = new ConsoleTextPane(doc);
+    JScrollPane scrollPane = new JScrollPane(stdoutPane);
 
     // create a status button
     JRadioButton statusButton = createStatusButton(nodeName, hostName);
@@ -951,19 +963,17 @@ public class CSMARTConsole extends JFrame {
       listener = new ConsoleNodeListener(this,
 					 nodeComponent,
 					 getLogFileName(nodeName), 
-					 doc,
-					 statusButton);
+					 statusButton,
+                                         stdoutPane);
     } catch (Exception e) {
       System.err.println("Unable to create output for: " + nodeName);
       e.printStackTrace();
       return false;
     }
     if (notifyCondition != null)
-      ((ConsoleNodeListener)listener).setNotifyCondition(notifyCondition);
+      stdoutPane.setNotifyCondition(notifyCondition);
     nodeListeners.put(nodeName, listener);
 
-    // create node event filter with no buffering
-    // so that idle display is "smooth"
     NodeEventFilter filter = new NodeEventFilter(10);
     Properties properties = new Properties();
     properties.put("org.cougaar.node.name", uniqueNodeName);
@@ -1020,7 +1030,7 @@ public class CSMARTConsole extends JFrame {
     desktop.addNodeFrame(nodeComponent, 
                          (ConsoleNodeListener)listener, 
                          new NodeFrameListener(),
-                         stdoutPane);
+                         scrollPane);
     addStatusButton(statusButton);
     updateExperimentControls(experiment, true);
     startTimers();
