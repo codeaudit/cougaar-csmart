@@ -150,7 +150,8 @@ an exclamation mark is displayed in the <a
 href="#NodeStatusButton">Node's status button</a>.  Output is scanned
 starting at the time that the notification is set.    Notify
 conditions can be either a specified string, or any output on Standard
-Error.  Thus, for example, the user could ask for a notification, if
+Error.  Note that notification strings are case <i>in</i>sensitive.
+Thus, for example, the user could ask for a notification, if
 the Node writes the string "not found". Notifications set here can be
 overridden by specific notifications set in each node's window.
 Initially, the notification string is set to "exception" so that any
