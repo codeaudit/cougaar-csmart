@@ -275,7 +275,7 @@ public class CMTDialog extends JDialog {
         return false;
       experimentName = name;
     }
-    System.out.println("Cloning experiment: " + experimentName);
+    //System.out.println("Cloning experiment: " + experimentName);
     experimentId = ExperimentDB.cloneExperiment(experimentId, 
                                                 experimentName);
     trialId = ExperimentDB.getTrialId(experimentId);
