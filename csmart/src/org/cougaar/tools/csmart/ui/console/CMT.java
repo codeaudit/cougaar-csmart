@@ -504,6 +504,8 @@ public class CMT {
 	deleteItems(asbPrefix+"expt_trial_assembly", "expt_id", expt_id);
 	deleteItems(asbPrefix+"expt_trial_thread", "expt_id", expt_id);
 	deleteItems(asbPrefix+"expt_trial_org_mult", "expt_id", expt_id);
+	deleteItems(asbPrefix+"expt_trial_metric_prop", "trial_id", sqlQuote(experiment_id+".TRIAL"));
+	deleteItems(asbPrefix+"expt_trial_metric", "trial_id", sqlQuote(experiment_id+".TRIAL"));
 	deleteItems(asbPrefix+"expt_trial", "expt_id", expt_id);
 	deleteItems(asbPrefix+"expt_experiment", "expt_id", expt_id);
 	clearUnusedCMTassemblies();
@@ -661,7 +663,6 @@ public class CMT {
 
     public static int deleteItems(String table, String column, String val){
 	String dbQuery = "delete from "+table+" where "+column+"="+val;
-//  	System.out.println("dbDelete: "+dbQuery);
 	int count=0;
 	try {
 	    Connection conn = getConnection();
@@ -669,7 +670,7 @@ public class CMT {
 		try {
 		    Statement stmt = conn.createStatement();	
 		    count = stmt.executeUpdate(dbQuery);
-//  		    System.out.println("Deleted "+count+" items from the database");
+		    //  		    System.out.println("Deleted "+count+" items from the database");
 		    stmt.close();
 
 		} finally {
@@ -677,6 +678,7 @@ public class CMT {
 		}
 	    }
 	} catch (Exception e) {
+	    System.out.println("dbDelete: "+dbQuery);
 	    e.printStackTrace();
 	    throw new RuntimeException("Error" + e);
 	}
@@ -685,7 +687,6 @@ public class CMT {
 
     public static Set querySet(String query, Map substitutions){
 	String dbQuery = getQuery(query, substitutions);
-//  	System.out.println("querySet: "+dbQuery);
 	Set s = new HashSet();
 	try {
 	    Connection conn = getConnection();
@@ -700,6 +701,7 @@ public class CMT {
 	    }
 
 	} catch (Exception e) {
+	    System.out.println("querySet: "+dbQuery);
 	    e.printStackTrace();
 	    throw new RuntimeException("Error" + e);
 	}
@@ -710,7 +712,7 @@ public class CMT {
 
     public static Hashtable queryHT(String query, Map substitutions){
 	String dbQuery = getQuery(query, substitutions);
-//  	System.out.println("queryHT: "+dbQuery);
+
 	Hashtable ht = new Hashtable();
 	try {
 	    Connection conn = getConnection();
@@ -727,6 +729,7 @@ public class CMT {
 	    }
 
 	} catch (Exception e) {
+	    System.out.println("queryHT: "+dbQuery);
 	    e.printStackTrace();
 	    throw new RuntimeException("Error" + e);
 	}
@@ -736,7 +739,7 @@ public class CMT {
 
     public static String query1String(String query, Map substitutions){
 	String dbQuery = getQuery(query, substitutions);
-//  	System.out.println("query1String: "+dbQuery);
+
 	String res = null;
 	try {
 	    Connection conn = getConnection();
@@ -754,6 +757,7 @@ public class CMT {
 	    }
 
 	} catch (Exception e) {
+	    System.out.println("query1String: "+dbQuery);
 	    e.printStackTrace();
 	    throw new RuntimeException("Error" + e);
 	}
@@ -762,7 +766,6 @@ public class CMT {
 
     public static Integer query1Int(String query, Map substitutions){
 	String dbQuery = getQuery(query, substitutions);
-//  	System.out.println("query1Int: "+dbQuery);
 	Integer res = null;
 	try {
 	    Connection conn = getConnection();
@@ -779,6 +782,7 @@ public class CMT {
 	    }
 
 	} catch (Exception e) {
+	    System.out.println("query1Int: "+dbQuery);
 	    e.printStackTrace();
 	    throw new RuntimeException("Error" + e);
 	}
@@ -796,7 +800,7 @@ public class CMT {
 
     public static int dbInsert(String query, Map substitutions){
 	String dbQuery = getQuery(query, substitutions);
-//  	System.out.println("dbInsert: "+dbQuery);
+
 	int count=0;
 	try {
 	    Connection conn = getConnection();
@@ -813,6 +817,7 @@ public class CMT {
 		}
 	    }
 	} catch (Exception e) {
+	    System.out.println("dbInsert: "+dbQuery);
 	    e.printStackTrace();
 	    throw new RuntimeException("Error" + e);
 	}
@@ -821,7 +826,6 @@ public class CMT {
 
     public static int dbUpdate(String query, Map substitutions){
 	String dbQuery = getQuery(query, substitutions);
-//  	System.out.println("dbUpdate: "+dbQuery);
 	int count=0;
 	try {
 	    Connection conn = getConnection();
@@ -836,6 +840,7 @@ public class CMT {
 		}
 	    }
 	} catch (Exception e) {
+	    System.out.println("dbUpdate: "+dbQuery);
 	    e.printStackTrace();
 	    throw new RuntimeException("Error" + e);
 	}
@@ -847,7 +852,6 @@ public class CMT {
 
     public static int dbDelete(String query, Map substitutions){
 	String dbQuery = getQuery(query, substitutions);
-//  	System.out.println("dbDelete: "+dbQuery);
 	int count=0;
 	try {
 	    Connection conn = getConnection();
@@ -862,6 +866,7 @@ public class CMT {
 		}
 	    }
 	} catch (Exception e) {
+	    System.out.println("dbDelete: "+dbQuery);
 	    e.printStackTrace();
 	    throw new RuntimeException("Error" + e);
 	}
