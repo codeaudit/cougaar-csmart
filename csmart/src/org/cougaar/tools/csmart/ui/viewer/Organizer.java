@@ -63,6 +63,8 @@ import org.cougaar.tools.csmart.society.scalability.ScalabilityXSociety;
 import org.cougaar.tools.csmart.society.cmt.CMTSociety;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.tools.csmart.recipe.ABCCyberImpact;
+import org.cougaar.tools.csmart.recipe.ABCKineticImpact;
 
 /**
  * The Organizer holds all the component a user creates
@@ -106,7 +108,9 @@ public class Organizer extends JScrollPane {
     new NameClassItem("Agent Insertion", AgentInsertionRecipe.class),
     new NameClassItem("Parameter Insertion", ParameterInsertionRecipe.class),
     new NameClassItem("Servlet Group Insertion", ServletGroupInsertionRecipe.class),
-    new NameClassItem("ABCImpact", ABCImpact.class),
+//     new NameClassItem("ABC CyberImpact", ABCCyberImpact.class),
+//     new NameClassItem("ABC KineticImpact", ABCKineticImpact.class)
+    //    new NameClassItem("ABCImpact", ABCImpact.class),
   };
 
   // Define Unique Name sets
@@ -1434,7 +1438,7 @@ public class Organizer extends JScrollPane {
 	} catch (Exception e) {
           if(log.isErrorEnabled()) {
 	    // Don't dump stack on this -- too verbose
-            log.error("Organizer: can't read file: " + f + " got exception " +  e);
+            log.error("Organizer: can't read file: " + f + " got exception ", e);
           }
 	} finally {
 	  ois.close();
