@@ -520,7 +520,7 @@
 	    "ogom.org_id as COMPONENT_LIB_ID,"
 	    "clone_set_id as  CLONE_SET_ID"
 	    "   from "    cfw-prefix "cfw_org_group_org_member ogom,"
-	    "   " asb-prefix "clone_set cs"
+	    "   " asb-prefix "lib_clone_set cs"
 	    "   where ogom.org_group_id="(sqlQuote org_group_id)
 	    "   and cs.clone_set_id>0 and cs.clone_set_id<"n
 	    "   and not exists (select component_alib_id from " asb-prefix "asb_agent aa"
@@ -579,7 +579,7 @@
    "'agent' as COMPONENT_TYPE,"
    "clone_set_id as  CLONE_SET_ID"
    "   from " cfw-prefix "cfw_org_group_org_member ogom,"
-   "   " asb-prefix "clone_set cs"
+   "   " asb-prefix "lib_clone_set cs"
    "   where ogom.org_group_id="(sqlQuote org_group_id)
    "   and cs.clone_set_id>0 and cs.clone_set_id<"n
    "   and (clone_set_id || '-' || ogom.org_id) not in (select component_alib_id from " asb-prefix "alib_component)")
@@ -1627,28 +1627,28 @@
 	    "   where om.trial_id="(sqlQuote trial_id)
 	    "   and om.org_group_id in"
 	    "   (select from " cfw-prefix "CFW_ORG_GROUP og,")
-	   ))))
-    (selected
-     (dbu (string-append
-	   "insert into " asb-prefix "EXPT_TRIAL_ORG_MULT"
-	   "   select distinct "
-	   "   et.expt_id,"
-	   "   et.trial_id,"
-	   "   gm.cfw_id,"
-	   "   om.org_group_id,"
-	   "   1,"
-	   "   null"
-	   "   from "
-	   asb-prefix "EXPT_EXPERIMENT exp,"
-	   asb-prefix "EXPT_TRIAL et,"
-	   cfw-prefix "CFW_GROUP_MEMBER gm,"
-	   cfw-prefix "CFW_ORG_GROUP og"
-	   "   where et.trial_id="(sqlQuote trial_id)
-	   "   and exp.expt_id=et.expt_id"
-	   "   and exp.cfw_group_id =gm.cfw_group_id"
-	   "   and og.cfw_id=gm.cfw_id"
-	   "   and og.org_group_id="(sqlQuote group_id))
-	  ))))
+	   )))
+     (selected
+      (dbu (string-append
+	    "insert into " asb-prefix "EXPT_TRIAL_ORG_MULT"
+	    "   select distinct "
+	    "   et.expt_id,"
+	    "   et.trial_id,"
+	    "   gm.cfw_id,"
+	    "   og.org_group_id,"
+	    "   1,"
+	    "   null"
+	    "   from "
+	    asb-prefix "EXPT_EXPERIMENT exp,"
+	    asb-prefix "EXPT_TRIAL et,"
+	    cfw-prefix "CFW_GROUP_MEMBER gm,"
+	    cfw-prefix "CFW_ORG_GROUP og"
+	    "   where et.trial_id="(sqlQuote trial_id)
+	    "   and exp.expt_id=et.expt_id"
+	    "   and exp.cfw_group_id =gm.cfw_group_id"
+	    "   and og.cfw_id=gm.cfw_id"
+	    "   and og.org_group_id="(sqlQuote group_id))
+	   )))))
 
 (define (getMultiplier trial_id group_name)
   (let*
@@ -1674,9 +1674,9 @@
     (dbu
      (string-append 
       "update " asb-prefix "EXPT_TRIAL_ORG_MULT"
-      "set MULTIPLIER= " value
-      "   where om.trial_id="(sqlQuote trial_id)
-      "   and om.org_group_id="(sqlQuote group_id)
+      "   set MULTIPLIER= " value
+      "   where trial_id="(sqlQuote trial_id)
+      "   and org_group_id="(sqlQuote group_id)
       )
      )
     )
@@ -1875,7 +1875,24 @@
 	  "   where expt_id=" (sqlQuote experiment_id)
 	  "   and ta.assembly_id=a.assembly_id"
 	  "   and a.assembly_type <> 'CSM'"))
+    new_expt_id
     ))
+
+
+(define (deleteExperiment experiment_id)
+  (dbu (string-append
+	"delete from " asb-prefix "expt_trial_assembly"
+	"   where expt_id=" (sqlQuote experiment_id)
+	))
+  (dbu (string-append
+	"delete from "
+	"   "	  asb-prefix "expt_trial"
+	"   where expt_id=" (sqlQuote experiment_id)))
+  (dbu (string-append
+	"delete from "
+	asb-prefix "expt_experiment"
+	"   where expt_id=" (sqlQuote experiment_id)))
+  )
 
 (define (query-set query col)
   ;; cols is a String[].
@@ -1886,18 +1903,56 @@
          ((not (.next result)) ans)     
        (.add ans (.getString result col))))))
 
+(define (query-list query cols)
+  ;; cols is a String[].
+  (with-query-jdbc
+   query
+   (lambda (result)
+     (do ((ans ()))
+         ((not (.next result)) ans)     
+       (set! ans 
+	     (append ans
+		     (list
+		      (map (lambda (col)
+			     ((eval (first col)) result (second col)))
+			   cols))))))))
+
 
 (define (updateCMTAssembly experiment_id)
   (let*
       ((assembly_description (string-append "assembly for: " experiment_id))
-       (threads (query-set "select thread_id from v4_expt_trial_thread" "THREAD_ID"))
+       (threads 
+	(query-set "select thread_id from v4_expt_trial_thread" "THREAD_ID"))
        (cfw_group_id 
 	(query-1-string
 	 (string-append "select cfw_group_id from " asb-prefix "expt_experiment where  expt_id=" (sqlQuote experiment_id))
 	 "CFW_GROUP_ID"))
+       (clones 
+	(query-list (string-append
+		     "select org_group_id, multiplier from "
+		    "   " asb-prefix "EXPT_TRIAL_ORG_MULT" 
+		    "   where multiplier >1"
+		    )
+		    '((.getString "ORG_GROUP_ID")(.getInt "MULTIPLIER"))))
        )
     (.add threads "STRATEGIC-TRANS")
     (.add threads "THEATER-TRANS")
+    (set! threads (order-threads threads))
     (println (list 'create-cmt-asb assembly_description cfw_group_id threads "" clones))
     (create-cmt-asb assembly_description cfw_group_id threads "" clones)
     ))
+
+(define (listif bool item)
+  (if bool (list item) ()))
+
+(define (order-threads set)
+  (append
+   (listif (.contains set "STRATEGIC-TRANS") "STRATEGIC-TRANS")
+   (listif (.contains set "THEATER-TRANS") "THEATER-TRANS")
+   (listif (.contains set "CLASS-1") "CLASS-1")
+   (listif (.contains set "CLASS-3") "CLASS-3")
+   (listif (.contains set "CLASS-4") "CLASS-4")
+   (listif (.contains set "CLASS-5") "CLASS-5")
+   (listif (.contains set "CLASS-9") "CLASS-9")))
+
+
