@@ -3000,14 +3000,14 @@ public class PopulateDb extends PDbBase {
       if (componentType.equals(ComponentData.SOCIETY)) {
 	result = ComponentData.SOCIETY + "|" + data.getName();
       } else if (componentType.equals(ComponentData.HOST)) {
-	result = ComponentData.HOST + "|" + data.getName();
+	result = getHostAlibId(data.getName());
       } else if (componentType.equals(ComponentData.AGENT)) {
 	// Note that this & the next block correctly make the
 	// alib_id namespace the same for nodes and Agents, since Nodes have a NodeAgent,
 	// you can't re-use the name
 	result = getAgentAlibId(data.getName());
       } else if (componentType.equals(ComponentData.NODE)) {
-	result = data.getName();
+	result = getNodeAlibId(data.getName());
       } else {
 	ComponentData anc = data.getParent();
 	if (componentType.equals(ComponentData.NODEBINDER) && ! anc.getType().equals(ComponentData.NODE)) {
@@ -3042,8 +3042,23 @@ public class PopulateDb extends PDbBase {
    * hyphen. We are not present concerned with clone set ids, so we
    * use a fixed CLONE_SET_ID.
    **/
-  private String getAgentAlibId(String agentName) {
-    return "" + agentName;
+  public static String getAgentAlibId(String agentName) {
+    return agentName;
+  }
+
+  /**
+   * The convention for a Nodes Alib ID is just to use the Node name
+   * In general, this must agree with the Agent convention.
+   */
+  public static String getNodeAlibId(String nodeName) {
+    return nodeName;
+  }
+
+  /**
+   * The convention for a Hosts Alib ID is to prepend host|
+   **/
+  public static String getHostAlibId(String hostName) {
+    return ComponentData.HOST + "|" + hostName;
   }
 
   /**
