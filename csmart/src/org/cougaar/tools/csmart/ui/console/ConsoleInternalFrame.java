@@ -27,6 +27,8 @@ import java.awt.event.KeyEvent;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import javax.swing.*;
 
@@ -71,10 +73,14 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private HostComponent host;
   private String hostName;
   private String notifyCondition;
+  private JButton statusButton;
+  private String logFileName;
 
   public ConsoleInternalFrame(NodeComponent node, 
                               ConsoleNodeListener listener,
-                              JScrollPane pane) {
+                              JScrollPane pane,
+                              JButton statusButton,
+                              String logFileName) {
     super("",   // title
           true, //resizable
           false, //not closable, because they can't be recreated
@@ -82,6 +88,8 @@ public class ConsoleInternalFrame extends JInternalFrame {
           true);//iconifiable
     this.node = node;
     this.listener = listener;
+    this.statusButton = statusButton;
+    this.logFileName = logFileName;
     consoleTextPane = (ConsoleTextPane)pane.getViewport().getView();
     // get host component by getting the experiment and 
     // searching its hosts for one with this node.
@@ -232,6 +240,32 @@ public class ConsoleInternalFrame extends JInternalFrame {
     aboutPanel.setLayout(new GridBagLayout());
     int x = 0;
     int y = 0;
+    aboutPanel.add(new JLabel("Status:"),
+                   new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.NONE,
+                                          new Insets(10, 0, 5, 5),
+                                          0, 0));
+    aboutPanel.add(new JLabel(CSMARTConsole.getStatusColorDescription(statusButton)),
+                   new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.HORIZONTAL,
+                                          new Insets(10, 0, 5, 0),
+                                          0, 0));
+    x = 0;
+    aboutPanel.add(new JLabel("Log File Name:"),
+                   new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.NONE,
+                                          new Insets(10, 0, 5, 5),
+                                          0, 0));
+    aboutPanel.add(new JLabel(logFileName),
+                   new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.HORIZONTAL,
+                                          new Insets(10, 0, 5, 0),
+                                          0, 0));
+    x = 0;
     aboutPanel.add(new JLabel("Host Name:"),
                    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
                                           GridBagConstraints.WEST,
@@ -239,6 +273,25 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           new Insets(10, 0, 5, 5),
                                           0, 0));
     aboutPanel.add(new JLabel(hostName),
+                   new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.HORIZONTAL,
+                                          new Insets(10, 0, 5, 0),
+                                          0, 0));
+    x = 0;
+    aboutPanel.add(new JLabel("Host Address:"),
+                   new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.NONE,
+                                          new Insets(10, 0, 5, 5),
+                                          0, 0));
+    String hostAddress = "";
+    try {
+      InetAdress host = InetAddress.getByName(hostName);
+      hostAddress = host.toString();
+    } catch (UnknownHostException uhe) {
+    }
+    aboutPanel.add(new JLabel(hostAddress),
                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.HORIZONTAL,

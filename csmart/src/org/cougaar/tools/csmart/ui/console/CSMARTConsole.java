@@ -126,6 +126,7 @@ public class CSMARTConsole extends JFrame {
   public static Color unknownStatus = new Color(180, 180, 180); //gray
   public static Color stdErrStatus = new Color(215, 145, 0); //orange
   public static Color notifyStatus = Color.blue;
+  private static Hashtable colorDescriptions;
 
   // used for log file name
   private static DateFormat fileDateFormat =
@@ -1069,10 +1070,11 @@ public class CSMARTConsole extends JFrame {
 
     // create a node event listener to get events from the node
     NodeEventListener listener = null;
+    String logFileName = getLogFileName(nodeName);
     try {
       listener = new ConsoleNodeListener(this,
 					 nodeComponent,
-					 getLogFileName(nodeName), 
+                                         logFileName,
 					 statusButton,
                                          stdoutPane);
     } catch (Exception e) {
@@ -1135,14 +1137,13 @@ public class CSMARTConsole extends JFrame {
     }
     
     // only add gui controls if successfully created node
-    // need to pass consolenodelistener to internal frame
-    // so that the listener can be invoked to gather idle chart information
-    // when the user requests the chart
+    addStatusButton(statusButton);
     desktop.addNodeFrame(nodeComponent, 
                          (ConsoleNodeListener)listener, 
                          new NodeFrameListener(),
-                         scrollPane);
-    addStatusButton(statusButton);
+                         scrollPane,
+                         statusButton,
+                         logFileName);
     updateExperimentControls(experiment, true);
     startTimers();
     return true;
@@ -1414,6 +1415,25 @@ public class CSMARTConsole extends JFrame {
     hostConfiguration.removeHostTreeSelectionListener(myTreeListener);
     hostConfiguration.selectNodeInHostTree(nodeName);
     hostConfiguration.addHostTreeSelectionListener(myTreeListener);
+  }
+
+  public static String getStatusColorDescription(Color statusColor) {
+    if (colorDescriptions == null) {
+      colorDescriptions = new Hashtable();
+      colorDescriptions.put(CSMARTConsole.busyStatus, "extremely busy");
+      colorDescriptions.put(CSMARTConsole.highBusyStatus, "very busy");
+      colorDescriptions.put(CSMARTConsole.mediumHighBusyStatus, "busy");
+      colorDescriptions.put(CSMARTConsole.mediumBusyStatus, "somewhat busy");
+      colorDescriptions.put(CSMARTConsole.mediumLowBusyStatus, "somewhat idle");
+      colorDescriptions.put(CSMARTConsole.lowBusyStatus, "idle");
+      colorDescriptions.put(CSMARTConsole.idleStatus, "node created");
+      colorDescriptions.put(CSMARTConsole.errorStatus, "node destroyed");
+      colorDescriptions.put(CSMARTConsole.noAnswerStatus, "no answer");
+      colorDescriptions.put(CSMARTConsole.unknownStatus, "unknown");
+      colorDescriptions.put(CSMARTConsole.stdErrStatus, "error");
+      colorDescriptions.put(CSMARTConsole.notifyStatus, "notify");
+    }
+    return (String)colorDescriptions.get(statusColor);
   }
 
   public static void main(String[] args) {
