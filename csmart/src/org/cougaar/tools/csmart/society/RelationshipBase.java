@@ -60,7 +60,8 @@ public class RelationshipBase
   private RelationshipData relationship;
 
   public RelationshipBase (RelationshipData relationship, int index){
-    super(relationship.getItem());
+    //    super(relationship.getItem());
+    super(relationship.getSupported());
     createLogger();
     this.relationship = relationship;
   }

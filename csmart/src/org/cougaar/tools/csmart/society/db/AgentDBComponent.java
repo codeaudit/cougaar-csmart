@@ -45,6 +45,7 @@ import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
 import org.cougaar.tools.csmart.society.AgentComponent;
+import org.cougaar.tools.csmart.society.AssetComponent;
 import org.cougaar.tools.csmart.society.ContainerBase;
 import org.cougaar.tools.csmart.society.PluginBase;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
@@ -166,67 +167,67 @@ public class AgentDBComponent
 
   // Take the ComponentData for an Agent to which
   // we are adding some data.
-  private ComponentData addAssetData(ComponentData data) {
-    AgentAssetData assetData = new AgentAssetData((AgentComponentData)data);
+//    private ComponentData addAssetData(ComponentData data) {
+//      AgentAssetData assetData = new AgentAssetData((AgentComponentData)data);
 
-    assetData.setType(AgentAssetData.ORG);
+//      assetData.setType(AgentAssetData.ORG);
 
-    String orgClass = queryOrgClass();
-    assetData.setAssetClass(orgClass);
+//      String orgClass = queryOrgClass();
+//      assetData.setAssetClass(orgClass);
     
-    // Get list of assemblies for use in query, ignoring CMT assemblies
-    String assemblyMatch = DBUtils.getListMatch(assemblyID, "CMT");
+//      // Get list of assemblies for use in query, ignoring CMT assemblies
+//      String assemblyMatch = DBUtils.getListMatch(assemblyID, "CMT");
 
-    if (assemblyMatch != null) {
-      substitutions.put(":assemblyMatch", assemblyMatch);
-      substitutions.put(":agent_name", name);
+//      if (assemblyMatch != null) {
+//        substitutions.put(":assemblyMatch", assemblyMatch);
+//        substitutions.put(":agent_name", name);
 
-      // Add all Relationship data
-      try {
-        Connection conn = DBUtils.getConnection();
-        try {
-          Statement stmt = conn.createStatement();	
-          String query = DBUtils.getQuery(QUERY_AGENT_RELATIONS, substitutions);
+//        // Add all Relationship data
+//        try {
+//          Connection conn = DBUtils.getConnection();
+//          try {
+//            Statement stmt = conn.createStatement();	
+//            String query = DBUtils.getQuery(QUERY_AGENT_RELATIONS, substitutions);
 	
-          ResultSet rs = stmt.executeQuery(query);
-          while(rs.next()) {
-            RelationshipData rd = new RelationshipData();
-            String supported = rs.getString(1);
-            String role = rs.getString(2);
-            Timestamp startDate = rs.getTimestamp(3);
-            Timestamp endDate = rs.getTimestamp(4);
-	    // what about rd.setType()? Probably to Supporting for most things?
-	    // except for some to Superior?
-            rd.setSupported(supported);
-            rd.setRole(role);
-            if (startDate != null) {
-              rd.setStartTime(startDate.getTime());
-            }
-            if (endDate != null) rd.setEndTime(endDate.getTime());
-            assetData.addRelationship(rd);
-          }
-          rs.close();
-          stmt.close();
+//            ResultSet rs = stmt.executeQuery(query);
+//            while(rs.next()) {
+//              RelationshipData rd = new RelationshipData();
+//              String supported = rs.getString(1);
+//              String role = rs.getString(2);
+//              Timestamp startDate = rs.getTimestamp(3);
+//              Timestamp endDate = rs.getTimestamp(4);
+//  	    // what about rd.setType()? Probably to Supporting for most things?
+//  	    // except for some to Superior?
+//              rd.setSupported(supported);
+//              rd.setRole(role);
+//              if (startDate != null) {
+//                rd.setStartTime(startDate.getTime());
+//              }
+//              if (endDate != null) rd.setEndTime(endDate.getTime());
+//              assetData.addRelationship(rd);
+//            }
+//            rs.close();
+//            stmt.close();
 
-        } finally {
-          conn.close();
-        }
-      } catch (Exception e) {
-        if(log.isErrorEnabled()) {
-          log.error("Exception", e);
-        }
-        throw new RuntimeException("Error" + e);
-      }
-    }
+//          } finally {
+//            conn.close();
+//          }
+//        } catch (Exception e) {
+//          if(log.isErrorEnabled()) {
+//            log.error("Exception", e);
+//          }
+//          throw new RuntimeException("Error" + e);
+//        }
+//      }
 
-    // FIXME: Add in other property groups!!
+//      // FIXME: Add in other property groups!!
     
-    // Note: This really does a SET, so it correctly
-    // replaces the old data, if any, with the new
-    data.addAgentAssetData(assetData);
+//      // Note: This really does a SET, so it correctly
+//      // replaces the old data, if any, with the new
+//      data.addAgentAssetData(assetData);
 
-    return data;
-  }
+//      return data;
+//    }
 
   public ComponentData addComponentData(ComponentData data) {
 //     if(log.isDebugEnabled()) {
@@ -307,7 +308,15 @@ public class AgentDBComponent
         throw new RuntimeException("Error" + e);
       }
     }
-    data = addAssetData(data);
+    //    data = addAssetData(data);
+
+    // Process AssetData
+    Iterator iter = 
+      ((Collection)getDescendentsOfClass(AssetComponent.class)).iterator();
+    while(iter.hasNext()) {
+      AssetComponent asset = (AssetComponent)iter.next();
+      asset.addComponentData(data);
+    }
 
     return data;
   }

@@ -18,22 +18,16 @@
  *  PERFORMANCE OF THE COUGAAR SOFTWARE.
  * </copyright>
  */
-package org.cougaar.tools.csmart.society.db;
+package org.cougaar.tools.csmart.society.cdata;
 
-import java.sql.SQLException;
-import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.ResultSet;
-import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.*;
+
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.PropGroupData;
 import org.cougaar.tools.csmart.core.cdata.RelationshipData;
-import org.cougaar.tools.csmart.core.db.DBUtils;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.society.AssetComponent;
@@ -41,13 +35,9 @@ import org.cougaar.tools.csmart.society.ContainerBase;
 import org.cougaar.tools.csmart.society.PropGroupBase;
 import org.cougaar.tools.csmart.society.RelationshipBase;
 
-public class AssetDBComponent
+public class AssetCDataComponent
   extends ModifiableConfigurableComponent
   implements AssetComponent {
-
-  // query names
-  private static final String QUERY_AGENT_ASSET_CLASS = "queryAgentAssetClass";
-  private static final String QUERY_AGENT_RELATIONS = "queryAgentRelationships";
 
   /** Property Definitions **/
   public static final String PROP_TYPE = "Asset Type";
@@ -61,47 +51,49 @@ public class AssetDBComponent
   public static final String PROP_UIC = "UIC";
   public static final String PROP_UIC_DESC = "UIC of the Asset";
 
-  private Map substitutions = new HashMap();
   private Property propAssetType;
   private Property propAssetClass;
   private Property propUniqueID;
   private Property propUnitName;
   private Property propUIC;
-  private String agentName;
-  private List assemblyID;
+  private AgentAssetData createdFromData;
 
-  public AssetDBComponent(String agentName, List assemblyID) {
+  public AssetCDataComponent(AgentAssetData data) {
     super("AssetData");
-    this.agentName = agentName;
-    this.assemblyID = assemblyID;
+    createdFromData = data;
   }
 
+  /**
+   * Init properties from AgentAssetData
+   */
+
   public void initProperties() {
-    propAssetType = addProperty(PROP_TYPE, new Integer(AgentAssetData.ORG));
+    propAssetType = addProperty(PROP_TYPE, 
+                                new Integer(createdFromData.getType()));
     propAssetType.setToolTip(PROP_TYPE_DESC);
-
-    propAssetClass = addProperty(PROP_CLASS, queryOrgClass());
+    propAssetClass = addProperty(PROP_CLASS, createdFromData.getAssetClass());
     propAssetClass.setToolTip(PROP_CLASS_DESC);
-
-    // TODO: where do you get the UID?
-    propUniqueID = addProperty(PROP_UID, "");
-    propUniqueID.setToolTip(PROP_UID_DESC);
-    
-    propUnitName = addProperty(PROP_UNITNAME, "");
+    if (createdFromData.getUniqueID() != null) {
+      propUniqueID = addProperty(PROP_UID, createdFromData.getUniqueID());
+      propUniqueID.setToolTip(PROP_UID_DESC);
+    }
+    // Unit name is allowed to be null, if it is, give an empty string.
+    String unitname = (createdFromData.getUnitName() == null) ? "" : createdFromData.getUnitName();
+    propUnitName = addProperty(PROP_UNITNAME, unitname);
     propUnitName.setToolTip(PROP_UNITNAME_DESC);
+    
+    if(createdFromData.getUIC() != null) {
+      propUIC = addProperty(PROP_UIC, createdFromData.getUIC());
+      propUIC.setToolTip(PROP_UIC_DESC);
+    }
 
-    propUIC = addProperty(PROP_UIC, "UIC/" + agentName);
-    propUIC.setToolTip(PROP_UIC_DESC);
-
-    //    addPropGroups();
-    RelationshipData[] relationshipData = getRelationshipData();
-    addRelationships(relationshipData);
+    addPropGroups(createdFromData);
+    addRelationships(createdFromData.getRelationshipData());
   }
 
   /**
    * Add component data for asset properties, relationships,
    * and property groups.
-   * TODO: same as AssetFileComponent: should this be moved to a base class?
    */
 
   public ComponentData addComponentData(ComponentData data) {
@@ -121,7 +113,7 @@ public class AssetDBComponent
         for(int i=0; i < container.getChildCount(); i++) {
           RelationshipBase rel = (RelationshipBase) container.getChild(i);
           RelationshipData rData = new RelationshipData();
-          rData.setType((String)rel.getProperty(RelationshipBase.PROP_TYPE).getValue());
+          rData.setType((String)rel.getProperty(PROP_TYPE).getValue());
           rData.setRole((String)rel.getProperty(RelationshipBase.PROP_ROLE).getValue());
           rData.setItem((String)rel.getProperty(RelationshipBase.PROP_ITEM).getValue());
           rData.setSupported((String)rel.getProperty(RelationshipBase.PROP_SUPPORTED).getValue());
@@ -142,67 +134,6 @@ public class AssetDBComponent
     return data;
   }
 
-  private RelationshipData[] getRelationshipData() {
-    // Get list of assemblies for use in query, ignoring CMT assemblies
-    String assemblyMatch = DBUtils.getListMatch(assemblyID, "CMT");
-
-    if (assemblyMatch != null) {
-      substitutions.put(":assemblyMatch", assemblyMatch);
-      substitutions.put(":agent_name", agentName);
-    }
-
-    // creates relationships by creating RelationshipData
-    // from the database and passing that as an argument
-    // to RelationshipBase
-    ArrayList relationshipData = new ArrayList();
-    try {
-      Connection conn = DBUtils.getConnection();
-      try {
-        Statement stmt = conn.createStatement();	
-        String query = DBUtils.getQuery(QUERY_AGENT_RELATIONS, substitutions);
-        ResultSet rs = stmt.executeQuery(query);
-        while(rs.next()) {
-          RelationshipData rd = new RelationshipData();
-          String supported = rs.getString(1);
-          String role = rs.getString(2);
-          Timestamp startDate = rs.getTimestamp(3);
-          Timestamp endDate = rs.getTimestamp(4);
-          //          rd.setType("");
-          //          rd.setItem("");
-          //          rd.setSupported(supported);
-          //          rd.setRole(role);
-          // TODO: is this correct handling of relationship data?
-          // start new code
-          rd.setItem(supported);
-          rd.setSupported(supported);
-          if (role.equals("Subordinate")) {
-            rd.setRole("");
-            rd.setType("Subordinate");
-          } else {
-            rd.setRole(role);
-            rd.setType("Supporting");
-          }
-          // end new code
-          if (startDate != null) {
-            rd.setStartTime(startDate.getTime());
-          }
-          if (endDate != null) rd.setEndTime(endDate.getTime());
-          relationshipData.add(rd);
-        }
-        rs.close();
-        stmt.close();
-      } finally {
-        conn.close();
-      }
-    } catch (Exception e) {
-      if(log.isErrorEnabled()) {
-        log.error("Exception", e);
-      }
-      throw new RuntimeException("Error" + e);
-    }
-    return (RelationshipData[])relationshipData.toArray(new RelationshipData[relationshipData.size()]);
-  }
-
   private void addRelationships(RelationshipData[] rel) {
     ContainerBase relContainer = new ContainerBase("Relationships");
     relContainer.initProperties();
@@ -214,43 +145,17 @@ public class AssetDBComponent
     }
   }
 
-//    private void addPropGroups(AgentAssetData aad) {
-//      Iterator iter = aad.getPropGroupsIterator();
-//      while(iter.hasNext()) {
-//        PropGroupData pgd = (PropGroupData)iter.next();
-//        PropGroupBase newPG = new PropGroupBase(pgd);
-//        if(log.isDebugEnabled()) {
-//          log.debug("Adding: " + pgd.getName());
-//        }
-//        newPG.initProperties();
-//        addChild(newPG);
-//      }
-//    }
-
-  private String queryOrgClass() {
-    String orgClass = null;
-    substitutions.put(":agent_name", agentName);
-    try {
-      Connection conn = DBUtils.getConnection();
-      try {
-	Statement stmt = conn.createStatement();	
-	String query = DBUtils.getQuery(QUERY_AGENT_ASSET_CLASS, substitutions);
-	ResultSet rs = stmt.executeQuery(query);
-	while (rs.next()) {
-	  orgClass = rs.getString(1);	  
-	}
-	rs.close();
-	stmt.close();
-
-      } finally {
-	conn.close();
+  private void addPropGroups(AgentAssetData aad) {
+    Iterator iter = aad.getPropGroupsIterator();
+    while(iter.hasNext()) {
+      PropGroupData pgd = (PropGroupData)iter.next();
+      PropGroupBase newPG = new PropGroupBase(pgd);
+      if(log.isDebugEnabled()) {
+        log.debug("Adding: " + pgd.getName());
       }
-    } catch (Exception e) {
-      if(log.isErrorEnabled()) {
-        log.error("Exception", e);
-      }
-      throw new RuntimeException("Error" + e);
+      newPG.initProperties();
+      addChild(newPG);
     }
-    return orgClass;
   }
+
 }

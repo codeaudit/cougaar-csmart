@@ -75,6 +75,7 @@ import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
 import org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL;
 import org.cougaar.tools.csmart.ui.experiment.ExperimentBuilder;
 
+import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.db.ExperimentDB;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
@@ -82,6 +83,7 @@ import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
+import org.cougaar.tools.csmart.society.cdata.SocietyCDataComponent;
 import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.monitor.generic.ExtensionFileFilter;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
@@ -561,8 +563,15 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     Class[] paramClasses = { CSMART.class, ModifiableComponent.class };
     Object[] params = new Object[2];
     params[0] = this;
-    if (cc instanceof Experiment)
-      cc = ((Experiment)cc).getSocietyComponent();
+    if (cc instanceof Experiment) {
+      // create component data from experiment
+      // then create society from the component data
+      //      cc = ((Experiment)cc).getSocietyComponent();
+      Experiment experiment = (Experiment)cc;
+      ComponentData cdata = experiment.getSocietyComponentData();
+      cc = new SocietyCDataComponent(cdata);
+      cc.initProperties();
+    }
     params[1] = cc;
     createTool(CONFIGURATION_BUILDER, PropertyBuilder.class, 
 	       alwaysNew, cc.getShortName(), (ModifiableComponent)cc,
