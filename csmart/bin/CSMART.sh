@@ -72,7 +72,7 @@ fi
     
 # The performance analyzer uses Excel. To use it or an equivalent,
 # edit the following property:
-MYEXCEL="-Dorg.cougaar.tools.csmart.excelpath=C:/Program Files/Microsoft Office/Office/excel.exe"
+MYEXCEL=-Dorg.cougaar.tools.csmart.excelpath=\"C:/Program\\ Files/Microsoft\\ Office/Office/excel.exe\"
 
 MYMEMORY="-Xms100m -Xmx300m"
 MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH $MYEXCEL"
