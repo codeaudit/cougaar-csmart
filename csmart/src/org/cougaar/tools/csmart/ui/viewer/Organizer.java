@@ -55,17 +55,12 @@ import org.cougaar.tools.csmart.recipe.SpecificInsertionRecipe;
 import org.cougaar.tools.csmart.recipe.AgentInsertionRecipe;
 import org.cougaar.tools.csmart.recipe.ParameterInsertionRecipe;
 import org.cougaar.tools.csmart.recipe.ServletGroupInsertionRecipe;
-import org.cougaar.tools.csmart.recipe.ABCImpact;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
-import org.cougaar.tools.csmart.society.abc.ABCSociety;
-import org.cougaar.tools.csmart.society.ini.INISociety;
-import org.cougaar.tools.csmart.society.scalability.ScalabilityXSociety;
 import org.cougaar.tools.csmart.society.cmt.CMTSociety;
+import org.cougaar.tools.csmart.society.file.SocietyFileComponent;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import org.cougaar.tools.csmart.recipe.ABCCyberImpact;
-import org.cougaar.tools.csmart.recipe.ABCKineticImpact;
 
 /**
  * The Organizer holds all the component a user creates
@@ -95,13 +90,6 @@ public class Organizer extends JScrollPane {
   private DBConflictHandler saveToDbConflictHandler =
     GUIUtils.createSaveToDbConflictHandler(this);
   
-  // The societies which can be created in CSMART
-//    private NameClassItem[] builtInSocieties = {
-//      new NameClassItem("Scalability", ScalabilityXSociety.class),
-//      new NameClassItem("ABC", ABCSociety.class),
-//      new NameClassItem("INI", INISociety.class),
-//    };
-
   // The stand-alone recipes that can be created in CSMART
   private Object[] metNameClassItems = {
     new NameClassItem("Basic Metric", BasicMetric.class),
@@ -110,9 +98,6 @@ public class Organizer extends JScrollPane {
     new NameClassItem("Agent Insertion", AgentInsertionRecipe.class),
     new NameClassItem("Parameter Insertion", ParameterInsertionRecipe.class),
     new NameClassItem("Servlet Group Insertion", ServletGroupInsertionRecipe.class),
-//     new NameClassItem("ABC CyberImpact", ABCCyberImpact.class),
-//     new NameClassItem("ABC KineticImpact", ABCKineticImpact.class)
-    //    new NameClassItem("ABCImpact", ABCImpact.class),
   };
 
   // Define Unique Name sets
@@ -514,16 +499,6 @@ public class Organizer extends JScrollPane {
    */
 
   public DefaultMutableTreeNode newSociety() {
-//      Object answer =
-//        JOptionPane.showInputDialog(this, "Select Society Type",
-//  				  "Select Society",
-//  				  JOptionPane.QUESTION_MESSAGE,
-//  				  null,
-//                                    builtInSocieties,
-//  				  "ScalabilityX");
-//      if (answer == null)
-//        return null;
-//      NameClassItem item = (NameClassItem) answer;
     // display file chooser to allow user to select file that defines society
     JFileChooser chooser = 
       new JFileChooser(SocietyFinder.getInstance().getPath());
@@ -533,7 +508,8 @@ public class Organizer extends JScrollPane {
       return null;
     String name = chooser.getSelectedFile().getName();
     // create society using file name
-    SocietyComponent sc = helper.createSociety(name, INISociety.class);
+    SocietyComponent sc = helper.createSociety(name, 
+                                               SocietyFileComponent.class);
     if (sc == null)
       return null;
     if (name.endsWith(".ini"))
@@ -1091,7 +1067,7 @@ public class Organizer extends JScrollPane {
 //        }
     // add society to workspace only if it's builtin
     //    if (builtIn) {
-    if (societyCopy instanceof INISociety) {
+    if (societyCopy instanceof SocietyComponent) {
       DefaultMutableTreeNode node = 
         (DefaultMutableTreeNode)findNode(society).getParent();
       workspace.setSelection(addSocietyToWorkspace(societyCopy, node));

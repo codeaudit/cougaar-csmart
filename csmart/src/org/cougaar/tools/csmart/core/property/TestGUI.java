@@ -101,7 +101,7 @@ public class TestGUI
                     return i < component.getChildCount();
                 }
                 public Object nextElement() {
-                    return getTreeNodeFor(component.getChild(i++));
+                    return getTreeNodeFor((ConfigurableComponent)component.getChild(i++));
                 }
             };
         }
@@ -109,7 +109,7 @@ public class TestGUI
             return true;
         }
         public TreeNode getChildAt(int childIndex) {
-            return getTreeNodeFor(component.getChild(childIndex));
+            return getTreeNodeFor((ConfigurableComponent)component.getChild(childIndex));
         }
         public int getChildCount() {
             return component.getChildCount();
@@ -122,7 +122,7 @@ public class TestGUI
             return -1;
         }
         public TreeNode getParent() {
-            return getTreeNodeFor(component.getParent());
+            return getTreeNodeFor((ConfigurableComponent)component.getParent());
         }
         public boolean isLeaf() {
             return getChildCount() == 0;

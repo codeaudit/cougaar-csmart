@@ -29,7 +29,7 @@ import java.util.Collection;
 
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
-import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
 
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
@@ -438,7 +438,7 @@ public class ABCImpact
 
 
   // Simple ImpactAgent Component.
-  class ImpactAgentComponent extends ConfigurableComponent 
+  class ImpactAgentComponent extends ModifiableConfigurableComponent 
     implements AgentComponent, Serializable {
 
     private boolean generator = false;

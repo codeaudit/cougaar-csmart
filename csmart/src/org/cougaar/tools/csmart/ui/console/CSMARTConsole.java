@@ -51,7 +51,6 @@ import org.cougaar.tools.csmart.experiment.TrialResult;
 import org.cougaar.tools.csmart.recipe.MetricComponent;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
-import org.cougaar.tools.csmart.society.scalability.ScalabilityXSociety;
 import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.configbuilder.PropertyEditorPanel;
 import org.cougaar.tools.csmart.ui.experiment.HostConfigurationBuilder;
@@ -2056,9 +2055,6 @@ public class CSMARTConsole extends JFrame {
 
   public static void main(String[] args) {
     CSMARTConsole console = new CSMARTConsole(null, null);
-    // for debugging, create our own society
-    SocietyComponent sc = (SocietyComponent)new org.cougaar.tools.csmart.society.scalability.ScalabilityXSociety();
-    console.setSocietyComponent(sc);
   }
 
   class NodeFrameListener implements InternalFrameListener {

@@ -26,6 +26,7 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -85,9 +86,6 @@ import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.monitor.generic.ExtensionFileFilter;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.util.Util;
-
-import org.cougaar.tools.csmart.society.scalability.ScalabilityXSociety;
-import java.io.ObjectInputStream;
 
 /**
  * Top level CSMART user interface.
@@ -563,6 +561,8 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     Class[] paramClasses = { CSMART.class, ModifiableComponent.class };
     Object[] params = new Object[2];
     params[0] = this;
+    if (cc instanceof Experiment)
+      cc = ((Experiment)cc).getSocietyComponent();
     params[1] = cc;
     createTool(CONFIGURATION_BUILDER, PropertyBuilder.class, 
 	       alwaysNew, cc.getShortName(), (ModifiableComponent)cc,
@@ -831,6 +831,11 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       if (societies != null)
         for (int i = 0; i < societies.length; i++)
           components.add(societies[i]);
+      // TODO: get society out of experiment
+      Experiment[] experiments = organizer.getSelectedExperiments();
+      if (experiments != null)
+        for (int i = 0; i < experiments.length; i++)
+          components.add(experiments[i]);
       // if no recipes or societies, then try to create a society
 //        if (components.size() == 0) {
 //  	organizer.addSociety();

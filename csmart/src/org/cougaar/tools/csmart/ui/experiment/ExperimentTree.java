@@ -34,7 +34,6 @@ import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.ui.console.*;
 import org.cougaar.tools.csmart.ui.tree.CSMARTDataFlavor;
 import org.cougaar.tools.csmart.ui.tree.DNDTree;
-import org.cougaar.tools.csmart.society.scalability.ScalabilityXSociety;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import java.io.ObjectInputStream;

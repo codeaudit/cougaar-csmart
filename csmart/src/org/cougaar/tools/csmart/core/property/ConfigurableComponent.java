@@ -61,7 +61,7 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
  * This method can be overridden by specific components.
  */
 public abstract class ConfigurableComponent
-  implements ComposableComponent, BaseComponent, ConfigurableComponentListener
+  implements BaseComponent, ConfigurableComponentListener
 {
   private static final long serialVersionUID = -7727291298618568087L;
 
@@ -69,7 +69,7 @@ public abstract class ConfigurableComponent
   private transient Collection myPropertyEntries = null;
   private List children = null; // Our children, if any
   private Set blockedProperties = new HashSet();
-  private ConfigurableComponent parent; // Our parent, if any
+  private ComposableComponent parent; // Our parent, if any
   private static int nameCount = 0;
   private ComponentName myName;
   private boolean nameChangeMark = false;
@@ -246,13 +246,13 @@ public abstract class ConfigurableComponent
    * The ancestor is a specific class type.
    *
    * @param cls <code>Class</code> of Ancestor 
-   * @return <code>ConfigurableComponent</code> for the ancestor.
+   * @return <code>ComposableComponent</code> for the ancestor.
    */
-  protected ConfigurableComponent getAncestorOfClass(Class cls) {
-    ConfigurableComponent parent = getParent();
+  protected ComposableComponent getAncestorOfClass(Class cls) {
+    ComposableComponent parent = getParent();
     if (parent == null) return null;
     if (cls.isInstance(parent)) return parent;
-    return parent.getAncestorOfClass(cls);
+    return ((ConfigurableComponent)parent).getAncestorOfClass(cls);
   }
 
   /**
@@ -266,7 +266,7 @@ public abstract class ConfigurableComponent
    */
   public Collection getDescendentsOfClass(Class cls, Collection c) {
     for (int i = 0, n = getChildCount(); i < n; i++) {
-      ConfigurableComponent child = getChild(i);
+      ComposableComponent child = getChild(i);
       child.getDescendentsOfClass(cls, c);
       if (cls.isInstance(child)) c.add(child);
     }
@@ -324,17 +324,17 @@ public abstract class ConfigurableComponent
 
   /**
    * Add a child to this component. Childs are always of type
-   * <code>ConfigurableComponent</code>.
+   * <code>ComposableComponent</code>.
    *
    * @param c the child to add
    * @return Count of all Children in this component.
    */
-  public int addChild(ConfigurableComponent c) {
+  public int addChild(ComposableComponent c) {
     if (children == null) children = new ArrayList();
-    c.addPropertiesListener(myPropertiesListener);
+    ((ConfigurableComponent)c).addPropertiesListener(myPropertiesListener);
     children.add(c);
     c.setParent(this);
-    for (Iterator i = c.getPropertyNames(); i.hasNext(); ) {
+    for (Iterator i = ((ConfigurableComponent)c).getPropertyNames(); i.hasNext(); ) {
       CompositeName name = (CompositeName) i.next();
       Property prop = getProperty(name);
       if (prop != null) firePropertyAdded(prop);
@@ -354,12 +354,12 @@ public abstract class ConfigurableComponent
   /**
    * Removes a specific child component.
    *
-   * @param c <code>ConfigurableComponent</code> of child to remove.
+   * @param c <code>ComposableComponent</code> of child to remove.
    */
-  public void removeChild(ConfigurableComponent c) {
+  public void removeChild(ComposableComponent c) {
     if (children == null || c.getParent() != this) return;
-    c.removePropertiesListener(myPropertiesListener);
-    for (Iterator i = c.getPropertyNames(); i.hasNext(); ) {
+    ((ConfigurableComponent)c).removePropertiesListener(myPropertiesListener);
+    for (Iterator i = ((ConfigurableComponent)c).getPropertyNames(); i.hasNext(); ) {
       CompositeName name = (CompositeName) i.next();
       Property prop = getProperty(name);
       if (prop != null) firePropertyRemoved(prop);
@@ -392,24 +392,24 @@ public abstract class ConfigurableComponent
    * Gets a child component from a specific index.
    *
    * @param n index of child component to retreive.
-   * @return a <code>ConfigurableComponent</code> object for that child.
+   * @return a <code>ComposableComponent</code> object for that child.
    */
-  public ConfigurableComponent getChild(int n) {
-    return (ConfigurableComponent) children.get(n);
+  public ComposableComponent getChild(int n) {
+    return (ComposableComponent) children.get(n);
   }
 
   /**
    * Gets a child component based on the childs Full Name.
    *
    * @param childName <code>CompositeName</code> of the child.
-   * @return a <code>ConfigurableComponent</code> object of the child.
+   * @return a <code>ComposableComponent</code> object of the child.
    */
-  public ConfigurableComponent getChild(CompositeName childName) {
-    ConfigurableComponent cc = null;
+  public ComposableComponent getChild(CompositeName childName) {
+    ComposableComponent cc = null;
 
     for(int i=0; i < getChildCount(); i++) {
       cc = getChild(i);
-      if(cc.getShortName().equals(childName.toString())){
+      if(((ConfigurableComponent)cc).getShortName().equals(childName.toString())){
 	return cc;
       }
     }
@@ -423,14 +423,16 @@ public abstract class ConfigurableComponent
    *
    * @param newParent New Parent Component
    */
-  public void setParent(ConfigurableComponent newParent) {
-    ConfigurableComponent oldParent = parent;
+  public void setParent(ComposableComponent newParent) {
+    ComposableComponent oldParent = parent;
     startNameChange();
     parent = newParent;
-    myName.setComponent(parent);
+    myName.setComponent((BaseComponent)parent);
     finishNameChange();
-    if (oldParent != null) oldParent.fireChildConfigurationChanged();
-    if (newParent != null) newParent.fireChildConfigurationChanged();
+    if (oldParent != null) 
+      ((ConfigurableComponent)oldParent).fireChildConfigurationChanged();
+    if (newParent != null) 
+      ((ConfigurableComponent)newParent).fireChildConfigurationChanged();
   }
 
   /**
@@ -474,9 +476,10 @@ public abstract class ConfigurableComponent
     if (nameChangeMark) return;
     nameChangeMark = true;
     for (int i = 0, n = getChildCount(); i < n; i++) {
-      getChild(i).startNameChange();
+      ((ConfigurableComponent)getChild(i)).startNameChange();
     }
-    if (parent != null) parent.startNameChange();
+    if (parent != null) 
+      ((ConfigurableComponent)parent).startNameChange();
     nameChangeMark = false;
     if (myProperties != null) {
       // Must make a copy because the entrySet is backed by the Map
@@ -499,9 +502,10 @@ public abstract class ConfigurableComponent
     if (nameChangeMark) return;
     nameChangeMark = true;
     for (int i = 0, n = getChildCount(); i < n; i++) {
-      getChild(i).finishNameChange();
+      ((ConfigurableComponent)getChild(i)).finishNameChange();
     }
-    if (parent != null) parent.finishNameChange();
+    if (parent != null) 
+      ((ConfigurableComponent)parent).finishNameChange();
     nameChangeMark = false;
   }
 
@@ -537,9 +541,9 @@ public abstract class ConfigurableComponent
    * Gets the parent of this component.  If there are no
    * parents, NULL is returned.
    *
-   * @return a <code>ConfigurableComponent</code> object for the parent, or null if no parent.
+   * @return a <code>ComposableComponent</code> object for the parent, or null if no parent.
    */
-  public ConfigurableComponent getParent() {
+  public ComposableComponent getParent() {
     return parent;
   }
 
@@ -557,7 +561,8 @@ public abstract class ConfigurableComponent
       return null;              // Fetching an invisible property
     }
     for (int i = 0, n = getChildCount(); i < n; i++) {
-      Property result = getChild(i).getProperty(name);
+      Property result = 
+        ((ConfigurableComponent)getChild(i)).getProperty(name);
       if (result != null) return result;
     }
     return null;
@@ -758,7 +763,8 @@ public abstract class ConfigurableComponent
             if (nextChildIndex >= getChildCount()) {
               return false;
             }
-            currentIterator = getChild(nextChildIndex++).getPropertyNames();
+            currentIterator = 
+              ((ConfigurableComponent)getChild(nextChildIndex++)).getPropertyNames();
           }
           pendingName = (CompositeName) currentIterator.next();
           if (pendingName != null && getProperty(pendingName) == null) {
@@ -845,7 +851,7 @@ public abstract class ConfigurableComponent
       // compose the correct name for the property
       // name must be prepended by new society name
       String s = name.last().toString();
-      ComponentName hisPropName = new ComponentName((ConfigurableComponent)result, s);
+      ComponentName hisPropName = new ComponentName(result, s);
       Property hisProp = result.getProperty(hisPropName);
       try {
 	// if have experimental values, then copy those
@@ -875,8 +881,9 @@ public abstract class ConfigurableComponent
 
     // Now, clone my children
     for(int i=0; i < getChildCount(); i++) {
-      ConfigurableComponent cc = getChild(i);
-      ConfigurableComponent co = ((ConfigurableComponent)result).getChild(cc.getFullName().last());
+      ConfigurableComponent cc = (ConfigurableComponent)getChild(i);
+      BaseComponent co = 
+        (BaseComponent)result.getChild(cc.getFullName().last());
       if(co != null) {
 	cc.copy(co);
       }

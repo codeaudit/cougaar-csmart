@@ -36,10 +36,6 @@ import org.cougaar.tools.csmart.core.property.name.ComponentName;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.cdata.*;
 import org.cougaar.tools.csmart.society.AgentComponent;
-import org.cougaar.tools.csmart.society.abc.ABCAgent;
-import org.cougaar.tools.csmart.society.abc.ABCSociety;
-import org.cougaar.tools.csmart.society.scalability.ScalabilityXAgent;
-import org.cougaar.tools.csmart.society.scalability.ScalabilityXSociety;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
 

@@ -61,14 +61,14 @@ public interface ComposableComponent extends Serializable {
    *
    * @param newParent New parent name.
    */
-  void setParent(ConfigurableComponent newParent);
+  void setParent(ComposableComponent newParent);
 
   /**
    * Returns the parent of this component.
    *
    * @return parent of this component.
    */
-  ConfigurableComponent getParent();
+  ComposableComponent getParent();
  
   /** Child Operations **/
 
@@ -77,7 +77,7 @@ public interface ComposableComponent extends Serializable {
    * @param c the child to add
    * @return child count.
    */
-  int addChild(ConfigurableComponent c);
+  int addChild(ComposableComponent c);
 
   /**
    * Removes a child from this component.
@@ -89,7 +89,7 @@ public interface ComposableComponent extends Serializable {
    * Removes a child from this component.
    * @param c Child to remove
    */
-  void removeChild(ConfigurableComponent c);
+  void removeChild(ComposableComponent c);
 
   /**
    * Removes all children from this component.
@@ -100,14 +100,14 @@ public interface ComposableComponent extends Serializable {
    * Returns a child of this component.
    * @param childIndex Index of the child within this component.
    */
-  ConfigurableComponent getChild(int childIndex);
+  ComposableComponent getChild(int childIndex);
 
   /**
    * Returns a child of this component.
    * @param childName Name of child to retrieve
    * @return Requested child or null of child not found
    */
-  ConfigurableComponent getChild(CompositeName childName);
+  ComposableComponent getChild(CompositeName childName);
 
   /**
    * Count of all children in this component.

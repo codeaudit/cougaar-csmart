@@ -172,10 +172,15 @@ public class ActionUtil {
       }
     } // end if selected object is folder
 
+    // TODO: probably need to make running configuration tool more selective
+    // for now, if experiment is selected, allow user to
+    // configure the society in it
     if (selectedObject instanceof Experiment) {
       Experiment experiment = (Experiment)selectedObject;
       if (action.equals(DUPLICATE_ACTION) ||
           action.equals(SAVE_TO_DATABASE_ACTION)) {
+        return true;
+      } else if (action.equals(CONFIGURE_ACTION)) {
         return true;
       } else if (action.equals(BUILD_ACTION)) {
         return !CSMART.isExperimentInEditor(experiment);

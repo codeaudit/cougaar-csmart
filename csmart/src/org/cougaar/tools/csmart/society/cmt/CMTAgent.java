@@ -34,7 +34,7 @@ import org.cougaar.util.DBProperties;
 import org.cougaar.util.DBConnectionPool;
 
 import org.cougaar.tools.csmart.core.db.DBUtils;
-import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
@@ -55,7 +55,7 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
  * @see CMTSociety
  */
 public class CMTAgent 
-  extends ConfigurableComponent 
+  extends ModifiableConfigurableComponent 
   implements AgentComponent, Serializable 
 {
 

@@ -29,7 +29,8 @@ import java.util.Collection;
 import java.util.StringTokenizer;
 import java.util.HashSet;
 
-import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.BaseComponent;
+import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
@@ -240,7 +241,7 @@ public class AgentInsertionRecipe extends RecipeBase
     } // end of if ()
     else {
       for (int i=0; i < agents.length; i++) {
-        if ( !agents[i].equals(getChild(i).getShortName()) ) {
+        if ( !agents[i].equals(((BaseComponent)getChild(i)).getShortName()) ) {
           childrenOK=false;
           break;
         } // end of if ()        
@@ -419,7 +420,7 @@ public class AgentInsertionRecipe extends RecipeBase
   }
 
   // Simple Agent Component.
-  class InsertAgentComponent extends ConfigurableComponent 
+  class InsertAgentComponent extends ModifiableConfigurableComponent 
     implements AgentComponent, Serializable {
 
     private Property[] propRelations = null;

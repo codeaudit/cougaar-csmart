@@ -22,6 +22,8 @@ package org.cougaar.tools.csmart.society;
 
 import java.io.FileFilter;
 import java.net.URL;
+import java.util.Collection;
+import java.util.Iterator;
 
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
@@ -77,6 +79,12 @@ public abstract class SocietyBase
    */
   public String getSocietyName() {
     return getShortName();
+  }
+
+  public AgentComponent[] getAgents() {
+    ArrayList agents = 
+      new ArrayList(getDescendentsOfClass(AgentComponent.class));
+    return (AgentComponent[])agents.toArray(new AgentComponent[agents.size()]);
   }
 
   /**
@@ -200,6 +208,33 @@ public abstract class SocietyBase
    * Called when a property has been removed from the society
    */
   public void propertyRemoved(PropertyEvent e) {}
+
+  public ComponentData addComponentData(ComponentData data) {
+    ComponentData[] children = data.getChildren();
+    for(int i=0; i < children.length; i++) {
+      ComponentData child = children[i];
+      // for each child component data, if it's an agent's component data
+      if (child.getType() == ComponentData.AGENT) {
+        // get all my agent components
+	Iterator iter = 
+          ((Collection)getDescendentsOfClass(AgentComponent.class)).iterator();
+	while(iter.hasNext()) {
+	  AgentComponent agent = (AgentComponent)iter.next();
+          // if the component data name matches the agent name
+	  if (child.getName().equals(agent.getShortName().toString())) {
+            // then set me as the owner of the component data
+	    child.setOwner(this);
+            // and add the component data
+	    agent.addComponentData(child);
+	  }
+	}		
+      } else {
+	// Process children of component data
+	addComponentData(child);
+      }      
+    }
+    return data;
+  }
 
   private void readObject(ObjectInputStream ois)
     throws IOException, ClassNotFoundException
