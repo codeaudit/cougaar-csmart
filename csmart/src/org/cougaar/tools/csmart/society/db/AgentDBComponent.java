@@ -71,8 +71,8 @@ public class AgentDBComponent
   /** Assembly ID Property Name **/
   public static final String PROP_ASSEMBLY_ID = "Assembly ID";
 
-  /** Component ID Property Name **/
-  public static final String PROP_COMPONENT_ID = "Component ID";
+//   /** Component ID Property Name **/
+//   public static final String PROP_COMPONENT_ID = "Component ID";
   
   /** Component Category Property Name **/
   public static final String PROP_COMPONENT_CATEGORY = "Component Category";
@@ -88,7 +88,7 @@ public class AgentDBComponent
   // The tree will not display in the builder
   // if there are no properties so put it's name.
   private Property propName;
-  private Property propComponentID;
+//   private Property propComponentID;
 
   private String name;
   private String assemblyID;
@@ -149,11 +149,11 @@ public class AgentDBComponent
 			     }
 			   });
 
-    propComponentID = addProperty(PROP_COMPONENT_ID, componentID,
-			   new ConfigurableComponentPropertyAdapter() {
-			     public void PropertyValueChanged(PropertyEvent e) {
-			     }
-			   });
+//     propComponentID = addProperty(PROP_COMPONENT_ID, componentID,
+// 			   new ConfigurableComponentPropertyAdapter() {
+// 			     public void PropertyValueChanged(PropertyEvent e) {
+// 			     }
+// 			   });
 
     try {
       initDBProperties();
@@ -234,10 +234,6 @@ public class AgentDBComponent
       try {
         Statement stmt = conn.createStatement();	
         query = dbp.getQuery(QUERY_PLUGIN_NAME, substitutions);
-//         if(log.isDebugEnabled()) {
-//           log.debug("Query: " + query);
-//         }
-
         ResultSet rs = stmt.executeQuery(query);
         while(rs.next()) {
           String pluginClassName = rs.getString(1);
