@@ -4,7 +4,7 @@
 -- Project :      CSMART Database
 -- Author :       M. Kappler & J. Berliner
 --
--- Date Created : Thursday, June 27, 2002 11:09:07
+-- Date Created : Tuesday, July 02, 2002 11:08:24
 -- Target DBMS : Oracle 8
 --
 
@@ -806,36 +806,6 @@ CREATE INDEX reflib_clone_set38 ON alib_component(CLONE_SET_ID)
 CREATE INDEX reflib_component13 ON alib_component(COMPONENT_LIB_ID)
 ;
 -- 
--- INDEX: Ref401 
---
-
-CREATE INDEX Ref401 ON alib_component(CLONE_SET_ID)
-;
--- 
--- INDEX: Ref403 
---
-
-CREATE INDEX Ref403 ON alib_component(COMPONENT_LIB_ID)
-;
--- 
--- INDEX: Ref405 
---
-
-CREATE INDEX Ref405 ON asb_agent(ASSEMBLY_ID)
-;
--- 
--- INDEX: Ref407 
---
-
-CREATE INDEX Ref407 ON asb_agent(COMPONENT_ALIB_ID)
-;
--- 
--- INDEX: Ref409 
---
-
-CREATE INDEX Ref409 ON asb_agent(COMPONENT_LIB_ID)
-;
--- 
 -- INDEX: refasb_assembly42 
 --
 
@@ -852,24 +822,6 @@ CREATE INDEX refalib_component43 ON asb_agent(COMPONENT_ALIB_ID)
 --
 
 CREATE INDEX reflib_component44 ON asb_agent(COMPONENT_LIB_ID)
-;
--- 
--- INDEX: Ref411 
---
-
-CREATE INDEX Ref411 ON asb_agent_pg_attr(ASSEMBLY_ID)
-;
--- 
--- INDEX: Ref413 
---
-
-CREATE INDEX Ref413 ON asb_agent_pg_attr(COMPONENT_ALIB_ID)
-;
--- 
--- INDEX: Ref415 
---
-
-CREATE INDEX Ref415 ON asb_agent_pg_attr(PG_ATTRIBUTE_LIB_ID)
 ;
 -- 
 -- INDEX: refasb_assembly36 
@@ -890,24 +842,6 @@ CREATE INDEX refalib_component12 ON asb_agent_pg_attr(COMPONENT_ALIB_ID)
 CREATE INDEX reflib_pg_attribute17 ON asb_agent_pg_attr(PG_ATTRIBUTE_LIB_ID)
 ;
 -- 
--- INDEX: Ref417 
---
-
-CREATE INDEX Ref417 ON asb_agent_relation(ASSEMBLY_ID)
-;
--- 
--- INDEX: Ref419 
---
-
-CREATE INDEX Ref419 ON asb_agent_relation(SUPPORTING_COMPONENT_ALIB_ID)
-;
--- 
--- INDEX: Ref421 
---
-
-CREATE INDEX Ref421 ON asb_agent_relation(SUPPORTED_COMPONENT_ALIB_ID)
-;
--- 
 -- INDEX: refasb_assembly4 
 --
 
@@ -926,28 +860,10 @@ CREATE INDEX refalib_component31 ON asb_agent_relation(SUPPORTING_COMPONENT_ALIB
 CREATE INDEX refalib_component32 ON asb_agent_relation(SUPPORTED_COMPONENT_ALIB_ID)
 ;
 -- 
--- INDEX: Ref4 
---
-
-CREATE INDEX Ref4 ON asb_alploc(ASSEMBLY_ID)
-;
--- 
 -- INDEX: refasb_assembly18 
 --
 
 CREATE INDEX refasb_assembly18 ON asb_alploc(ASSEMBLY_ID)
-;
--- 
--- INDEX: Ref425 
---
-
-CREATE INDEX Ref425 ON asb_component_arg(COMPONENT_ALIB_ID)
-;
--- 
--- INDEX: Ref427 
---
-
-CREATE INDEX Ref427 ON asb_component_arg(ASSEMBLY_ID)
 ;
 -- 
 -- INDEX: refalib_component11 
@@ -960,24 +876,6 @@ CREATE INDEX refalib_component11 ON asb_component_arg(COMPONENT_ALIB_ID)
 --
 
 CREATE INDEX refasb_assembly34 ON asb_component_arg(ASSEMBLY_ID)
-;
--- 
--- INDEX: Ref429 
---
-
-CREATE INDEX Ref429 ON asb_component_hierarchy(COMPONENT_ALIB_ID)
-;
--- 
--- INDEX: Ref431 
---
-
-CREATE INDEX Ref431 ON asb_component_hierarchy(PARENT_COMPONENT_ALIB_ID)
-;
--- 
--- INDEX: Ref433 
---
-
-CREATE INDEX Ref433 ON asb_component_hierarchy(ASSEMBLY_ID)
 ;
 -- 
 -- INDEX: refalib_component28 
@@ -998,34 +896,10 @@ CREATE INDEX refalib_component29 ON asb_component_hierarchy(PARENT_COMPONENT_ALI
 CREATE INDEX refasb_assembly30 ON asb_component_hierarchy(ASSEMBLY_ID)
 ;
 -- 
--- INDEX: Ref435 
---
-
-CREATE INDEX Ref435 ON asb_oplan(ASSEMBLY_ID)
-;
--- 
 -- INDEX: refasb_assembly19 
 --
 
 CREATE INDEX refasb_assembly19 ON asb_oplan(ASSEMBLY_ID)
-;
--- 
--- INDEX: Ref437 
---
-
-CREATE INDEX Ref437 ON asb_oplan_agent_attr(ASSEMBLY_ID, OPLAN_ID)
-;
--- 
--- INDEX: Ref439 
---
-
-CREATE INDEX Ref439 ON asb_oplan_agent_attr(COMPONENT_ALIB_ID)
-;
--- 
--- INDEX: Ref441 
---
-
-CREATE INDEX Ref441 ON asb_oplan_agent_attr(ATTRIBUTE_NAME)
 ;
 -- 
 -- INDEX: refasb_oplan20 
@@ -1046,24 +920,6 @@ CREATE INDEX refalib_component21 ON asb_oplan_agent_attr(COMPONENT_ALIB_ID)
 CREATE INDEX refcfw_instance4 ON cfw_alploc(CFW_ID)
 ;
 -- 
--- INDEX: Ref54 
---
-
-CREATE INDEX Ref54 ON cfw_alploc(CFW_ID)
-;
--- 
--- INDEX: Ref3043 
---
-
-CREATE INDEX Ref3043 ON cfw_context_plugin_arg(PLUGIN_ARG_ID)
-;
--- 
--- INDEX: Ref544 
---
-
-CREATE INDEX Ref544 ON cfw_context_plugin_arg(CFW_ID)
-;
--- 
 -- INDEX: reflib_plugin_arg43 
 --
 
@@ -1074,18 +930,6 @@ CREATE INDEX reflib_plugin_arg43 ON cfw_context_plugin_arg(PLUGIN_ARG_ID)
 --
 
 CREATE INDEX refcfw_instance44 ON cfw_context_plugin_arg(CFW_ID)
-;
--- 
--- INDEX: Ref22 
---
-
-CREATE INDEX Ref22 ON cfw_group_member(CFW_GROUP_ID)
-;
--- 
--- INDEX: Ref53 
---
-
-CREATE INDEX Ref53 ON cfw_group_member(CFW_ID)
 ;
 -- 
 -- INDEX: refcfw_group2 
@@ -1100,18 +944,6 @@ CREATE INDEX refcfw_group2 ON cfw_group_member(CFW_GROUP_ID)
 CREATE INDEX refcfw_instance3 ON cfw_group_member(CFW_ID)
 ;
 -- 
--- INDEX: Ref232 
---
-
-CREATE INDEX Ref232 ON cfw_group_org(CFW_GROUP_ID)
-;
--- 
--- INDEX: Ref2233 
---
-
-CREATE INDEX Ref2233 ON cfw_group_org(ORG_ID)
-;
--- 
 -- INDEX: refcfw_group32 
 --
 
@@ -1124,28 +956,10 @@ CREATE INDEX refcfw_group32 ON cfw_group_org(CFW_GROUP_ID)
 CREATE INDEX reflib_organization33 ON cfw_group_org(ORG_ID)
 ;
 -- 
--- INDEX: Ref55 
---
-
-CREATE INDEX Ref55 ON cfw_oplan(CFW_ID)
-;
--- 
 -- INDEX: refcfw_instance5 
 --
 
 CREATE INDEX refcfw_instance5 ON cfw_oplan(CFW_ID)
-;
--- 
--- INDEX: Ref662 
---
-
-CREATE INDEX Ref662 ON cfw_oplan_activity(CFW_ID, OPLAN_ID)
-;
--- 
--- INDEX: Ref1163 
---
-
-CREATE INDEX Ref1163 ON cfw_oplan_activity(ORG_GROUP_ID)
 ;
 -- 
 -- INDEX: refcfw_oplan62 
@@ -1172,30 +986,6 @@ CREATE INDEX reflib_org_group67 ON cfw_oplan_loc(ORG_GROUP_ID)
 CREATE INDEX refcfw_oplan64 ON cfw_oplan_loc(OPLAN_ID, CFW_ID)
 ;
 -- 
--- INDEX: Ref1167 
---
-
-CREATE INDEX Ref1167 ON cfw_oplan_loc(ORG_GROUP_ID)
-;
--- 
--- INDEX: Ref664 
---
-
-CREATE INDEX Ref664 ON cfw_oplan_loc(CFW_ID, OPLAN_ID)
-;
--- 
--- INDEX: Ref1136 
---
-
-CREATE INDEX Ref1136 ON cfw_oplan_og_attr(ORG_GROUP_ID)
-;
--- 
--- INDEX: Ref67 
---
-
-CREATE INDEX Ref67 ON cfw_oplan_og_attr(CFW_ID, OPLAN_ID)
-;
--- 
 -- INDEX: reflib_org_group36 
 --
 
@@ -1206,24 +996,6 @@ CREATE INDEX reflib_org_group36 ON cfw_oplan_og_attr(ORG_GROUP_ID)
 --
 
 CREATE INDEX refcfw_oplan7 ON cfw_oplan_og_attr(OPLAN_ID, CFW_ID)
-;
--- 
--- INDEX: Ref1111 
---
-
-CREATE INDEX Ref1111 ON cfw_org_group_org_member(ORG_GROUP_ID)
-;
--- 
--- INDEX: Ref560 
---
-
-CREATE INDEX Ref560 ON cfw_org_group_org_member(CFW_ID)
-;
--- 
--- INDEX: Ref2261 
---
-
-CREATE INDEX Ref2261 ON cfw_org_group_org_member(ORG_ID)
 ;
 -- 
 -- INDEX: reflib_org_group11 
@@ -1244,24 +1016,6 @@ CREATE INDEX refcfw_instance60 ON cfw_org_group_org_member(CFW_ID)
 CREATE INDEX reflib_organization61 ON cfw_org_group_org_member(ORG_ID)
 ;
 -- 
--- INDEX: Ref556 
---
-
-CREATE INDEX Ref556 ON cfw_org_hierarchy(CFW_ID)
-;
--- 
--- INDEX: Ref2257 
---
-
-CREATE INDEX Ref2257 ON cfw_org_hierarchy(ORG_ID)
-;
--- 
--- INDEX: Ref2259 
---
-
-CREATE INDEX Ref2259 ON cfw_org_hierarchy(SUPERIOR_ORG_ID)
-;
--- 
 -- INDEX: refcfw_instance56 
 --
 
@@ -1280,18 +1034,6 @@ CREATE INDEX reflib_organization57 ON cfw_org_hierarchy(ORG_ID)
 CREATE INDEX reflib_organization59 ON cfw_org_hierarchy(SUPERIOR_ORG_ID)
 ;
 -- 
--- INDEX: Ref2216 
---
-
-CREATE INDEX Ref2216 ON cfw_org_list(ORG_ID)
-;
--- 
--- INDEX: Ref517 
---
-
-CREATE INDEX Ref517 ON cfw_org_list(CFW_ID)
-;
--- 
 -- INDEX: reflib_organization16 
 --
 
@@ -1302,36 +1044,6 @@ CREATE INDEX reflib_organization16 ON cfw_org_list(ORG_ID)
 --
 
 CREATE INDEX refcfw_instance17 ON cfw_org_list(CFW_ID)
-;
--- 
--- INDEX: Ref1120 
---
-
-CREATE INDEX Ref1120 ON cfw_org_og_relation(ORG_GROUP_ID)
-;
--- 
--- INDEX: Ref2731 
---
-
-CREATE INDEX Ref2731 ON cfw_org_og_relation(ROLE)
-;
--- 
--- INDEX: Ref2252 
---
-
-CREATE INDEX Ref2252 ON cfw_org_og_relation(ORG_ID)
-;
--- 
--- INDEX: Ref553 
---
-
-CREATE INDEX Ref553 ON cfw_org_og_relation(CFW_ID)
-;
--- 
--- INDEX: reflib_org_group20 
---
-
-CREATE INDEX reflib_org_group20 ON cfw_org_og_relation(ORG_GROUP_ID)
 ;
 -- 
 -- INDEX: reflib_role_ref31 
@@ -1352,16 +1064,10 @@ CREATE INDEX reflib_organization52 ON cfw_org_og_relation(ORG_ID)
 CREATE INDEX refcfw_instance53 ON cfw_org_og_relation(CFW_ID)
 ;
 -- 
--- INDEX: Ref2348 
+-- INDEX: reflib_org_group20 
 --
 
-CREATE INDEX Ref2348 ON cfw_org_orgtype(ORGTYPE_ID)
-;
--- 
--- INDEX: Ref1547 
---
-
-CREATE INDEX Ref1547 ON cfw_org_orgtype(ORG_ID, CFW_ID)
+CREATE INDEX reflib_org_group20 ON cfw_org_og_relation(ORG_GROUP_ID)
 ;
 -- 
 -- INDEX: refcfw_org_list47 
@@ -1374,12 +1080,6 @@ CREATE INDEX refcfw_org_list47 ON cfw_org_orgtype(ORG_ID, CFW_ID)
 --
 
 CREATE INDEX reflib_orgtype_ref48 ON cfw_org_orgtype(ORGTYPE_ID)
-;
--- 
--- INDEX: Ref1537 
---
-
-CREATE INDEX Ref1537 ON cfw_org_pg_attr(ORG_ID, CFW_ID)
 ;
 -- 
 -- INDEX: refcfw_org_list37 
@@ -1404,42 +1104,6 @@ CREATE INDEX refcfw_instance22 ON cfw_orgtype_plugin_grp(CFW_ID)
 --
 
 CREATE INDEX reflib_plugin_group23 ON cfw_orgtype_plugin_grp(PLUGIN_GROUP_ID)
-;
--- 
--- INDEX: Ref2321 
---
-
-CREATE INDEX Ref2321 ON cfw_orgtype_plugin_grp(ORGTYPE_ID)
-;
--- 
--- INDEX: Ref522 
---
-
-CREATE INDEX Ref522 ON cfw_orgtype_plugin_grp(CFW_ID)
-;
--- 
--- INDEX: Ref2423 
---
-
-CREATE INDEX Ref2423 ON cfw_orgtype_plugin_grp(PLUGIN_GROUP_ID)
-;
--- 
--- INDEX: Ref2526 
---
-
-CREATE INDEX Ref2526 ON cfw_plugin_group_member(PLUGIN_ID)
-;
--- 
--- INDEX: Ref2427 
---
-
-CREATE INDEX Ref2427 ON cfw_plugin_group_member(PLUGIN_GROUP_ID)
-;
--- 
--- INDEX: Ref528 
---
-
-CREATE INDEX Ref528 ON cfw_plugin_group_member(CFW_ID)
 ;
 -- 
 -- INDEX: reflib_plugin_ref26 
@@ -1472,34 +1136,10 @@ CREATE INDEX Ref677 ON community_attribute(ASSEMBLY_ID)
 CREATE INDEX Ref676 ON community_entity_attribute(ASSEMBLY_ID)
 ;
 -- 
--- INDEX: Ref445 
---
-
-CREATE INDEX Ref445 ON expt_trial(EXPT_ID)
-;
--- 
 -- INDEX: refexpt_experiment26 
 --
 
 CREATE INDEX refexpt_experiment26 ON expt_trial(EXPT_ID)
-;
--- 
--- INDEX: Ref447 
---
-
-CREATE INDEX Ref447 ON expt_trial_assembly(EXPT_ID)
-;
--- 
--- INDEX: Ref449 
---
-
-CREATE INDEX Ref449 ON expt_trial_assembly(ASSEMBLY_ID)
-;
--- 
--- INDEX: Ref451 
---
-
-CREATE INDEX Ref451 ON expt_trial_assembly(TRIAL_ID)
 ;
 -- 
 -- INDEX: refexpt_experiment50 
@@ -1520,24 +1160,6 @@ CREATE INDEX refasb_assembly2 ON expt_trial_assembly(ASSEMBLY_ID)
 CREATE INDEX refexpt_trial27 ON expt_trial_assembly(TRIAL_ID)
 ;
 -- 
--- INDEX: Ref475 
---
-
-CREATE INDEX Ref475 ON expt_trial_config_assembly(EXPT_ID)
-;
--- 
--- INDEX: Ref477 
---
-
-CREATE INDEX Ref477 ON expt_trial_config_assembly(ASSEMBLY_ID)
-;
--- 
--- INDEX: Ref479 
---
-
-CREATE INDEX Ref479 ON expt_trial_config_assembly(TRIAL_ID)
-;
--- 
 -- INDEX: Ref1278 
 --
 
@@ -1554,24 +1176,6 @@ CREATE INDEX Ref1179 ON expt_trial_config_assembly(EXPT_ID)
 --
 
 CREATE INDEX Ref680 ON expt_trial_config_assembly(ASSEMBLY_ID)
-;
--- 
--- INDEX: Ref453 
---
-
-CREATE INDEX Ref453 ON expt_trial_mod_recipe(TRIAL_ID)
-;
--- 
--- INDEX: Ref455 
---
-
-CREATE INDEX Ref455 ON expt_trial_mod_recipe(EXPT_ID)
-;
--- 
--- INDEX: Ref457 
---
-
-CREATE INDEX Ref457 ON expt_trial_mod_recipe(MOD_RECIPE_LIB_ID)
 ;
 -- 
 -- INDEX: refexpt_trial47 
@@ -1592,18 +1196,6 @@ CREATE INDEX refexpt_experiment51 ON expt_trial_mod_recipe(EXPT_ID)
 CREATE INDEX reflib_mod_recipe56 ON expt_trial_mod_recipe(MOD_RECIPE_LIB_ID)
 ;
 -- 
--- INDEX: Ref459 
---
-
-CREATE INDEX Ref459 ON expt_trial_org_mult(TRIAL_ID)
-;
--- 
--- INDEX: Ref461 
---
-
-CREATE INDEX Ref461 ON expt_trial_org_mult(EXPT_ID)
-;
--- 
 -- INDEX: refexpt_trial41 
 --
 
@@ -1614,18 +1206,6 @@ CREATE INDEX refexpt_trial41 ON expt_trial_org_mult(TRIAL_ID)
 --
 
 CREATE INDEX refexpt_experiment52 ON expt_trial_org_mult(EXPT_ID)
-;
--- 
--- INDEX: Ref463 
---
-
-CREATE INDEX Ref463 ON expt_trial_thread(TRIAL_ID)
-;
--- 
--- INDEX: Ref465 
---
-
-CREATE INDEX Ref465 ON expt_trial_thread(EXPT_ID)
 ;
 -- 
 -- INDEX: refexpt_trial40 
@@ -1640,34 +1220,16 @@ CREATE INDEX refexpt_trial40 ON expt_trial_thread(TRIAL_ID)
 CREATE INDEX refexpt_experiment53 ON expt_trial_thread(EXPT_ID)
 ;
 -- 
--- INDEX: Ref467 
---
-
-CREATE INDEX Ref467 ON lib_agent_org(COMPONENT_LIB_ID)
-;
--- 
 -- INDEX: reflib_component45 
 --
 
 CREATE INDEX reflib_component45 ON lib_agent_org(COMPONENT_LIB_ID)
 ;
 -- 
--- INDEX: Ref469 
---
-
-CREATE INDEX Ref469 ON lib_component_arg(COMPONENT_LIB_ID)
-;
--- 
 -- INDEX: reflib_component14 
 --
 
 CREATE INDEX reflib_component14 ON lib_component_arg(COMPONENT_LIB_ID)
-;
--- 
--- INDEX: Ref473 
---
-
-CREATE INDEX Ref473 ON lib_mod_recipe_arg(MOD_RECIPE_LIB_ID)
 ;
 -- 
 -- INDEX: reflib_mod_recipe55 
@@ -1682,18 +1244,6 @@ CREATE INDEX reflib_mod_recipe55 ON lib_mod_recipe_arg(MOD_RECIPE_LIB_ID)
 CREATE INDEX Ref5081 ON lib_plugin_arg(PLUGIN_ID)
 ;
 -- 
--- INDEX: Ref2841 
---
-
-CREATE INDEX Ref2841 ON lib_plugin_arg_thread(THREAD_ID)
-;
--- 
--- INDEX: Ref3042 
---
-
-CREATE INDEX Ref3042 ON lib_plugin_arg_thread(PLUGIN_ARG_ID)
-;
--- 
 -- INDEX: reflib_thread41 
 --
 
@@ -1706,18 +1256,6 @@ CREATE INDEX reflib_thread41 ON lib_plugin_arg_thread(THREAD_ID)
 CREATE INDEX reflib_plugin_arg42 ON lib_plugin_arg_thread(PLUGIN_ARG_ID)
 ;
 -- 
--- INDEX: Ref2529 
---
-
-CREATE INDEX Ref2529 ON lib_plugin_thread(PLUGIN_ID)
-;
--- 
--- INDEX: Ref2830 
---
-
-CREATE INDEX Ref2830 ON lib_plugin_thread(THREAD_ID)
-;
--- 
 -- INDEX: reflib_plugin_ref29 
 --
 
@@ -1728,18 +1266,6 @@ CREATE INDEX reflib_plugin_ref29 ON lib_plugin_thread(PLUGIN_ID)
 --
 
 CREATE INDEX reflib_thread30 ON lib_plugin_thread(THREAD_ID)
-;
--- 
--- INDEX: Ref2749 
---
-
-CREATE INDEX Ref2749 ON lib_role_thread(ROLE)
-;
--- 
--- INDEX: Ref2850 
---
-
-CREATE INDEX Ref2850 ON lib_role_thread(THREAD_ID)
 ;
 -- 
 -- INDEX: reflib_role_ref49 
