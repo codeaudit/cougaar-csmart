@@ -50,9 +50,8 @@ public class ConsoleNodeOutputFilter extends JDialog {
   boolean[] msgArray = { false, false, false, false, false, false };
   private boolean allSelected = true;
 
-  public ConsoleNodeOutputFilter(Frame parent,
-                                 boolean[] initialValues, boolean acceptAll) {
-    super(parent, "Filter", true); // modal dialog
+  public ConsoleNodeOutputFilter(boolean[] initialValues, boolean acceptAll) {
+    super((Frame)null, "Filter", true); // modal dialog
     filterPanel = new JPanel(new BorderLayout());
 
     // ok and cancel buttons panel
@@ -153,13 +152,11 @@ public class ConsoleNodeOutputFilter extends JDialog {
       idlenessCB.setSelected(msgArray[NodeEvent.IDLE_UPDATE]);
     }
     setSize(225, 300);
-    // make dialog display over the middle of the caller's frame
-    Point p = parent.getLocation();
-    Dimension d = parent.getSize();
-    int centerX = p.x + d.width/2;
-    int centerY = p.y + d.height/2;
-    Dimension myD = getSize();
-    setLocation(new Point(centerX - myD.width/2, centerY - myD.height/2));
+    // make dialog display over the middle of the screen
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    int w = getWidth();
+    int h = getHeight();
+    setLocation((screenSize.width - w)/2, (screenSize.height - h)/2);
     setVisible(true);
   }
   
@@ -182,13 +179,6 @@ public class ConsoleNodeOutputFilter extends JDialog {
       return true;
     else
       return msgArray[eventType];
-  }
-
-  /**
-   * Return whether or not the event should be written in the log file.
-   */
-  public boolean includeEventInLogFile(NodeEvent event) {
-    return true;
   }
 
   ActionListener allCBSelected = new ActionListener() {
@@ -216,16 +206,5 @@ public class ConsoleNodeOutputFilter extends JDialog {
 
   public boolean isAllSelected() {
     return allSelected;
-  }
-
-
-  // FIXME: Remove WindowListener on close?
-  // note that the "parent" slot points to CSMART, but I see no way to 
-  // get rid of that
-
-  public static void main(String[] args) {
-    ConsoleNodeOutputFilter filter = 
-      new ConsoleNodeOutputFilter(null, null, true);
-    filter.setVisible(true);
   }
 } 

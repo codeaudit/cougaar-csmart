@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2000-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -22,6 +22,7 @@
 package org.cougaar.tools.csmart.ui.viewer;
 
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
+import org.cougaar.tools.csmart.experiment.DBExperiment;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
@@ -58,8 +59,8 @@ public class OrganizerTree extends DNDTree {
                          OrganizerTree.class,
                          "Recipe");
   public static final CSMARTDataFlavor experimentFlavor =
-    new CSMARTDataFlavor(Experiment.class,
-                         Experiment.class,
+    new CSMARTDataFlavor(DBExperiment.class,
+                         DBExperiment.class,
                          OrganizerTree.class,
                          "Experiment");
   public static final CSMARTDataFlavor componentFlavor =
@@ -148,7 +149,7 @@ public class OrganizerTree extends DNDTree {
         for (int i = 0; i < flavors.length; i++) {
           if (ConsoleTreeObject.flavorEquals(cflavor, flavors[i])) {
             return nodes;
-          } 
+          }
         }
       }
       return null;
@@ -209,7 +210,7 @@ public class OrganizerTree extends DNDTree {
    * @param possibleFlavors possible flavors of the source
    * @param target where the source will be dropped
    */
-  public int isDroppable(DataFlavor[] possibleFlavors, 
+  public int isDroppable(DataFlavor[] possibleFlavors,
                          DefaultMutableTreeNode target) {
     Object userObject = target.getUserObject();
     // if dropping on root or a folder
@@ -236,10 +237,10 @@ public class OrganizerTree extends DNDTree {
   public boolean isDraggable(Object o) {
     if (o instanceof DefaultMutableTreeNode) {
       DefaultMutableTreeNode node = (DefaultMutableTreeNode) o;
-      if (node == getModel().getRoot()) 
+      if (node == getModel().getRoot())
         return false; // not draggable if it's the root node
       // not draggable if it's inside an experiment
-      DefaultMutableTreeNode parentNode = 
+      DefaultMutableTreeNode parentNode =
         (DefaultMutableTreeNode)node.getParent();
       Object userObject = parentNode.getUserObject();
       if (userObject != null && userObject instanceof Experiment)
@@ -263,7 +264,7 @@ public class OrganizerTree extends DNDTree {
                         DefaultMutableTreeNode before) {
     DataFlavor[] flavors = t.getTransferDataFlavors();
     int action = isDroppable(flavors, target);
-    if (action == DnDConstants.ACTION_NONE) 
+    if (action == DnDConstants.ACTION_NONE)
       return action; // do nothing
     Object data = null;
     try {
@@ -282,9 +283,9 @@ public class OrganizerTree extends DNDTree {
     }
     if (data instanceof DMTNArray) {
       DMTNArray nodes = (DMTNArray) data;
-      for (int i = 0; i < nodes.nodes.length; i++) 
+      for (int i = 0; i < nodes.nodes.length; i++)
         addElement(nodes.nodes[i], target, before);
-    } else 
+    } else
       addElement(data, target, before);
     return action;
   }
@@ -316,9 +317,9 @@ public class OrganizerTree extends DNDTree {
       DefaultMutableTreeNode source = (DefaultMutableTreeNode)data;
       int n = source.getChildCount();
       DefaultMutableTreeNode[] children = new DefaultMutableTreeNode[n];
-      for (int i = 0; i < n; i++) 
+      for (int i = 0; i < n; i++)
         children[i] = (DefaultMutableTreeNode) source.getChildAt(i);
-      for (int i = 0; i < n; i++) 
+      for (int i = 0; i < n; i++)
         model.insertNodeInto(children[i], newNode, i);
     }
     // select the newly created node

@@ -1,12 +1,12 @@
-/* 
+/*
  * <copyright>
  *  Copyright 2002-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -17,7 +17,7 @@
  *  TORTIOUS CONDUCT, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  *  PERFORMANCE OF THE COUGAAR SOFTWARE.
  * </copyright>
- */ 
+ */
 package org.cougaar.tools.csmart.recipe;
 
 
@@ -50,9 +50,9 @@ import java.util.Vector;
 public class ServletGroupInsertionRecipe extends RecipeBase
   implements Serializable
 {
-  private static final String DESCRIPTION_RESOURCE_NAME = 
+  private static final String DESCRIPTION_RESOURCE_NAME =
     "servlet-group-insertion-recipe-description.html";
-  private static final String BACKUP_DESCRIPTION = 
+  private static final String BACKUP_DESCRIPTION =
     "ServletGroupInsertionRecipe provides a method for adding groups of servlets into an experiment";
 
   private static final boolean PROP_SERVLETS_DFLT = false;
@@ -60,7 +60,7 @@ public class ServletGroupInsertionRecipe extends RecipeBase
 
   private static final String PROP_TARGET_AGENT_QUERY = "Target Agent Selection Query";
   private static final String PROP_TARGET_AGENT_QUERY_DFLT = "recipeQueryAllAgents";
-  private static final String PROP_TARGET_AGENT_QUERY_DESC = 
+  private static final String PROP_TARGET_AGENT_QUERY_DESC =
     "The query name for selecting agents to which to add servlets.";
 
   private static final String DFLT_SERVLET_CLASS = "org.cougaar.core.servlet.SimpleServletComponent";
@@ -94,7 +94,7 @@ public class ServletGroupInsertionRecipe extends RecipeBase
         ((Property)propServlets[i]).setToolTip(PROP_SERVLETS_DESC);
       }
     }
-   
+
     propTargetAgentQuery =
       addRecipeQueryProperty(PROP_TARGET_AGENT_QUERY,
                              PROP_TARGET_AGENT_QUERY_DFLT);
@@ -107,7 +107,7 @@ public class ServletGroupInsertionRecipe extends RecipeBase
     return prop;
   }
 
-  
+
   /**
    * Gets the name of the html help file for this component.
    *
@@ -132,14 +132,14 @@ public class ServletGroupInsertionRecipe extends RecipeBase
       if (log.isErrorEnabled()) {
 	log.error("Could not read servlets file.", e);
       }
-    } 
+    }
     if (vec == null) {
       vec = new Vector();
       if (inputFile != null) {
-	try { 
+	try {
 	  RandomAccessFile servletFile = null;
 	  // read servlets, one per line
-	  servletFile = new RandomAccessFile(inputFile, "r");      
+	  servletFile = new RandomAccessFile(inputFile, "r");
 	  while (true) {
 	    String isrv = servletFile.readLine(); // get servlet line
 	    // Skip comment lines
@@ -169,7 +169,7 @@ public class ServletGroupInsertionRecipe extends RecipeBase
 	    inputFile = cf.locateFile("servlets.txt");
 	  } catch(Exception e) {
 	    log.error("Could not read servlets file.", e);
-	  } 
+	  }
 	  if (inputFile != null) {
 	    log.warn(".. this time we found it?");
 	  } else {
@@ -178,7 +178,7 @@ public class ServletGroupInsertionRecipe extends RecipeBase
 	}
       }
     }
-    return vec;    
+    return vec;
   }
 
 
@@ -198,7 +198,7 @@ public class ServletGroupInsertionRecipe extends RecipeBase
     ServletListRecord servRecord =  new ServletListRecord(name, classname, arguments);
     return servRecord;
   }
-  
+
   public ComponentData modifyComponentData(ComponentData data, PopulateDb pdb) {
     try {
       Set targets = pdb.executeQuery(propTargetAgentQuery.getValue().toString());
@@ -214,14 +214,14 @@ public class ServletGroupInsertionRecipe extends RecipeBase
   private void modifyComponentData(ComponentData data, PopulateDb pdb, Set targets)
     throws SQLException
   {
-    if (targets.contains(pdb.getComponentAlibId(data))) { 
+    if (targets.contains(pdb.getComponentAlibId(data))) {
       if (log.isDebugEnabled()) {
 	log.debug("Adding servlets to " + pdb.getComponentAlibId(data));
       }
       //if the set of targets (agents) contains the one we're at now
       // do insertion of the correct set of servlets into this agent
       // need to get the set of servlets the user selected
-     
+
       if (propServlets != null) {
         for(int i=0; i < propServlets.length; i++) {
 	  ServletListRecord servlet = (ServletListRecord)servletList.elementAt(i);
@@ -230,7 +230,7 @@ public class ServletGroupInsertionRecipe extends RecipeBase
             plugin.setType(ComponentData.PLUGIN);
 
 	    String[] arguments = servlet.getArguments();
-	    for (int j = 0; j < arguments.length; j++) 
+	    for (int j = 0; j < arguments.length; j++)
 	      plugin.addParameter(arguments[j]);
 
             plugin.setClassName(servlet.getClassname());
@@ -273,7 +273,7 @@ public class ServletGroupInsertionRecipe extends RecipeBase
     private String[] argument;
 
     public ServletListRecord() {}
-    
+
     public ServletListRecord(String name, String classname, String argument[]) {
       this.name = name;
       this.classname = classname;

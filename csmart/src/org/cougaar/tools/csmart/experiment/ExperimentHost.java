@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2000-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -65,14 +65,14 @@ public class ExperimentHost
   }
 
   private void createLogger() {
-      log = CSMART.createLogger(this.getClass().getName());    
+      log = CSMART.createLogger(this.getClass().getName());
   }
 
   public void initProperties() {
     addProperty("NodeNames", new ArrayList());
   }
 
-  public int getNodeCount() {
+  private int getNodeCount() {
     return nodes.size();
   }
 
@@ -82,7 +82,7 @@ public class ExperimentHost
 
   public NodeComponent addNode(NodeComponent node) {
     Property prop = getProperty("NodeNames");
-    if (prop == null) 
+    if (prop == null)
       prop = addProperty("NodeNames", new ArrayList());
     ArrayList names = (ArrayList)prop.getValue();
     names.add(node.getShortName());
@@ -162,5 +162,5 @@ public class ExperimentHost
     ois.defaultReadObject();
     createLogger();
   }
-  
+
 }

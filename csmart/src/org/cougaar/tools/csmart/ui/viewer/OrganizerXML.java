@@ -1,12 +1,12 @@
-/* 
+/*
  * <copyright>
  *  Copyright 2002-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -22,6 +22,7 @@ package org.cougaar.tools.csmart.ui.viewer;
 
 import org.cougaar.tools.csmart.core.db.ExperimentDB;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.experiment.DBExperiment;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.util.XMLUtils;
@@ -51,7 +52,7 @@ public class OrganizerXML extends XMLUtils {
   public static final String RESULTDIR_NODE = "ResultDir";
   public static final String NAME_ATTR = "Name";
   public static final String ID_ATTR = "ID";
-  
+
   private Logger log;
 
   private Document doc;
@@ -78,9 +79,9 @@ public class OrganizerXML extends XMLUtils {
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     try {
       DocumentBuilder db = dbf.newDocumentBuilder();
-      
+
       doc = db.newDocument();
-      
+
       Element root = doc.createElement(WORKSPACE_NODE);
       // this should be same as the name of the file, so leave it out
       //      root.setAttribute(NAME_ATTR, rootNode.getUserObject());
@@ -119,7 +120,7 @@ public class OrganizerXML extends XMLUtils {
     if (o instanceof Experiment) {
       Element exp = doc.createElement(EXPERIMENT_NODE);
       exp.setAttribute(NAME_ATTR, ((Experiment)o).getExperimentName());
-      exp.setAttribute(ID_ATTR, ((Experiment)o).getExperimentID());
+      exp.setAttribute(ID_ATTR, ((DBExperiment)o).getExperimentID());
       // what about experiment result directory?
       File eResDir = ((Experiment)o).getResultDirectory();
       if (eResDir != null) {
@@ -151,9 +152,9 @@ public class OrganizerXML extends XMLUtils {
   }
 
   /**
-   * Load the given XML file, creating the workspace in the given Organizer. 
-   * The caller is expected to have set up the organizer with a workspace, 
-   * TreeModel, and root Node. 
+   * Load the given XML file, creating the workspace in the given Organizer.
+   * The caller is expected to have set up the organizer with a workspace,
+   * TreeModel, and root Node.
    *
    * @param workspacefilename a <code>String</code> file name to load
    * @param organizer an <code>Organizer</code> to fill in
@@ -172,7 +173,7 @@ public class OrganizerXML extends XMLUtils {
 
     return parse(doc.getDocumentElement(), organizer.root);
   }
-  
+
 
   // Parsing an XML workspace representation.
   // Given a root element (that has been handled), and a root Workspace
@@ -223,7 +224,7 @@ public class OrganizerXML extends XMLUtils {
 	      log.warn("XML file Exp " + eName + " lists experiment ID of " + eID + " but DB says experiment with that name has ID " + dbid + "!");
 	      log.warn("Will skip loading that experiment. Load it manually later if you really want it.");
 	    }
-	  } else {  
+	  } else {
 	    // This will load the experiment (incl CMTDialog),
 	    // create the Node, add it to the workspace, and also
 	    // add any recipes & societies & whatnot to the workspace

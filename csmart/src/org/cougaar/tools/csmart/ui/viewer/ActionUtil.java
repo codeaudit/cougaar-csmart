@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2000-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -21,6 +21,7 @@
 
 package org.cougaar.tools.csmart.ui.viewer;
 
+import org.cougaar.tools.csmart.experiment.DBExperiment;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
@@ -47,12 +48,12 @@ public class ActionUtil {
   public static String NEW_EXPERIMENT_FROM_UI_ACTION = "From User";
   public static String NEW_RECIPE_ACTION = "New Recipe";
   public static String NEW_FOLDER_ACTION = "New Folder";
-  public static String DELETE_EXPERIMENT_FROM_DATABASE_ACTION = 
+  public static String DELETE_EXPERIMENT_FROM_DATABASE_ACTION =
     "Delete Experiment From Database";
-  public static String DELETE_RECIPE_FROM_DATABASE_ACTION = 
+  public static String DELETE_RECIPE_FROM_DATABASE_ACTION =
     "Delete Recipe From Database";
   public static String SAVE_ACTION = "Save";
-  
+
   /**
    * Enable/disable an action, based on the object selected.
    * @param action action to enable/disable
@@ -110,8 +111,8 @@ public class ActionUtil {
 
     Object selectedObject = selectedNode.getUserObject();
 
-    if (selectedObject instanceof String) 
-      action.setEnabled(isActionAllowedOnFolder(action, organizer, 
+    if (selectedObject instanceof String)
+      action.setEnabled(isActionAllowedOnFolder(action, organizer,
                                                 organizer.getSelectedNode()));
     else if (selectedObject instanceof Experiment)
       action.setEnabled(isActionAllowedOnExperiment(action, organizer,
@@ -154,7 +155,7 @@ public class ActionUtil {
     Enumeration nodes = node.breadthFirstEnumeration();
     nodes.nextElement(); // advance over first element which is the folder
     // can delete empty folder, but not root
-    if (!nodes.hasMoreElements() && !node.isRoot()) 
+    if (!nodes.hasMoreElements() && !node.isRoot())
       return (action.equals(organizer.deleteAction) ||
               action.equals(organizer.deleteFolderAction));
     return false;
@@ -199,8 +200,8 @@ public class ActionUtil {
     }
     if (action.equals(organizer.runExperimentAction))
       return experiment.isRunnable();
-    if (action.equals(organizer.deleteAction) || 
-        action.equals(organizer.deleteExperimentAction) || 
+    if (action.equals(organizer.deleteAction) ||
+        action.equals(organizer.deleteExperimentAction) ||
         action.equals(organizer.renameAction) ||
         action.equals(organizer.renameExperimentAction) ||
         action.equals(organizer.configureAction) ||
@@ -271,7 +272,7 @@ public class ActionUtil {
         action.equals(organizer.newExperimentFromUIAction) ||
         action.equals(organizer.newFolderAction) ||
         action.equals(organizer.newRecipeFromDatabaseAction) ||
-        action.equals(organizer.newRecipeBuiltInAction)) 
+        action.equals(organizer.newRecipeBuiltInAction))
       return false;
     if (!recipe.isEditable())
       return false;
@@ -302,7 +303,7 @@ public class ActionUtil {
     DefaultMutableTreeNode node = organizer.getSelectedNode();
     if (node == null)
       return false;
-    DefaultMutableTreeNode parentNode = 
+    DefaultMutableTreeNode parentNode =
       (DefaultMutableTreeNode)node.getParent();
     if (parentNode == null)
       return false;

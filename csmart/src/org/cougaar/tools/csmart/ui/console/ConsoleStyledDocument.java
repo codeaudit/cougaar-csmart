@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2000-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -29,18 +29,14 @@ import javax.swing.event.UndoableEditListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
 
 /**
- * This is the document that contains the content of the Node output. 
- * By extending <code>DefaultStyledDocument</code>, we get access to 
- * search and highlight support. Note however that this is relatively 
- * heavyweight. It includes support for undo listeners, all sorts of 
+ * This is the document that contains the content of the Node output.
+ * By extending <code>DefaultStyledDocument</code>, we get access to
+ * search and highlight support. Note however that this is relatively
+ * heavyweight. It includes support for undo listeners, all sorts of
  * SGML type strutures, etc. Also note that it uses a <code>GapContent</code>
  * for underlying storage - which automatically grows at twice the required
  * speed, and never shrinks. So this extension goes to some pains to
@@ -69,57 +65,11 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
   }
 
   /**
-   * Fill document from log file.  Reads log file contents into buffer.
-   * Caller must close log file prior to calling this method
-   * and re-open log file for appending.
-   * Sets screen buffer size to display all output (i.e. no limit).
-   * @param logFileName name of the log file from which to fill document
-   */
-  public void fillFromLogFile(String logFileName) {
-    AttributeSet a = new javax.swing.text.SimpleAttributeSet();
-    try {
-      // clear document
-      remove(0, getLength());
-    } catch (Exception e) {
-      if(log.isErrorEnabled()) {
-        log.error("fillFromLogFile: Exception clearing output window", e);
-      }
-    }
-    // read log file contents into document
-    BufferedReader reader = null;
-    try {
-      reader = new BufferedReader(new FileReader(logFileName));
-    } catch (FileNotFoundException fnfe) {
-      if(log.isErrorEnabled()) {
-        log.error("Exception, Cannot find logfile", fnfe);
-      }
-    }
-    try {
-      while (true) {
-        String s = reader.readLine();
-        if (s != null) {
-          insertString(getLength(), s, a);
-        } else
-          break;
-      }
-    } catch (IOException ioe) {
-      if(log.isErrorEnabled()) {
-        log.error("fillFromLogfile Exception", ioe);
-      }
-    } catch (BadLocationException ble) {
-      if(log.isErrorEnabled()) {
-        log.error("fillFromLogFile Exception", ble);
-      }
-    }
-    bufferSize = -1; // don't trim document any more
-  }
-
-  /**
-   * Append a string to the display buffer.  
+   * Append a string to the display buffer.
    * If we are limiting the buffer size, trim the buffer as necessary
    * to keep under the limit, possibly including some of the addition
    * being added here. This is in part necessary because the underlying
-   * storage, a <code>GapContent</code>, never shrinks in size -- 
+   * storage, a <code>GapContent</code>, never shrinks in size --
    * and when it increases in size, it does so by double the necessary
    * amount (to maintain a gap).<br>
    * Note that this means that notifications / etc may miss things
@@ -171,17 +121,17 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
    * numbers are ignored.
    */
   public void setBufferSize(int bufferSize) {
-    if (bufferSize == -1) 
+    if (bufferSize == -1)
       this.bufferSize = bufferSize;
     else if (bufferSize >= 1) {
       this.bufferSize = bufferSize;
       this.minRemoveSize = Math.min((int)(bufferSize * .2), 1);
-    }    
+    }
   }
 
   /**
    * Get the number of characters displayed.  A value of -1 means
-   * display all characters (no limit). 
+   * display all characters (no limit).
    */
   public int getBufferSize() {
     return bufferSize;
@@ -205,50 +155,6 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
     // clear buffer (underlying storage)
     buffer = null;
   }
-
-  // for random access file
-//    public void fillFromLogFile(RandomAccessFile logFile) {
-//      AttributeSet a = new javax.swing.text.SimpleAttributeSet();
-//      try {
-//        // clear document
-//        remove(0, getLength());
-//      } catch (Exception e) {
-//       if(log.isErrorEnabled()) {
-//         log.error(e.toString());
-//         e.printStackTrace();
-//       }
-//      }
-//      // read log file contents into document
-//      try {
-//        RandomAccessFile logFile = new RandomAccessFile(logFileName, "r");
-//        logFile.seek(0);
-//        while (true) {
-//          String s = logFile.readLine();
-//          if (s != null) {
-//            if(log.isDebugEnabled()) {
-//              log.debug("Inserting: " + s + " at: " + getLength());
-//            }
-//            insertString(getLength(), s, a);
-//          } else {
-//            logFile.close();
-//            break;
-//          }
-//        }
-//      } catch (FileNotFoundException fnfe) {
-//        if(log.isErrorEnabled()) {
-//          log.error(fnfe.toString());
-//        }
-//      } catch (IOException ioe) {
-//           if(log.isErrorEnabled()) {
-//             log.error(ioe.toString());
-//           }
-//      } catch (BadLocationException ble) {
-//        if(log.isErrorEnabled()) {
-//           log.error(ble.toString());
-//         }
-//      }
-//      bufferSize = -1; // don't trim document any more
-//    }
 
   public static void main(String[] args) {
     ConsoleStyledDocument doc = new ConsoleStyledDocument();
@@ -280,10 +186,6 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
         log.debug(doc.getText(0, doc.getLength()));
       }
       logFile.close();
-      doc.fillFromLogFile("tmp");
-      if(log.isDebugEnabled()) {
-        log.debug(doc.getText(0, doc.getLength()));
-      }
       logFile = new BufferedWriter(new FileWriter("tmp", true));
       logFile.write("12345");
       doc.appendString("12345", a);

@@ -1,12 +1,12 @@
-/* 
+/*
  * <copyright>
  *  Copyright 2001-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -49,9 +49,9 @@ import java.util.List;
 
 // Create a society ComponentData
 public class ExperimentINIWriter implements ConfigurationWriter {
-  transient NodeComponent[] nodesToWrite;
-  transient List components;
-  ComponentData theSoc;
+  private transient NodeComponent[] nodesToWrite;
+  private transient List components;
+  private ComponentData theSoc;
   private String trialID = null;
   private transient Logger log;
 
@@ -71,7 +71,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
     log = CSMART.createLogger(this.getClass().getName());
   }
 
-  public ExperimentINIWriter(List components, NodeComponent[] nodesToWrite, Experiment exp) {
+  public ExperimentINIWriter(List components, NodeComponent[] nodesToWrite, ExperimentBase exp) {
     createLogger();
     this.nodesToWrite = nodesToWrite;
     this.components = components;
@@ -88,7 +88,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
     // Some components will want access to the complete set of Nodes in the society, etc.
     // To get that, they must get back to the root soc object,
     // and do a getOwner and go from there. Ugly.
-    
+
     // Now ask each component in turn to add its stuff
     for (int i = 0; i < components.size(); i++) {
       BaseComponent soc = (BaseComponent) components.get(i);
@@ -99,10 +99,10 @@ public class ExperimentINIWriter implements ConfigurationWriter {
     for (int i = 0; i < components.size(); i++) {
       BaseComponent soc = (BaseComponent) components.get(i);
       soc.modifyComponentData(theSoc);
-    }    
+    }
   }
-  
-  private void addNodes(Experiment exp) {
+
+  private void addNodes(ExperimentBase exp) {
     for (int i = 0; i < nodesToWrite.length; i++) {
       ComponentData nc = new GenericComponentData();
       nc.setType(ComponentData.NODE);
@@ -110,7 +110,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
       nc.setClassName(""); // leave this out?? FIXME
       nc.setOwner(exp); // the experiment? FIXME
       nc.setParent(theSoc);
-      ComponentName name = 
+      ComponentName name =
 	  new ComponentName((BaseComponent)nodesToWrite[i], "ConfigurationFileName");
       try {
 	nc.addParameter(((BaseComponent)nodesToWrite[i]).getProperty(name).getValue().toString());
@@ -180,9 +180,9 @@ public class ExperimentINIWriter implements ConfigurationWriter {
     }
     finally {
       writer.close();
-    }    
+    }
   }
-  
+
   private void writeSocietyFile(File configDir, ComponentData hc) throws IOException {
     String configFileName = hc.getName() + ".txt";
     PrintWriter writer = new PrintWriter(new FileWriter(new File(configDir, configFileName)));
@@ -196,22 +196,22 @@ public class ExperimentINIWriter implements ConfigurationWriter {
     }
     finally {
       writer.close();
-    }    
+    }
   }
-  
+
   private String writeParam(Object param) {
     // do fancy stuff based on type here??? FIXME!!
     return param.toString();
   }
 
-  private String quote(String string) {
+  private static String quote(String string) {
     return "\"" + string + "\"";
   }
 
-  private void writeChildLine(PrintWriter writer, ComponentData me) throws IOException {
+  private void writeChildLine(PrintWriter writer, ComponentData me) {
     if (me.getType().equals(ComponentData.SOCIETY) || me.getType().equals(ComponentData.AGENT) || me.getType().equals(ComponentData.HOST) || me.getClassName() == null)
       writer.print(me.getName());
-    else 
+    else
       writer.print(me.getClassName());
     if (me.parameterCount() == 0 || me.getType().equals(ComponentData.AGENT)) {
       writer.println();
@@ -269,14 +269,14 @@ public class ExperimentINIWriter implements ConfigurationWriter {
 	writer.close();
       }
     } // end of loop over leaves
-  } // end of writeLeafData  
-  
+  } // end of writeLeafData
+
   private void writeNodeFile(File configDir, ComponentData nc) throws IOException {
     if (nc.childCount() == 0) {
       if (log.isDebugEnabled()) {
 	log.debug("Found node with no children. it's parent: " + nc.getParent());
       }
-      // node has no agents or binders. 
+      // node has no agents or binders.
       // If it also has no Parent (IE the parent is the society, not a host)
       // then skip it
       if (nc.getParent() == null || nc.getParent().getType().equals(ComponentData.SOCIETY))
@@ -294,9 +294,9 @@ public class ExperimentINIWriter implements ConfigurationWriter {
       configFileName = (String)parameters[0];
     if (! configFileName.endsWith(".ini"))
       configFileName = configFileName + ".ini";
-    PrintWriter writer = 
+    PrintWriter writer =
       new PrintWriter(new FileWriter(new File(configDir, configFileName)));
-   
+
     try {
       // loop over children
       // if there are binder or such, do those
@@ -304,8 +304,8 @@ public class ExperimentINIWriter implements ConfigurationWriter {
       for (int i = 0; i < nc.childCount(); i++) {
         if (children[i] instanceof AgentComponentData) {
           continue;
-        } else if (children[i].getType().equals(ComponentData.NODE) || 
-                   children[i].getType().equals(ComponentData.SOCIETY) || 
+        } else if (children[i].getType().equals(ComponentData.NODE) ||
+                   children[i].getType().equals(ComponentData.SOCIETY) ||
                    children[i].getType().equals(ComponentData.AGENT)) {
           if(log.isErrorEnabled()) {
             log.error("Got unexpected child of Node type: " + children[i].getType());
@@ -327,7 +327,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
 	    writer.print(children[i].getType());
             // This assumes the type is always the prefix.
           }
-	  if(ComponentDescription.parsePriority(children[i].getPriority()) != 
+	  if(ComponentDescription.parsePriority(children[i].getPriority()) !=
 	     ComponentDescription.PRIORITY_COMPONENT) {
 	    writer.print("(" + children[i].getPriority() + ")");
 	  }
@@ -366,7 +366,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
           writeAgentFile(configDir, (AgentComponentData)children[i]);
         } else if (children[i].getType().equals(ComponentData.NODEBINDER)) {
         } else {
-          //  	} else if (!children[i].getType().equals(ComponentData.NODEBINDER) 
+          //  	} else if (!children[i].getType().equals(ComponentData.NODEBINDER)
           //                     || !children[i].getType().equals(ComponentData.AGENTBINDER)) {
           if(log.isDebugEnabled()) {
             log.debug("Got a child of a Node that wasn't an Agent or Node Binder Type: "
@@ -389,7 +389,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
     }
     finally {
       writer.close();
-    }    
+    }
   } // end of writeNodeFile
 
   private void writeChildrenOfComp(PrintWriter writer, File configDir, ComponentData comp) throws IOException {
@@ -406,7 +406,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
 	} else {
 	  writer.print(children[i].getType());
 	}
-        if(ComponentDescription.parsePriority(children[i].getPriority()) != 
+        if(ComponentDescription.parsePriority(children[i].getPriority()) !=
            ComponentDescription.PRIORITY_COMPONENT) {
           writer.print("(" + children[i].getPriority() + ")");
         }
@@ -420,7 +420,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
     }
   }
 
-  protected DateFormat myDateFormat = DateFormat.getInstance(); 
+  private DateFormat myDateFormat = DateFormat.getInstance();
 
   private void writeAgentFile(File configDir, AgentComponentData ac) throws IOException {
     PrintWriter writer = new PrintWriter(new FileWriter(new File(configDir, ac.getName() + ".ini")));
@@ -428,7 +428,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
       writer.println("[ Cluster ]");
       writer.println("class = " + ac.getClassName());
       AgentAssetData aad = ac.getAgentAssetData();
-      writer.println("uic = " + ((aad == null) ? 
+      writer.println("uic = " + ((aad == null) ?
                      "UIC/" + ac.getName() : aad.getUIC()));
       writer.println("cloned = false");
       writer.println();
@@ -457,12 +457,12 @@ public class ExperimentINIWriter implements ConfigurationWriter {
     }
     // write the prototype-ini file
     writePrototypeINI(configDir, ac);
-    
+
     // write any other leaf component data files
     writeLeafData(configDir, (ComponentData)ac);
 
   } // end of writeAgentFile
-  
+
   private void writePrototypeINI(File configDir, AgentComponentData agent) throws IOException {
     AgentAssetData assetData = agent.getAgentAssetData();
 
@@ -492,14 +492,14 @@ public class ExperimentINIWriter implements ConfigurationWriter {
 	  writer.println(assetData.getUnitName());
 	  writer.println();
 	}
-	
+
         if(!assetData.isNewIniFormat()) {
           writer.print("[UIC] ");
           writer.println(quote(assetData.getUIC()));
           writer.println();
         }
 //       }
-      
+
       // Write Relationships.
       Iterator iter = assetData.getRelationshipIterator();
       writer.println("[Relationship]");
@@ -510,7 +510,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
           if(log.isInfoEnabled()) {
             log.info("Writing out new INI file format");
           }
-          if (assetData.isEntity()) {	  
+          if (assetData.isEntity()) {
 	    // AMH: Must write not the Type but the role if
 	    // the type says Supporting
 	    if (rel.getType().equals("Supporting"))
@@ -543,7 +543,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
           if(log.isInfoEnabled()) {
             log.info("Writing out old INI file format");
           }
-          
+
           if(rel.getRole().equalsIgnoreCase("Subordinate")) {
             writer.print("Superior  ");
             writer.print(quote(rel.getSupported()) + " ");
@@ -562,7 +562,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
 	PropGroupData pgData = (PropGroupData)iter.next();
 
 	writer.println("[" + pgData.getName() + "]");
-	Iterator iter2 = pgData.getPropertiesIterator();	
+	Iterator iter2 = pgData.getPropertiesIterator();
 	while(iter2.hasNext()) {
 	  PGPropData propData = (PGPropData)iter2.next();
           if(propData.getName().equals("HomeLocation")) {
@@ -581,7 +581,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
 	    writer.print("Collection");
 	  } else if (propData.getType().equals("LIST")) {
 	    writer.print("List");
-	  } else {	  
+	  } else {
 	    writer.print(propData.getType());
 	  }
 

@@ -1,12 +1,12 @@
-/* 
+/*
  * <copyright>
  *  Copyright 2001-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -47,9 +47,9 @@ import java.util.List;
  * and then inefficiently finds the Leaf files to write them.
  **/
 public class LeafOnlyConfigWriter implements ConfigurationWriter {
-  transient NodeComponent[] nodesToWrite;
-  transient List components;
-  ComponentData theSoc;
+  private transient NodeComponent[] nodesToWrite;
+  private transient List components;
+  private ComponentData theSoc;
   private transient Logger log;
 
   public LeafOnlyConfigWriter(ComponentData theSoc) {
@@ -57,7 +57,7 @@ public class LeafOnlyConfigWriter implements ConfigurationWriter {
     this.theSoc = theSoc;
   }
 
-  public LeafOnlyConfigWriter(List components, NodeComponent[] nodesToWrite, Experiment exp) {
+  public LeafOnlyConfigWriter(List components, NodeComponent[] nodesToWrite, ExperimentBase exp) {
     createLogger();
     this.nodesToWrite = nodesToWrite;
     this.components = components;
@@ -73,7 +73,7 @@ public class LeafOnlyConfigWriter implements ConfigurationWriter {
     // Some components will want access to the complete set of Nodes in the society, etc.
     // To get that, they must get back to the root soc object,
     // and do a getOwner and go from there. Ugly.
-    
+
     // Now ask each component in turn to add its stuff
     for (int i = 0; i < components.size(); i++) {
       BaseComponent soc = (BaseComponent) components.get(i);
@@ -83,7 +83,7 @@ public class LeafOnlyConfigWriter implements ConfigurationWriter {
     for (int i = components.size() - 1; i >= 0; i--) {
       BaseComponent soc = (BaseComponent) components.get(i);
       soc.modifyComponentData(theSoc);
-    }    
+    }
   }
 
   /**
@@ -153,7 +153,7 @@ public class LeafOnlyConfigWriter implements ConfigurationWriter {
 
       files.add(leaf.getName());
     } // end of loop over leaves
-    
+
     return files;
   }
 
@@ -192,8 +192,8 @@ public class LeafOnlyConfigWriter implements ConfigurationWriter {
   /**
    * Describe <code>writeFile</code> method here.
    *
-   * @param filename 
-   * @param out 
+   * @param filename
+   * @param out
    * @exception Exception if an error occurs
    */
   public void writeFile(String filename, OutputStream out) throws Exception {
@@ -294,7 +294,7 @@ public class LeafOnlyConfigWriter implements ConfigurationWriter {
       writeNodeFile(configDir, nodes[i]);
     }
   }
-  
+
   /**
    * @deprecated
    */
@@ -312,7 +312,7 @@ public class LeafOnlyConfigWriter implements ConfigurationWriter {
       }
     }
   }
-  
+
   /**
    * @deprecated
    */
@@ -325,7 +325,7 @@ public class LeafOnlyConfigWriter implements ConfigurationWriter {
       writeLeafData(configDir, children[i]);
     }
   }
-  
+
   /**
    * @deprecated
    */
@@ -334,11 +334,11 @@ public class LeafOnlyConfigWriter implements ConfigurationWriter {
     // write any other leaf component data files
     writeLeafData(configDir, (ComponentData)ac);
   }
-  
+
   /**
    * @deprecated
    */
-  private void addNodes(Experiment exp) {
+  private void addNodes(ExperimentBase exp) {
     for (int i = 0; i < nodesToWrite.length; i++) {
       ComponentData nc = new GenericComponentData();
       nc.setType(ComponentData.NODE);
@@ -346,8 +346,8 @@ public class LeafOnlyConfigWriter implements ConfigurationWriter {
       nc.setClassName(""); // leave this out?? FIXME
       nc.setOwner(exp); // the experiment? FIXME
       nc.setParent(theSoc);
-      ComponentName name = 
-	  new ComponentName((BaseComponent)nodesToWrite[i], 
+      ComponentName name =
+	  new ComponentName((BaseComponent)nodesToWrite[i],
                             "ConfigurationFileName");
       nc.addParameter(nodesToWrite[i].getProperty(name).getValue().toString());
       theSoc.addChild(nc);
@@ -402,9 +402,9 @@ public class LeafOnlyConfigWriter implements ConfigurationWriter {
 	writer.close();
       }
     } // end of loop over leaves
-  } // end of writeLeafData  
+  } // end of writeLeafData
 
   private void createLogger() {
     log = CSMART.createLogger(this.getClass().getName());
-  }  
+  }
 }

@@ -25,6 +25,7 @@ package org.cougaar.tools.csmart.ui.viewer;
 import org.cougaar.bootstrap.Bootstrapper;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
+import org.cougaar.tools.csmart.experiment.DBExperiment;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
@@ -32,7 +33,7 @@ import org.cougaar.tools.csmart.society.cdata.SocietyCDataComponent;
 import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.analyzer.Analyzer;
 import org.cougaar.tools.csmart.ui.configbuilder.PropertyBuilder;
-import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
+import org.cougaar.tools.csmart.ui.console.CSMARTConsoleView;
 import org.cougaar.tools.csmart.ui.experiment.ExperimentBuilder;
 import org.cougaar.tools.csmart.ui.monitor.generic.ExtensionFileFilter;
 import org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL;
@@ -173,7 +174,7 @@ public class CSMART extends JFrame {
 
   private CSMART csmart;
 
-  private Experiment experimentToEdit;
+  private DBExperiment experimentToEdit;
 
   /**
    * Constructor for top level class in CSMART.
@@ -654,8 +655,7 @@ public class CSMART extends JFrame {
     cc.setEditable(false);
     if (originalComponent != null)
       originalComponent.setEditable(false);
-    JFrame tool =
-      (JFrame)new PropertyBuilder(this, cc, originalComponent, experiment);
+    JFrame tool = new PropertyBuilder(this, cc, originalComponent, experiment);
     addTool(CONFIGURATION_BUILDER, cc.getShortName(), tool);
   }
 
@@ -663,7 +663,7 @@ public class CSMART extends JFrame {
     Thread configureThread = null;
     experimentToEdit = null;
     configureThread =
-      new ConfigureThread("ConfigureExperiment", experiment);
+      new ConfigureThread(experiment);
     // TODO: this isn't blocking mouse events on the toolbar; it's deferring them
     GUIUtils.timeConsumingTaskStart(csmart);
     try {
@@ -698,8 +698,7 @@ public class CSMART extends JFrame {
         (SocietyComponent)originalSociety.copy(copyName);
       societyCopy.setEditable(false);
       originalSociety.setEditable(false);
-      JFrame tool =
-        (JFrame)new PropertyBuilder(csmart, societyCopy, originalSociety,
+      JFrame tool = new PropertyBuilder(csmart, societyCopy, originalSociety,
                                     experimentToEdit);
       addTool(CONFIGURATION_BUILDER, societyCopy.getShortName(), tool);
       GUIUtils.timeConsumingTaskEnd(csmart);
@@ -727,8 +726,7 @@ public class CSMART extends JFrame {
     // to avoid confusion while editing the experiment
     organizer.removeChildren(experiment);
     JFrame tool =
-      (JFrame)new ExperimentBuilder(this, experiment);
-    addTool(EXPERIMENT_BUILDER, experiment.getExperimentName(), tool);
+      new ExperimentBuilder(this, experiment); addTool(EXPERIMENT_BUILDER, experiment.getExperimentName(), tool);
   }
 
 //    private Experiment queryUser(Experiment experiment,
@@ -760,8 +758,7 @@ public class CSMART extends JFrame {
    * @param experiment the experiment to run
    */
   protected void runConsole(Experiment experiment) {
-    JFrame tool =
-      (JFrame)new CSMARTConsole(this, experiment);
+    JFrame tool = new CSMARTConsoleView(this, experiment);
     String s = "";
     if (experiment != null)
       s = experiment.getExperimentName();
@@ -778,7 +775,7 @@ public class CSMART extends JFrame {
       runningExperiment = (Experiment)runningExperiments.get(0);
       name = runningExperiment.getExperimentName();
     }
-    JFrame tool = (JFrame)new CSMARTUL(this, runningExperiment);
+    JFrame tool = new CSMARTUL(this, runningExperiment);
     addTool(SOCIETY_MONITOR, name, tool);
   }
 
@@ -787,12 +784,12 @@ public class CSMART extends JFrame {
    * @param experiment the experiment to analyze
    */
   protected void runAnalyzer(Experiment experiment) {
-    JFrame tool = (JFrame)new Analyzer(this, experiment);
+    JFrame tool = new Analyzer(this, experiment);
     addTool(PERFORMANCE_ANALYZER, experiment.getExperimentName(), tool);
   }
 
   protected void runAnalyzer() {
-    JFrame tool = (JFrame)new Analyzer(this);
+    JFrame tool = new Analyzer(this);
     addTool(PERFORMANCE_ANALYZER, "", tool);
   }
 
@@ -801,31 +798,31 @@ public class CSMART extends JFrame {
    * and set up a listener to update the menu when the tool is exited.
    */
   private void addTool(String toolName, String docName, JFrame tool) {
-    NamedFrame.getNamedFrame().addFrame(toolName + ((docName != null && ! docName.trim().equals("")) ? (": " + docName) : ""), tool);
-    final boolean isConsole = (toolName == EXPERIMENT_CONTROLLER);
-    tool.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+      NamedFrame.getNamedFrame().addFrame(toolName + ((docName != null && !docName.trim().equals("")) ? (": " + docName) : ""), tool);
+      final boolean isConsole = (toolName == EXPERIMENT_CONTROLLER);
+      tool.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
-    tool.addWindowListener(new WindowAdapter() {
-      public void windowClosing(WindowEvent e) {
-	JFrame frameArg = (JFrame)e.getWindow();
-        if(!frameArg.getGlassPane().isVisible()) {
-	  // If user hit cancel in exit dialog in console,
-	  // then don't close the window
-	  if (isConsole && ((CSMARTConsole)frameArg).dontClose)
-	    return;
-          NamedFrame.getNamedFrame().removeFrame(frameArg);
-	  // Next line can cause NPE in Container.removeNotify(line 1878)
-	  // Is there some test we can/should do on the JFrame before calling?
-	  try {
-	    frameArg.dispose();
-	    //frameArg = null;
-	  } catch (NullPointerException npe) {
-	    if (log.isWarnEnabled())
-	      log.warn("Bug 1439: Was a drop-down list open? Using: " + writeDebug(), npe);
-	  }
-        }
-      }
-    });
+      tool.addWindowListener(new WindowAdapter() {
+          public void windowClosing(WindowEvent e) {
+              JFrame frameArg = (JFrame) e.getWindow();
+              if (!frameArg.getGlassPane().isVisible()) {
+                  // If user hit cancel in exit dialog in console,
+                  // then don't close the window
+                  if (isConsole && ((CSMARTConsoleView) frameArg).dontClose)
+                      return;
+                  NamedFrame.getNamedFrame().removeFrame(frameArg);
+                  // Next line can cause NPE in Container.removeNotify(line 1878)
+                  // Is there some test we can/should do on the JFrame before calling?
+                  try {
+                      frameArg.dispose();
+                      //frameArg = null;
+                  } catch (NullPointerException npe) {
+                      if (log.isWarnEnabled())
+                          log.warn("Bug 1439: Was a drop-down list open? Using: " + writeDebug(), npe);
+                  }
+              }
+          }
+      });
   }
 
   /**
@@ -843,7 +840,7 @@ public class CSMART extends JFrame {
 
   /**
    * Determine if an experiment is in the Console.
-   * @param String the experiment name
+   * @param experiment the experiment name
    * @return true if experiment is in the Console
    */
   protected static boolean isExperimentInConsole(Experiment experiment) {
@@ -964,7 +961,7 @@ public class CSMART extends JFrame {
   }
 
   public static void displayURL(String s) {
-    URL help = (URL)CSMART.class.getResource(s);
+    URL help = CSMART.class.getResource(s);
     if (help != null)
       Browser.setPage(help);
   }
@@ -1128,7 +1125,7 @@ public class CSMART extends JFrame {
   /**
    * Used to grab an instance of the Logger
    *
-   * @param requestor
+   * @param name the requestor
    * @return a <code>Logger</code> value
    */
   public static Logger createLogger(String name) {
@@ -1158,7 +1155,7 @@ public class CSMART extends JFrame {
   class ConfigureThread extends Thread {
     Experiment experiment;
 
-    ConfigureThread(String name, Experiment experiment) {
+    ConfigureThread(Experiment experiment) {
       this.experiment = experiment;
     }
 
@@ -1166,7 +1163,7 @@ public class CSMART extends JFrame {
       // copy the original experiment and put the copy in the workspace
       String newName =
         organizer.generateExperimentName(experiment.getExperimentName());
-      experimentToEdit = (Experiment)experiment.copy(newName);
+      experimentToEdit = (DBExperiment)experiment.copy(newName);
       if (experimentToEdit == null) {
         return;
       }
@@ -1183,8 +1180,7 @@ public class CSMART extends JFrame {
       newName = organizer.generateSocietyName(cdata.getName());
       cdata.setName(newName);
       SocietyComponent newSociety =
-        new SocietyCDataComponent(cdata,
-         ((SocietyComponent)experiment.getSocietyComponent()).getAssemblyId());
+        new SocietyCDataComponent(cdata, (experiment.getSocietyComponent()).getAssemblyId());
       newSociety.initProperties();
       // Save this new society
       newSociety.saveToDatabase();

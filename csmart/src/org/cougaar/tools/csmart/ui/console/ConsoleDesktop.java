@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2000-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -43,9 +43,11 @@ public class ConsoleDesktop extends JDesktopPane {
     public void componentMoved(ComponentEvent e) {
       ConsoleDesktop.this.componentMoved(e.getComponent(), true);
     }
+
     public void componentShown(ComponentEvent e) {
       ConsoleDesktop.this.componentMoved(e.getComponent(), true);
     }
+
     public void componentResized(ComponentEvent e) {
       ConsoleDesktop.this.componentResized(e.getComponent());
     }
@@ -77,12 +79,12 @@ public class ConsoleDesktop extends JDesktopPane {
   /**
    * When we're done with a Node Frame, remove it, and remove
    * our listener. Then dispose of the Frame -- which
-   * will recurse to get rid of the ConsoleTextPane, 
+   * will recurse to get rid of the ConsoleTextPane,
    * ConsoleStyledDocument.
    **/
   public void removeNodeFrame(String nodeName) {
     //    System.out.println("Desktop.removeNodeFrame " + nodeName);
-    JInternalFrame frame = (JInternalFrame)myFrames.remove(nodeName);
+    JInternalFrame frame = (JInternalFrame) myFrames.remove(nodeName);
     cleanFrame(frame);
   }
 
@@ -90,13 +92,13 @@ public class ConsoleDesktop extends JDesktopPane {
     // loop through myFrames to find the one, and remove it
     Enumeration names = myFrames.keys();
     while (names.hasMoreElements()) {
-      String title = (String)names.nextElement();
-      JInternalFrame cand = (JInternalFrame)myFrames.get(title);
+      String title = (String) names.nextElement();
+      JInternalFrame cand = (JInternalFrame) myFrames.get(title);
       if (cand != null && cand.equals(frame)) {
-	//System.out.println("Found frame to remove: " + title);
-	cleanFrame(cand);
-	myFrames.remove(title);
-	return;
+        //System.out.println("Found frame to remove: " + title);
+        cleanFrame(cand);
+        myFrames.remove(title);
+        return;
       }
     }
     // If get here it wasnt a node frame. Must remove seperately.
@@ -117,8 +119,8 @@ public class ConsoleDesktop extends JDesktopPane {
    * @param nodeName the name of the node
    * @return the frame for the node
    */
-  public ConsoleInternalFrame getNodeFrame(String nodeName) {
-    return (ConsoleInternalFrame)myFrames.get(nodeName);
+  public NodeView getNodeFrame(String nodeName) {
+    return (NodeView) myFrames.get(nodeName);
   }
 
   protected void addImpl(Component c, Object constraints, int index) {
@@ -174,8 +176,8 @@ public class ConsoleDesktop extends JDesktopPane {
       // loop through frames and remove the listener from them
       JInternalFrame[] frames = getAllFrames();
       for (int i = 0; i < frames.length; i++) {
-	frames[i].removeComponentListener(myComponentListener);
-	frames[i].dispose();
+        frames[i].removeComponentListener(myComponentListener);
+        frames[i].dispose();
       }
       myComponentListener = null;
     }

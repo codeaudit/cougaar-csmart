@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2000-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -38,9 +38,9 @@ public class OrganizerTreeCellRenderer extends DefaultTreeCellRenderer {
     this.organizer = organizer;
   }
 
-  /** 
+  /**
    * If a node represents a component
-   * and that component needs to be saved to the database, 
+   * and that component needs to be saved to the database,
    * then draw the component in red.
    * If a node represents a component in an experiment,
    * and that experiment is being edited,
@@ -53,7 +53,7 @@ public class OrganizerTreeCellRenderer extends DefaultTreeCellRenderer {
                                                 boolean leaf,
                                                 int row,
                                                 boolean hasFocus) {
-    Component c = 
+    Component c =
       super.getTreeCellRendererComponent(tree, value, sel,
                                          expanded, leaf, row, hasFocus);
     DefaultMutableTreeNode node = (DefaultMutableTreeNode)value;

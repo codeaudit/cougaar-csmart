@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2002-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -46,7 +46,7 @@ public class ExperimentXML extends ComponentDataXML {
   public ExperimentXML (){
     log = CSMART.createLogger("org.cougaar.tools.csmart.experiment.ExperimentDump");
   }
-  
+
   /**
    * Parses the specified file into and Experiment ComponentData.
    * An Experiment ComponentData contains no detailed Agent information.
@@ -55,7 +55,7 @@ public class ExperimentXML extends ComponentDataXML {
    * @param filename - Name of file to parse
    * @return a <code>ComponentData</code> value
    */
-  public ComponentData parseExperimentFile(String filename) {
+  private ComponentData parseExperimentFile(String filename) {
     // TODO: Parse out and store Agent details from the new ComponentData
     // this should be just a pure HNA mapping.
     if(filename == null || filename.equals("")) {

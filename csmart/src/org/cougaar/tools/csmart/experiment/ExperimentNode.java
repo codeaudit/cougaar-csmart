@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2000-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -94,7 +94,7 @@ public class ExperimentNode
   private void createObserver() {
     if (myObserver == null) {
       myObserver = new Observer() {
-        public void update(Observable o, Object arg) {
+        public void update(final Observable o, final Object arg) {
           ExperimentNode.this.fireModification();
         }
       };
@@ -115,7 +115,7 @@ public class ExperimentNode
     setName(newName); // invokes setName in ConfigurableComponent
   }
 
-  public int getAgentCount() {
+  private int getAgentCount() {
     return agents.size();
   }
 
@@ -125,7 +125,7 @@ public class ExperimentNode
 
   public void addAgent(AgentComponent agent) {
     Property prop = getProperty("AgentNames");
-    if (prop == null) 
+    if (prop == null)
       prop = addProperty("AgentNames", new ArrayList());
     ArrayList names = (ArrayList)prop.getValue();
     names.add(agent.getShortName());
@@ -180,11 +180,11 @@ public class ExperimentNode
 
   /**
    * Copy this node and return the new node.
-   * @param the experiment which will contain this node
+   * @param experimentCopy experiment which will contain this node
    */
 
   public NodeComponent copy(Experiment experimentCopy) {
-    NodeComponent nodeCopy = new ExperimentNode(getShortName(), 
+    NodeComponent nodeCopy = new ExperimentNode(getShortName(),
                                                 experimentCopy);
     Properties newProps = nodeCopy.getArguments();
     newProps.clear();

@@ -1,3 +1,1167 @@
+2003-04-02  Brian Krisler  <bkrisler@bbn.com>
+
+	* ConsoleInternalFrame.java, NodeCreationInfo.java, ButtonState.java, CSMARTConsole.java:
+	Not used any more
+
+	* ConsoleStyledDocument.java, CreateNodeThread.java, GLSClientView.java, NodeModel.java, NodeStatusButton.java, AppServerSupport.java:
+	Cleaned up imports
+
+	* NodeView.java: Cleaned up formatting.
+
+	* CSMARTConsoleView.java: Scrubbed Imports.
+	Removed reference to CSMARTConsole
+
+	* CSMARTConsoleModel.java: Added missing methods.
+
+	* ConsoleNodeListener.java: Removed reference to CSMARTConsole.
+
+	* NodeView.java, NodeModel.java, CSMARTConsoleModel.java:
+	Scrubbed Imports, removed unused variables.
+
+2003-04-02  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* NodeModel.java, NodeView.java, AppServerSupport.java, CSMARTConsoleModel.java, CSMARTConsoleView.java, ConsoleNodeListener.java, CreateNodeThread.java:
+	Added support for node states.
+	Views observe the node state (which is in the node model),
+	and update their menus and buttons accordingly.
+
+2003-04-01  Brian Krisler  <bkrisler@bbn.com>
+
+	* CSMARTConsoleModel.java:
+	Added method to ensure Node containing GLS is started before displaying a window.
+	Removed debug system.out.
+
+	* CSMARTConsoleView.java, ButtonState.java, CSMARTConsoleModel.java:
+	Fixed problem with buttons retaining state
+
+2003-04-01  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* NodeChange.java, NodeModel.java, CSMARTConsoleModel.java, CSMARTConsoleView.java, CreateNodeThread.java:
+	Changes to handle resetting Run and Stop buttons when there are
+	errors on node startup.
+	Changes to handle stopping nodes and destroying associated GUIs.
+
+	* NodeChange.java: New file.
+
+2003-03-31  Brian Krisler  <bkrisler@bbn.com>
+
+	* CSMARTConsoleView.java, CSMARTConsoleModel.java:
+	Modifed to use new ButtonState Class
+
+	* ButtonState.java: Class to monitor GUI Button States
+
+	* ButtonState.java: New file.
+
+2003-03-31  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* CreateNodeThread.java:
+	Catch runtime exception when creating node thread.
+	Pass exception error messages back to user.
+
+2003-03-28  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* CSMARTConsoleModel.java, CSMARTConsoleView.java:
+	Finished methods invoked from notify menu on CSMARTConsole.
+
+2003-03-27  Brian Krisler  <bkrisler@bbn.com>
+
+	* GLSClientView.java: Removed dead code.
+
+	* CSMARTConsoleView.java: Minimize GLS Window on start
+
+	* CSMARTConsoleView.java, CSMARTConsoleModel.java:
+	Fixed Experiment Timer
+
+2003-03-27  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* NodeModel.java, CSMARTConsoleModel.java, CSMARTConsoleView.java:
+	Fixed setting notify conditions from CSMARTConsoleView (top console window).
+
+2003-03-27  Brian Krisler  <bkrisler@bbn.com>
+
+	* CSMARTConsoleModel.java:
+	Added method to get run start time.  Scrubbed Imports.
+
+	* NodeModel.java:
+	Uncomment makeResultDirectory, and fixed so it actually works.
+
+	* NodeModel.java: Add some documentation.
+
+	* GLSClientView.java:
+	Remove need for Model.  Make getting window static.
+
+	* CSMARTConsoleView.java, CSMARTConsoleModel.java:
+	Add Listener for adding a GLS Window.
+
+	* ConsoleNodeListener.java, NodeModel.java: Removed System.out's
+
+	* CreateNodeThread.java, NodeModel.java:
+	Added Thread for killing Nodes, to prevent GUI blocking.
+
+2003-03-27  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* NodeView.java, ConsoleNodeListener.java, ConsoleStyledDocument.java, NodeModel.java, CSMARTConsoleModel.java, CSMARTConsoleView.java, ConsoleInternalFrame.java, AppServerSupport.java, CSMARTConsole.java:
+	Removed commented out code and methods that weren't executed because
+	menu items were permanently disabled.
+	Get app servers from experiment and fixed enabling/disabling app server
+	menu items.
+
+	* CSMARTConsoleView.java:
+	Fixed error in HostConfigurationBuilder in selecting Node from Host tree.
+
+	* NodeView.java, CSMARTConsoleModel.java, CSMARTConsoleView.java, ConsoleDesktop.java, NodeModel.java:
+	Added host configuration window.
+	Added support for menus on Node Status Button.
+	Added support for setting view size for node view frame.
+
+2003-03-26  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* ConsoleNodeOutputFilter.java, NodeModel.java, NodeView.java, CSMARTConsole.java, CSMARTConsoleModel.java, ConsoleInternalFrame.java:
+	Wired up more of the methods that are accessed via the NodeView menus.
+
+2003-03-26  Brian Krisler  <bkrisler@bbn.com>
+
+	* CSMARTConsoleModel.java, CSMARTConsoleView.java:
+	Add GLS Client Window
+
+	* NodeModel.java: Clean up some code.
+
+2003-03-26  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* CSMARTConsoleModel.java, CSMARTConsoleView.java, CreateNodeThread.java, NodeModel.java:
+	Make attach to running node work.
+
+2003-03-26  Brian Krisler  <bkrisler@bbn.com>
+
+	* CSMARTConsoleView.java: Fixed Issue with start/stop button state.
+
+2003-03-25  Brian Krisler  <bkrisler@bbn.com>
+
+	* NodeModel.java, CSMARTConsoleView.java, CSMARTConsoleModel.java:
+	Added Support to Kill a Node.
+
+	* CreateNodeThread.java: Added Ability to Kill the Node.
+
+	* ConsoleDesktop.java: Cleaned up formatting.
+
+2003-03-24  Brian Krisler  <bkrisler@bbn.com>
+
+	* NodeCreationInfo.java, NodeInfo.java, NodeModel.java, NodeStatusButton.java, NodeView.java, ConsoleStyledDocument.java, ConsoleTextPane.java, CreateNodeThread.java, ExitConsole.java, GLSClientView.java, Legend.java, CSMARTConsoleControl.java, CSMARTConsoleModel.java, CSMARTConsoleView.java, ConsoleInternalFrame.java, ConsoleNodeListener.java, AppServerDesc.java, AppServerRequest.java, AppServerSupport.java, CSMARTConsole.java:
+	Rollback to version 10_2, pre-refactoring.
+
+2003-03-21  Brian Krisler  <bkrisler@bbn.com>
+
+	* CSMARTConsoleView.java: Add mouse listner to Node Status Button
+
+	* CreateNodeThread.java: Removed old methods
+
+	* NodeInfo.java: Added a equals method
+
+	* NodeModel.java: Attempt to get stop to work correctly
+
+	* CSMARTConsoleModel.java: Handle stopping of a Node Correctly
+
+	* CSMARTConsoleModel.java: Add missing setChanged.
+	Add method to gain access to NodeModel
+
+	* CSMARTConsoleView.java: Add Status button when displaying view.
+
+	* NodeView.java:
+	Change status button from JRadioButton to NodeStatusButton
+
+	* NodeStatusButton.java: Add view as a listener to the model.
+
+2003-03-21  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* AppServerSupport.java, CSMARTConsoleModel.java, CSMARTConsoleView.java:
+	Fixed class cast exception in AppServerSupport.
+	Call setChanged before notifying observers of new node view.
+
+2003-03-20  Brian Krisler  <bkrisler@bbn.com>
+
+	* CSMARTConsoleModel.java: Init Hashtable before using.
+
+	* CSMARTConsoleView.java: Add invisible button to use as a deactivator.
+
+2003-03-20  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* NodeView.java, CSMARTConsoleModel.java, CSMARTConsoleView.java, NodeModel.java:
+	Implemented NodeView which replaces ConsoleInternalFrame.
+
+2003-03-19  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* AppServerSupport.java, CSMARTConsoleModel.java:
+	Added synchronization on AppServer data structures.
+
+	* CSMARTConsole.java, CSMARTConsoleView.java:
+	Comment out unneeded code in CSMARTConsole.
+
+	* CSMARTConsoleModel.java, CSMARTConsoleView.java, ConsoleInternalFrame.java, CreateNodeThread.java, NodeModel.java, AppServerSupport.java, CSMARTConsole.java:
+	Finished first round of changes to AppServerSupport.
+
+	* CreateNodeThread.java, NodeInfo.java, AppServerSupport.java, CSMARTConsole.java, CSMARTConsoleModel.java:
+	Removed processName from NodeInfo.
+	Removed commented-out code from AppServerSupport.
+
+2003-03-18  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* AppServerRequest.java, AppServerSupport.java, CSMARTConsole.java, CSMARTConsoleModel.java, CSMARTConsoleView.java, ConsoleInternalFrame.java, ConsoleNodeListener.java, ConsoleStyledDocument.java, AppServerDesc.java:
+	Changes, especially in AppServerSupport, to refactor CSMARTConsole.
+
+2003-03-18  Brian Krisler  <bkrisler@bbn.com>
+
+	* NodeStatusButton.java: Cleaned up for refactoring
+
+	* ConsoleTextPane.java: Cleaned formatting, starting refactoring
+
+	* Legend.java: Cleaned formatting
+
+	* NodeInfo.java: Made variables private and added getters
+
+	* ConsoleNodeListener.java:
+	Modified to match current refactoring changes
+
+	* ConsoleInternalFrame.java: Cleaned up formatting
+
+	* CSMARTConsole.java:
+	Modifed to work with current changes.  This class will be going away soon.
+
+	* AppServerSupport.java: Cleaned up formatting
+
+	* NodeModel.java, NodeView.java, CSMARTConsoleControl.java, CSMARTConsoleModel.java, CSMARTConsoleView.java, CreateNodeThread.java, ExitConsole.java, GLSClientView.java, NodeCreationInfo.java:
+	New classes, part of console refactoring.  Not finished yet
+
+2003-01-23  Mike Thome  <mthome@clarinet.sl.bbn.com>
+
+	* ConsoleFontChooser.java, ConsoleInternalFrame.java, ConsoleNodeListener.java, ConsoleNodeOutputFilter.java, ConsoleStyledDocument.java, ConsoleTextPane.java, Legend.java, NodeInfo.java, NodeStatusButton.java, SelectedColoredCircle.java, SwingWorker.java, AppServerSupport.java, CSMARTConsole.java, ColoredCircle.java, ConsoleDesktop.java:
+	Update copyright notices
+
+2003-01-15  Brian Krisler  <bkrisler@bbn.com>
+
+	* AppServerSupport.java, CSMARTConsole.java, ColoredCircle.java, ConsoleDesktop.java, ConsoleFontChooser.java, ConsoleInternalFrame.java, ConsoleNodeListener.java, ConsoleNodeOutputFilter.java, ConsoleStyledDocument.java, ConsoleTextPane.java, Legend.java, NodeInfo.java, NodeStatusButton.java, SelectedColoredCircle.java, SwingWorker.java:
+	Scrubbed Imports.
+
+2003-01-15  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java:
+	Log if don't have a result directory / can't create one.
+	Use pwd as default if no directory created, logging a warning
+
+2002-12-17  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* ConsoleNodeListener.java:
+	improve a log message and add some FIXMEs - Mark Barger had CSMART
+	lose ability to write to the Node log file somehow
+
+2002-11-25  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java: Add a small comment
+
+2002-11-22  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java, ConsoleInternalFrame.java, ConsoleNodeListener.java, help.html:
+	Drop dead multi-trial support code:
+	1) ExperimentalValues slot in Property is gode
+	2) Experiment has a single Trial slot
+	3) Console no longer has an Abort button, just the Stop button
+	4) Drop all sorts of unused code on building trials, selecting trial
+	values, counting current trial number, etc
+
+	* StripChart.java, StripChartFrame.java, StripChartSource.java:
+	Drop misleading / unused node idleness history chart
+
+2002-11-15  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* ConsoleFontChooser.java, ConsoleNodeListener.java:
+	More cluster->agent changes
+
+2002-11-12  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java:
+	Use new core module constants for insertion points, not string literals
+
+2002-11-07  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* AppServerSupport.java, CSMARTConsole.java:
+	Comments, small fixes from branch
+
+2002-09-11  Mike Thome  <mthome@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java:
+	Merge in changes from the 9.4.1 branch (R9_4_1 - R9_4_1_3)
+
+2002-09-09  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java:
+	- Bug 2218: Large societies, under heavy load, may "thrash" when you
+	  try to stop the run by hitting "Stop" in the Console. (You can also
+	  get this on smaller societies by simply turning up the App Server
+	  polling interval to sub-second intervals.) The result is
+	  a long wait time to kill the society, and many messages like:
+	10:55:13,970 WARN  [CSMARTConsole] - Remote Process for NCA-NODE says it is not
+	alive. Marking it dead.
+
+	  The fix is to turn down AppServer polling when the user is stopping
+	  the society ("stopping" flag is true, so ignore certain errors), and
+	  in case of certain timeout problems while killing the Node, retry up
+	  to 5 times after sleeping for 2 seconds.
+
+
+	(Remember the HEAD version of this file includes bugs 2071/2 fixes
+	that are not on the branch.)
+
+	* CSMARTConsole.java:
+	- Bug 2218: Large societies, under heavy load, may "thrash" when you
+	  try to stop the run by hitting "Stop" in the Console. (You can also
+	  get this on smaller societies by simply turning up the App Server
+	  polling interval to sub-second intervals.) The result is
+	  a long wait time to kill the society, and many messages like:
+	10:55:13,970 WARN  [CSMARTConsole] - Remote Process for NCA-NODE says it is not
+	alive. Marking it dead.
+
+	  The fix is to turn down AppServer polling when the user is stopping
+	  the society ("stopping" flag is true, so ignore certain errors), and
+	  in case of certain timeout problems while killing the Node, retry up
+	  to 5 times after sleeping for 2 seconds.
+
+2002-08-23  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java:
+	oops. Bug 2072 fix not approved for checkin. reverting...
+
+	* CSMARTConsole.java: ConfigurableComponent.java
+	Bug 2097: Comment that there is no .equals method
+
+	Experiment.java
+	Bug 2097: More debug logs (particularly using FullNames of Agents
+	instead of ShortNames), mostly commented out. Optimize the Node /
+	Agent reconciliation, pulling it out into a separate method. Add
+	multiple getNodesInner, getHostComponentsNoReconcile methods to have
+	finer control over when that method is called. Use these new calls in
+	experiment.copy and getHostComponents and updateNameServerHostName and
+	getNodeComponents. Also during Experiment save and generateHNACdata. So far, this is just
+	speed improvements. Also though, Node/Agent reconciliation now notices
+	if Node's Agent has same name (.equals) with that from Society, but is
+	not ==. In this case, remove the old one and replace with the new one
+	from the Society
+
+	ExperimentNode.java
+	Bug 2097: Short circuit .equals for same object comparison
+
+	ExperimentHost.java
+	Bug 2097: Short circuit .equals for same object comparison
+
+	AgentBase.java
+	Bug 2097: Commented out debug line when .equals is called (great for
+	finding where a lot of time is spent). Also, short-circuit case of
+	comparing object with itself
+
+	SocietyComponentCreator.java
+	Bug 2097: javadoc, import cleanup
+
+	SocietyCDataComponent.java
+	Bug 2097:  More debug logging (some commented out). Only add an Agent
+	to the list of Agents to add to the society if we have not already
+	added it. If the CDATA given is correct, this will not be needed. But
+	this extra error check avoids having bad-data corrupt the society.
+
+	AgentDBComponent.java
+	Bug 2097: remove .equals method that duplicates that in parent class
+
+	CSMARTConsole.java
+	Bugy 2072: Watch for currentTrial counter getting out of wack, log something,
+	avoid ArrayIndexOutOfBounds, try to correct the bad state - but still
+	haven't figured out why it happens
+
+	HostConfigurationBuilder.java
+	Bug 2097: Comments about where a lot of time appears to be spend
+	refreshing the Node & Agent trees, plus removing one call to
+	Node/Agent reconciliation. Finally, log a warning if Find failed to
+	find an Agent/Node/Host
+
+	OrganizerHelper.java
+	Bug 2097: Comments about minimizing node/agent reconciliation on
+	load. It was happening twice when you loaded an experiment from the
+	DB. Now it should be only once
+
+	release-notes.txt
+	Bugs 2097 changes
+
+2002-08-20  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java:
+	Bug 2071,2: Avoid odd runtime errors when currentTrial counter gets out of wack. This is not a solution, but avoid the exceptions. Note that this change is _not_ on the 941 branch.
+
+2002-08-13  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* AppServerSupport.java, CSMARTConsole.java:
+	Avoid rare NPE if AppServer dies unexpectedly when trying to get the
+	RemoteProcess (bug 2008)
+
+2002-08-01  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* help.html: clean up help menu (bug 1925)
+
+	* NodeStatusButton.java: capitalize status desriptions (bug 1875)
+
+	* ConsoleInternalFrame.java: Make sure close means cancel (bug 1926)
+	disable editing -D args in Node info screen (bug 1874)
+
+	* CSMARTConsole.java: clean up help menu (1925)
+	ensure closing dialog is a cancel, dialogs have good titles, and are
+	clear (bugs 1926, 1928, 1930)
+
+	* help.html: clean up help menu (bug 1925)
+
+	* NodeStatusButton.java: capitalize status desriptions (bug 1875)
+
+	* ConsoleInternalFrame.java: Make sure close means cancel (bug 1926)
+	disable editing -D args in Node info screen (bug 1874)
+
+	* CSMARTConsole.java: clean up help menu (1925)
+	ensure closing dialog is a cancel, dialogs have good titles, and are
+	clear (bugs 1926, 1928, 1930)
+
+2002-07-31  Mike Thome  <mthome@clarinet.sl.bbn.com>
+
+	* ConsoleDesktop.java, ConsoleFontChooser.java, ConsoleInternalFrame.java, ConsoleNodeListener.java, ConsoleNodeOutputFilter.java, ConsoleStyledDocument.java, ConsoleTextPane.java, NodeStatusButton.java, StripChartFrame.java, StripChartSource.java, help.html, AppServerSupport.java, CSMARTConsole.java:
+	Merge of B9_4_1 changes up to R9_4_1
+
+2002-07-25  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java, help.html:
+	multiple bugs (incl 1663, 1674, 1685, 1842, 1834):
+	Allow adding a GLS Client when attaching to a society
+
+	* CSMARTConsole.java:
+	multiple bugs (incl 1663, 1674, 1685, 1842, 1834):
+	A thorough re-working to further support AS polling so we notice
+	what's going on, and to try to be more careful in cleaning up unused
+	resources
+
+	In this class: add more error checks.
+	New method from Poller that checks to see if the various AppServers
+	are alive, and then the Nodes. If not, mark them NO_ANSWER.
+	Put various things in SwingUtilities.invokeLater to avoid deadlock
+
+	Add new error method markNodeDead to run when have error talking to
+	nodes
+
+	Try a lot harder to clean up old resources when done -- particularly
+	when exiting the Console
+
+	When getting result files, talk to each AppServer only once, not once
+	per Node. Avoid those we can't talk to.
+
+	* AppServerSupport.java:
+	multiple bugs (incl 1663, 1674, 1685, 1842, 1834):
+	A thorough re-working to further support AS polling so we notice
+	what's going on, and to try to be more careful in cleaning up unused
+	resources
+
+	In this class: add more error checks. Remove extra AS polls. Add
+	helper function to ping remote ASes to see if they are alive
+
+	* ConsoleDesktop.java:
+	multiple bugs (incl 1663, 1674, 1685, 1842, 1834):
+	A thorough re-working to further support AS polling so we notice
+	what's going on, and to try to be more careful in cleaning up unused
+	resources
+
+	In this class: add a dispose method that cleans up everything, plus
+	helper functions for cleaning up individual frames
+
+	* ConsoleInternalFrame.java:
+	multiple bugs (incl 1663, 1674, 1685, 1842, 1834):
+	A thorough re-working to further support AS polling so we notice
+	what's going on, and to try to be more careful in cleaning up unused
+	resources
+
+	In this class: override dispose to clean up all resources, clean up imports
+
+	* ConsoleNodeListener.java:
+	multiple bugs (incl 1663, 1674, 1685, 1842, 1834):
+	A thorough re-working to further support AS polling so we notice
+	what's going on, and to try to be more careful in cleaning up unused
+	resources
+
+	In this class: add a cleanUp method, and a bunch of error checks
+
+	* ConsoleTextPane.java:
+	multiple bugs (incl 1663, 1674, 1685, 1842, 1834):
+	A thorough re-working to further support AS polling so we notice
+	what's going on, and to try to be more careful in cleaning up unused
+	resources
+
+	In this class: add a cleanUp method to remove listeners, and clean up
+	the document
+
+	* ConsoleStyledDocument.java:
+	multiple bugs (incl 1663, 1674, 1685, 1842, 1834):
+	A thorough re-working to further support AS polling so we notice
+	what's going on, and to try to be more careful in cleaning up unused
+	resources
+
+	In this class: add a cleanUp method to remove listeners
+	In appendString, remove content before adding new
+
+	* NodeStatusButton.java:
+	multiple bugs (incl 1663, 1674, 1685, 1842, 1834):
+	A thorough re-working to further support AS polling so we notice
+	what's going on, and to try to be more careful in cleaning up unused
+	resources
+
+	In this class: make status public
+
+2002-07-24  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* StripChartSource.java: bug 1831: remove extraneous local var
+
+	* StripChartFrame.java, ConsoleNodeOutputFilter.java:
+	bug 1831: remove extraneous local vars
+
+	* ConsoleFontChooser.java: bug 1831: remove extraneous imports
+
+	* help.html: bug 1701: more doc updates
+
+2002-07-23  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* help.html: bug 1701: start on updated console help
+
+2002-07-20  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* ConsoleNodeOutputFilter.java: bug 1685: add comment
+
+2002-07-18  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java:
+	bug 1685 partial: remove a use of "final" -- doesn't seem to help, but
+	its less confusing
+
+	When disposing nodes, remove the listeners on the frames before
+	disposing of them
+
+	When doing exit, set lots more things to null -- trying to narrow
+	down who has the references still keeping the memory
+
+	* ConsoleNodeListener.java:
+	bug 1685 partial: remove a use of "final" -- doesn't seem to help, but
+	its less confusing
+
+	* ConsoleStyledDocument.java: bug 1685 in progress -
+	clean up log messages
+
+	large changes to appendString, courtesy of Ray:
+	underlying data storage (GapConent) _never_ shrinks. So be careful to remove any
+	existing content we need to to keep the total size at the user-desired
+	level, _before_ adding new content
+
+	This helps - memory size grows more slowly. But still grows pretty ridiculously.
+
+	* CSMARTConsole.java:
+	bug 1685 in progress - when exiting console, make a lot more of an
+	effort to clean up:
+	1) If just detaching, we now:
+	- make sure no Nodes are still starting up
+	- stop the glsClient
+	- close all the log files
+	- save any results so far
+	- stop any timers running
+	2) Whenever we are exiting, try to get rid of as many resources as
+	possible, setting variables to null, etc
+
+	* ConsoleNodeListener.java: bug 1685 in progress - cleanup
+
+	* ConsoleInternalFrame.java:
+	bug 1685 in progress - add a dispose method to try to allow memory to
+	be gc'ed
+
+	* AppServerSupport.java:
+	bug 1685 in progress - when killing listeners, flush the output first
+
+	* ConsoleNodeOutputFilter.java, ConsoleTextPane.java:
+	bug 1685 in progress - cleanup
+
+2002-07-16  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java: fix error message
+
+	* AppServerSupport.java:
+	try to resolve various AppServer exception handling issues
+
+	* CSMARTConsole.java: bug 1668 comments
+	Plus some comments on bug 1663
+
+2002-07-15  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* StripChart.java: drop unused variable(s) -- per IASET team's PMD run
+	-- this might in fact have been an error!
+
+	* ConsoleStyledDocument.java:
+	drop unused variable(s) -- per IASET team's PMD run
+
+	* ConsoleInternalFrame.java:
+	Bug 1650: Make the Agent contents dialogs bigger
+
+2002-07-12  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java:
+	if user selected no nodes to attach to, just go away -- if there _are_
+	no nodes to attach to, only then give the user a warning
+
+	* AppServerSupport.java:
+	return empty list if user selects no processes to attach to
+
+	* CSMARTConsole.java:
+	dont invisibly add the swallowConnections argument to Nodes -- lets do
+	it explicitly in the Global Arguments on the Nodes
+
+	* CSMARTConsole.java:
+	Bug 1623: On exit, give user a choice of whether to Detach from the
+	Nodes (default), kill the Nodes (old behavior), or cancel altogether
+
+	* CSMARTConsole.java:
+	Put an Attach menu item on the AppServer drop-down menu, same behavior
+	as the button
+
+	Put in some logic to try to enable / disable various appServer actions
+	based on whether there are AppServers or processes
+
+	Put up a confirmation dialog on the Kill All Nodes command
+
+	If have an experiment, not run, attach to a single node, kill it, then
+	select re-start -- this should not be the same as hitting Run - cause
+	that would run the Experiment.
+
+	If hit Attach, and there are no New Nodes to Attach To, say so, don't
+	just do nothing
+
+	Try to enable the Run button when start with an experiment and have
+	attached to some Nodes
+
+	Run / stop / etc buttons not quite enabled at right times yet - still
+	working on it.
+
+	* ConsoleInternalFrame.java:
+	Added 2 disabled menu items to the Control menu for detaching /
+	attaching a Node. The idea would be to allow per-node detaching at
+	some point.
+
+	* AppServerSupport.java:
+	new methods to see if we know of any valid AppServers, and to see if
+	we know of any running processes - to be used in enabling / disabling
+	menu items
+
+2002-07-12  Brian Krisler  <bkrisler@bbn.com>
+
+	* CSMARTConsole.java: Fixed Jikes Pedantic warnings.
+
+2002-07-11  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java: Add new menu item to kill any nodes anywhere.
+	It will
+	a) Hit 'Abort' if applicable
+	b) Kill any other processes it can find
+
+	When starting a process, if the process name is used, tack a 1 on the
+	end of the name, to avoid exceptions.
+	Perhaps what you really want is to tell the user that a so-named
+	process is already running, and suggest they Attach instead, but oh
+	well
+
+	* AppServerSupport.java: Fix spacing in error messages
+
+	Add new method to kill all processes known without regard to who
+	started them, whether anyone is listening, etc
+
+	Use constant from Experiment for App Server default port
+
+	If user types in just a host name, or just a port number, try to guess
+	something reasonable and try to attach
+
+	Add helper to tell you if a given process name is used:
+	Note that in general, process names need only be unique per AppServer,
+	but AppServerSupport assumes they are unique throughout
+
+	* AppServerSupport.java: Default AppServer to add as localhost:8484
+	If after eliminating currently listening processes we have none, then
+	show no dialog at all
+
+	* CSMARTConsole.java:
+	Before getting list of processes to attach to, do an updateAppServers
+
+	Fix enable/disabling of Control menu on Nodes
+
+	Avoid re-attaching to a process we're already attached to
+	-- If just the node names are the same, but the process name is
+	different, then tweak the node name slightly
+	-- if the process names are the same, it won't connect
+
+	Add in some comments:
+	Need to put in a fix so if try to start a Node up where the resulting
+	process name would be the same as one that's already running, we use a
+	different process name (or don't start it up, or something)
+
+	Also, if have an Experiment but not using it, and start up a
+	non-experiment Node, avoid exception in makeResultsDirectory
+
+	* AppServerSupport.java:
+	When listing processes you could attach to, don't list those you're
+	already attached to.
+
+	When parsing out the host name for a Node from its process
+	description, remove the port numbers
+
+	Add comment:
+	Before getting list of processes to attach to, caller should do an updateAppServers
+
+	* ConsoleInternalFrame.java:
+	If have no configuration info for the Node, do not display the list of
+	Agents, etc in the Node info window
+
+	* AppServerSupport.java: clean up logging
+	Do not tell remote AppServer registry to be verbose
+
+	* CSMARTConsole.java: add a couple of (mostly redundant) error checks
+
+	New AppServer menu item to let the user set the polling interval for
+	new AppServers. If it is set to 0, there is no polling.
+	The user-selected value is kept between invocations of the Console for
+	a given invocation of CSMART.
+
+	* AppServerSupport.java: add a bunch of (mostly redundant) error checks
+
+2002-07-10  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java: use the logger more
+	Use constants where possible
+	Make the interval to poll the appservers be a number we may later be
+	able to vary
+	Shuffle around where some methods are in the file
+
+	Explicitly always include in a Node's Properties the AppServer
+	property which causes Nodes to be left running if the client (CSMART
+	in this case) stops running. This way, if CSMART dies, the Nodes stay
+	running. If CSMART kills the Nodes, then they stop.
+
+	* AppServerSupport.java: use the logger more
+	Use constants in Experiment where possible
+
+2002-07-10  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* AppServerSupport.java, CSMARTConsole.java:
+	Fixed bug in AppServerSupport: needed to create logger.
+	Fixed bug in AppServerSupport: new nodes were being detected
+	repeatedly instead of just the first time that CSMART noticed them.
+	CSMARTConsole: Allow the user to select an experiment, but
+	then not run it and attach to running nodes instead.
+	CSMARTConsole: Don't add listener when creating new nodes; they're
+	added as part of the node creation process.
+
+	* CSMARTConsole.java:
+	Modified to use new GLSClient which allows user to specify
+	protocol, as well as host, port and agent.
+
+2002-07-10  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java: Add to javadoc
+	Use logger instead of System.out in 3 places
+	Play with comments, spacing
+
+	getURL method: shuffle some line orders so that if there's an error
+	parsing the HTTPS port number, we try to parse the HTTP port number,
+	rather than immediately falling back to the default
+
+2002-07-10  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* NodeInfo.java, AppServerSupport.java, CSMARTConsole.java, ConsoleNodeListener.java:
+	Changes to support attaching to running nodes.
+
+2002-07-09  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java: avoid jikes innerclass annoyance
+
+2002-07-08  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java:
+	Fixed specifying protocol and port definitions for GLSClient.
+
+	* CSMARTConsole.java:
+	Fixed bugs 1523 (fix different handling of hosts and nodes in
+	community editor) and 1578 (flatten nodes and hosts in community editor).
+	Fixed bug in which displaying all communities was not clearing the
+	currently displayed communities first.
+	Added menus for viewing, adding, deleting, and updating Application Servers.
+	Added ability to select multiple recipes from the database and
+	add these to the Organizer.
+
+2002-07-03  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java: Fixed bug 1416; destroy nodes in parallel.
+
+	* CSMARTConsole.java, ConsoleDesktop.java, ConsoleInternalFrame.java, ConsoleNodeListener.java:
+	Fixed bug 931 (node log files not kept up-to-date)
+	Started work on being able to attach to running nodes.
+
+2002-07-02  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java: more use of constants
+
+2002-07-01  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* ConsoleInternalFrame.java:
+	Fixed bugs 932 (support for adding/deleting multiple recipes in
+	an experiment) and bug 1470 (support for viewing components in an
+	agent in the experiment builder).
+
+2002-06-27  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* ConsoleInternalFrame.java:
+	Fixed bug 1525; made information window about agent sub-components (i.e. plugins)
+	smaller and added horizontal scrollbars.
+
+2002-06-20  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* ConsoleInternalFrame.java: javadoc, comments
+
+	* CSMARTConsole.java:
+	Bug 1309: Change default view size from 50,000 characters to 300,000 characters
+
+	* CSMARTConsole.java: add javadoc
+	resort imports
+	Bug 1309: Chand default view size from 50,000 characters to 300,000 characters
+
+	* ConsoleInternalFrame.java: add javadoc
+	put in comments on bug 1525
+	resort imports
+	Show Component Priority in Agent contents window
+	Add the NodeAgent to the list of Agents whose contents you can see
+	-- when viewing a NodeAgent's contents, do not show the Agents though.
+
+2002-06-19  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* help.html: clarify how Node restart works with persistence
+
+	* CSMARTConsole.java:
+	bug 1504: Use Experiment constant. Do not over-ride / set any
+	persistence.clear flag for normal runs
+
+	* help.html: warn users about persistence / node restart behavior
+
+	* CSMARTConsole.java:
+	Bug 1504: Do not try to mess with the user's setting for
+	persistence.clear _EXCEPT_ when restarting a Node. This too is
+	potentially confusing and may be worth revisiting later.
+
+2002-06-18  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* help.html: minor online docs update
+
+	* ConsoleInternalFrame.java: fix a jikes-ism, no change if using javac
+	on bug 1494
+
+	* ConsoleInternalFrame.java: fix a jikes-ism with an inner class
+
+	* help.html: various online help updates
+
+2002-06-17  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* ConsoleInternalFrame.java: bug 1494 fix, copied from HEAD
+
+2002-06-17  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* ConsoleInternalFrame.java:
+	Fixed bug 1494; information for wrong node being displayed in CSMART Console.
+
+2002-06-17  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java:
+	bug 1504: use constant in Experiment for manipulating
+	persistence.clear argument.
+	Also, avoid NPE if have no trial ID for experiment per TODO note
+
+2002-06-14  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* ConsoleInternalFrame.java: add comment lines about bug 1494
+
+2002-06-13  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java: Add a bunch of debug output
+	Fix up assignUnassignedAgents to assign only to Nodes on Hosts
+	But then comment out its use. Why would we do this?
+
+2002-06-11  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java:
+	Made community display be a tabbed pane in the Experiment Builder,
+	instead of a top-level CSMART tool.
+	Fixed Bug 1456: throw IllegalArgumentException in makeDraggableObject and return null;
+	make caller check for null return and ignore drag.
+	Fixed Bug 1447: HostConfigurationBuilder now lays out its panes horizontally.
+
+2002-06-05  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java:
+	comment about upcoming changes to support using HTTPS
+
+2002-06-05  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java, ConsoleInternalFrame.java:
+	Added new community display.
+	Fix for setting node window view size in CSMART Console.
+
+2002-05-31  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* ConsoleInternalFrame.java:
+	Bug 1399: Node info window should show all subcomponents of an Agent,
+	not just plugins
+
+2002-05-24  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* ConsoleInternalFrame.java:
+	Screen listing Plugins on an Agent should list all subcomponent of an Agent
+
+2002-05-22  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* help.html: refer people to new topology view
+
+2002-05-14  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* help.html: bug 1322: update docs re -server option
+
+	* help.html: update help re -server option
+
+2002-05-13  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* SwingWorker.java: A couple minor JTest inspired fixes
+
+2002-05-10  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* help.html: update online help to reflect bug fixes, etc
+
+2002-05-09  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java: spacing change
+
+2002-05-09  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* ConsoleInternalFrame.java, CSMARTConsole.java:
+	Added ability to specify $HOST in -D arguments.
+
+	* ConsoleInternalFrame.java:
+	Fixed bug 1297, in Node Info dialog, label agents as "initial configuration"
+	and -D options as "in CSMART".  Also fixed NPE when node had no agents.
+
+	* CSMARTConsole.java:
+	Fixed bug 1055, getting error messages from the GLSClient after the
+	experiment has been stopped or aborted.
+
+2002-05-07  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* ConsoleNodeListener.java, ConsoleNodeOutputFilter.java, ConsoleFontChooser.java:
+	Fixed bug 1247, removed support for heartbeat in nodes, as this info
+	is no longer sent by the app server.
+
+	* CSMARTConsole.java:
+	Fix bug 1265 -- run nodes that have no agents, as agents might
+	migrate to them.
+
+2002-04-30  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* help.html: Add a couple notes on usage of the GLS Init UI
+
+2002-04-30  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* help.html: Updated online documentation.
+
+2002-04-26  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java:
+	Figure out what agent the GLSInitServlet is on, dont hardcode it.
+	Move to the top of the file the constants http and <full class of GLS
+	Init servlet>
+
+	After this checkin, I dont see the bug where the Servlet fails to
+	notice that the oplan was published. But perhaps it is a Swing thread bug?
+
+2002-04-23  Brian Krisler  <bkrisler@bbn.com>
+
+	* CSMARTConsole.java:
+	Fixed bug where GLS Init Window was appearing on run when GLS Init Servlet
+	did not exist.
+
+2002-04-23  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java:
+	If we're using the default bootstrapper and got no command line
+	arguments (the user deleted it?), then add the default node class as
+	an argument, so it gets run
+
+2002-04-22  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java:
+	Class that is run by Console is the Bootstrapper. But take that as an
+	argument from the Node, if it is there.
+
+2002-04-22  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java:
+	Various changes to ensure that Experiments are only saved when modified.
+
+2002-04-22  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java:
+	Only set property values for trials if this will actually be a
+	change. A minor step that didnt work to try to stop the console from
+	forcing the experiment to re-save.
+
+2002-03-26  Brian Krisler  <bkrisler@bbn.com>
+
+	* ConsoleInternalFrame.java, CSMARTConsole.java:
+	Fixed to match new method names in Experiment
+
+2002-03-13  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java:
+	ComposableComponent interface: replaced references to ConfigurableComponent
+	class with ComposableComponent interface.
+	ConfigurableComponent, TestGUI, ExperimentINIWriter:
+	Modified to work with the ComposableComponent, mostly appropriate casting.
+	ImpactAgentComponent, InsertAgentComponent:
+	Extend ModifiableConfigurableComponent, not ConfigurableComponent.
+	AgentComponent: Extends ModifiableComponent so that user interface
+	can listen for changes.
+	SocietyBase: Moved some common methods from societies to this base class.
+	PropertyEditorPanel: Take advantage of reworked interfaces to support
+	editing of any society, agent, etc. regardless of its source.
+	ActionUtil, CSMART: Support editing societies that are inside experiments
+	(i.e. supports editing societies read from databases).
+
+2002-03-12  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java:
+	Modifications to support editing society in Configuration Builder.
+
+2002-03-08  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java:
+	Work around for ExceptionInInitializer problem in getOplanAgentURL.
+
+2002-02-27  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java, ConsoleTextPane.java: javadoc cleanup
+
+2002-02-27  Todd Wright  <twright@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java, ConsoleDesktop.java, ConsoleInternalFrame.java, ConsoleNodeListener.java, ConsoleNodeOutputFilter.java, StripChartSource.java:
+	Modified to match app-server refactor.
+	NOTE: one deprecation warning on use of NodeEvents.
+
+2002-02-26  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java:
+	Determine whether GLS servlets are loaded in the society by looking at the
+	society component data.
+
+2002-02-25  Todd Wright  <twright@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java, ConsoleFontChooser.java, ConsoleInternalFrame.java:
+	Cleanup to reduce app-server dependencies, in preparation for
+	app-server refactoring:
+	  Remove unused app-server imports.
+	  Altered some comments to remove mention of "NodeEvent".
+	  Created dummy "experiment/ConfigWriter" for Exp.INIWriter use
+	  Removed (dead) references to app-server ConfigWriter
+	Now only "ui/console" depends upon the app-server.
+
+2002-02-16  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* help.html: docs tweaks
+
+2002-02-13  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* help.html: Updated help files.
+
+2002-02-12  James L Winston  <jwinston@clarinet.sl.bbn.com>
+
+	* ConsoleInternalFrame.java:
+	Changed PlugIn to Plugin inside files and file names.
+
+2002-02-11  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* help.html: Further updates to online docs
+
+2002-02-11  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java, GLSClient.java:
+	GLSClient comes from cougaar class now.
+
+2002-02-08  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* help.html: note that notifications are case-insensitive
+
+2002-02-06  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* help.html: tweaks, cleanup of docs
+
+2002-02-05  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java:
+	Don't shut down society monitor when experiment is stopped or aborted.
+	Removed support for experiment listener as it was only used for monitoring.
+	Make society monitor button bring the main society monitor frame to the
+	front if it's selected and there's already a society monitor running.
+
+2002-02-04  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java:
+	Incorporated use of GLSClient in internal frame in CSMART console.
+
+2002-02-01  Brian Krisler  <bkrisler@bbn.com>
+
+	* CSMARTConsole.java, ColoredCircle.java, ConsoleDesktop.java, ConsoleFontChooser.java, ConsoleInternalFrame.java, ConsoleNodeListener.java, ConsoleNodeOutputFilter.java, ConsoleStyledDocument.java, ConsoleTextPane.java, GLSClient.java, Legend.java, NodeStatusButton.java, SelectedColoredCircle.java, StripChart.java, StripChartFrame.java, StripChartSource.java:
+	Fixed Logging Statments
+	 - ensured that the right check was being done for the log level
+	 - removed printStackTraces, they are now part of the log message.
+	Corrected Copyright year
+
+2002-01-31  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* ConsoleInternalFrame.java, ConsoleNodeListener.java, ConsoleStyledDocument.java, ConsoleTextPane.java, GLSClient.java, StripChart.java, StripChartSource.java:
+	logging cleanup
+
+	* CSMARTConsole.java: logging cleanup
+	further drop the configuration writer
+
+2002-01-31  Brian Krisler  <bkrisler@bbn.com>
+
+	* CSMARTConsole.java, ConsoleFontChooser.java, ConsoleInternalFrame.java, ConsoleNodeListener.java, ConsoleStyledDocument.java, ConsoleTextPane.java, StripChart.java, StripChartSource.java:
+	Changed logging category to just use getClass().getName().
+	* This will prevent any future issues when repackaging.
+	* Makes logging more fine grained
+
+2002-01-31  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* CSMARTConsole.java, GLSClient.java, SwingWorker.java:
+	Made GLSClient an internal frame in the CSMARTConsole.
+
+2002-01-30  Brian Krisler  <bkrisler@bbn.com>
+
+	* ChangeLog: updated
+
+	* CSMARTConsole.java: use new method to send leaf data to the server.
+
+2002-01-30  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* ConsoleInternalFrame.java:
+	Fixed layout problems in dialog that displays information about nodes.
+
+	* CSMARTConsole.java:
+	Removed references to trials in Console user interface.
+	Made name passed to HostServseClient.createNode be unique.
+	Added support for multiple running experiments.
+	Added call to create the GLSClient GUI from Jim Winston.
+
 2002-01-30  Brian Krisler  <bkrisler@bbn.com>
 
 	* CSMARTConsole.java: use new method to send leaf data to the server.

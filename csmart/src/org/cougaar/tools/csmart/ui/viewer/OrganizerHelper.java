@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2000-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -29,9 +29,10 @@ import org.cougaar.tools.csmart.core.db.PDbBase;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.Property;
-import org.cougaar.tools.csmart.experiment.Experiment;
+import org.cougaar.tools.csmart.experiment.DBExperiment;
 import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
+import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.recipe.ComplexRecipeBase;
 import org.cougaar.tools.csmart.recipe.RecipeBase;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
@@ -88,7 +89,7 @@ public class OrganizerHelper {
    * Create an experiment.
    * @return Experiment the new experiment or null if any error
    */
-  public Experiment createExperiment(String originalExperimentName,
+  public DBExperiment createExperiment(String originalExperimentName,
                                      String experimentName,
                                      String experimentId,
                                      String trialId) {
@@ -112,7 +113,7 @@ public class OrganizerHelper {
           break;
         }
       }
-      
+
       if (id == null || (! id.startsWith(CMT_START_STRING) && ! id.startsWith(CSA_START_STRING))) {
 	// PROBLEM! Not a society assembly!
 	if (log.isErrorEnabled()) {
@@ -124,7 +125,7 @@ public class OrganizerHelper {
 	}
 	return null;
       }
-      
+
       if(id != null) {
         String societyName = DBUtils.getSocietyName(id);
         SocietyComponent sc = organizer.getSociety(societyName);
@@ -139,7 +140,7 @@ public class OrganizerHelper {
 	  }
           soc = new SocietyDBComponent(societyName, id);
           soc.initProperties();
-        } 
+        }
       }
     } else { // We need to create a new trial.
       // Need to have the experiment id, trial id, and multiplicity
@@ -150,16 +151,16 @@ public class OrganizerHelper {
       return null; // creating an experiment from scratch not implemented yet
     }
 
-    Experiment experiment = new Experiment((String)experimentName, 
+    DBExperiment experiment = new DBExperiment((String)experimentName,
                                            experimentId, trialId);
 
-    // The following is ugly  
+    // The following is ugly
     setDefaultNodeArguments(experiment, assemblyMatch,
 			    PopulateDb.getSocietyAlibId(originalExperimentName));
     //    experiment.setCloned(isCloned);
 
     //to hold all potential agents
-    List agents = new ArrayList(); 
+    List agents = new ArrayList();
 
     Map experimentNamesMap = ExperimentDB.getExperimentNames();
     String origExperimentId = (String)experimentNamesMap.get(originalExperimentName);
@@ -168,14 +169,14 @@ public class OrganizerHelper {
       if (log.isErrorEnabled()) {
 	log.error("Found no experiment ID for name " + originalExperimentName);
 	log.error("Will have null trialID, and therefore will lose the recipes that were in this experiment!");
-      }      
+      }
     } else {
       origTrialId = ExperimentDB.getTrialId(origExperimentId);
     }
-    
+
     // This gets all the recipes for the experiment from which this was created
     List defaultRecipes = checkForRecipes(origTrialId, origExperimentId);
-  
+
 //     if (log.isDebugEnabled()) {
 //       log.debug("default recipes list from OLD exptID has " + defaultRecipes.size() + " items");
 //       Iterator rI = defaultRecipes.iterator();
@@ -202,7 +203,7 @@ public class OrganizerHelper {
     // under a new ID and attach it to the new Expt.
     // FIXME: Do something with community stuff here?
     // That is, find any comm info, stash it away in new ASB
-    // ref'ed in Expt, so that saveToDb can then save it
+    // ref'ed in Expt, so that save can then save it
     // in the correct assembly in the Expt.
 
 
@@ -333,7 +334,7 @@ public class OrganizerHelper {
 	// Else, create from db
 	RecipeComponent mc = getDatabaseRecipe(dbRecipe);
 	if (mc != null) {
-	  AgentComponent[] recagents = mc.getAgents(); 
+	  AgentComponent[] recagents = mc.getAgents();
 	  if (recagents != null && recagents.length > 0) {
 	    agents.addAll(Arrays.asList(recagents));
 	  }
@@ -353,7 +354,7 @@ public class OrganizerHelper {
       }
       agents.addAll(Arrays.asList(socagents));
     }
-    AgentComponent[] allagents = (AgentComponent[])agents.toArray(new AgentComponent[agents.size()]); 
+    AgentComponent[] allagents = (AgentComponent[])agents.toArray(new AgentComponent[agents.size()]);
 
     experiment.addSocietyComponent((SocietyComponent)soc);
 
@@ -374,12 +375,12 @@ public class OrganizerHelper {
     }
     mapNodesToHosts(experiment, assemblyMatch);
 
-    try {    
+    try {
       if (!ExperimentDB.isExperimentNameInDatabase(experimentName)) {
 	if (log.isDebugEnabled()) {
 	  log.debug("Saving expt " + experimentName + " not in DB to DB");
 	}
-	experiment.saveToDb(saveToDbConflictHandler);
+	experiment.save(saveToDbConflictHandler);
       }
       else {
 	// Add the recipes to the expt_trial_mod_recipe table
@@ -450,7 +451,7 @@ public class OrganizerHelper {
       if(log.isErrorEnabled()) {
         log.error("Caught SQL exception getting Trial pieces: " + query, se);
       }
-    } 
+    }
 
     return assemblyIds;
   }
@@ -481,7 +482,7 @@ public class OrganizerHelper {
       } finally {
         conn.close();
       }
-    } catch (SQLException se) {      
+    } catch (SQLException se) {
       if(log.isErrorEnabled()) {
         log.error("Caught SQL exception getting Nodes " + query, se);
       }
@@ -511,11 +512,11 @@ public class OrganizerHelper {
       } finally {
         conn.close();
       }
-    } catch (SQLException se) {      
+    } catch (SQLException se) {
       if(log.isErrorEnabled()) {
         log.error("Caught SQL exception getting hosts: " + query, se);
       }
-    } 
+    }
 
     return hosts;
   }
@@ -544,7 +545,7 @@ public class OrganizerHelper {
   }
 
 
-  private void mapNodesToHosts(Experiment experiment, 
+  private void mapNodesToHosts(Experiment experiment,
 			       String assemblyMatch ) {
 
     // Note that getNodeC will do a node/agent reconcile,
@@ -567,7 +568,7 @@ public class OrganizerHelper {
         ResultSet rs = stmt.executeQuery(query);
         while(rs.next()) {
           String hostName = rs.getString(1);
-          String nodeName = rs.getString(2);	
+          String nodeName = rs.getString(2);
           for (int i=0; i < hostComponents.length; i++) {
             HostComponent hc = hostComponents[i];
             if (hc.getShortName().equals(hostName)) {
@@ -576,11 +577,11 @@ public class OrganizerHelper {
                 if (nc.getShortName().equals(nodeName)) {
                   hc.addNode(nc);
                   break;
-                }	      
-              }	    
+                }
+              }
               break;
-            }	  
-          } 
+            }
+          }
         }
         rs.close();
         stmt.close();
@@ -606,7 +607,7 @@ public class OrganizerHelper {
         Map substitutions = new HashMap();
         substitutions.put(":trial_id", trialId);
         substitutions.put(":assemblyMatch", assemblyMatch);
-        substitutions.put(":insertion_point", Agent.INSERTION_POINT);	 
+        substitutions.put(":insertion_point", Agent.INSERTION_POINT);
         Statement stmt = conn.createStatement();
         NodeComponent nodeComponent = null;
         while(iter.hasNext()) {
@@ -641,8 +642,8 @@ public class OrganizerHelper {
 // 		  log.debug("OrganizerHelper:  Adding agent named:  " + ac.getShortName() + " to Node " + nodeComponent.getShortName());
 // 		}
                 break;
-              }	    
-            } 	  
+              }
+            }
           }
           rs.close();
         }
@@ -697,7 +698,7 @@ public class OrganizerHelper {
 //         if(log.isDebugEnabled()) {
 //           log.debug("OrganizerHelper " + COMPONENT_ARGS_QUERY + ": "  + query);
 //         }
-        
+
         ResultSet rs = stmt.executeQuery(query);
         while(rs.next()) {
           String param = rs.getString(1);
@@ -725,7 +726,7 @@ public class OrganizerHelper {
       } finally {
         conn.close();
       }
-    } catch (SQLException se) {      
+    } catch (SQLException se) {
       if(log.isErrorEnabled()) {
         log.error("Caught SQL exception getting compArgs " + query, se);
       }
@@ -752,7 +753,7 @@ public class OrganizerHelper {
         ResultSet rs = stmt.executeQuery(query);
         while(rs.next()) {
           try {
-            DbRecipe dbRecipe = 
+            DbRecipe dbRecipe =
               new DbRecipe(rs.getString(2), Class.forName(rs.getString(3)));
             String recipeId = rs.getString(1);
 	    dbRecipe.id = recipeId;
@@ -775,7 +776,7 @@ public class OrganizerHelper {
         log.error("Caught SQL exception getting recipes " + query, se);
       }
     }
-    
+
     return recipeList;
   }
 
@@ -785,7 +786,7 @@ public class OrganizerHelper {
    **/
   public static Map getRecipeNamesFromDatabase() {
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer.OrganizerHelper");
-    
+
     Map recipes = new TreeMap();
     String query = null;
     try {
@@ -818,13 +819,13 @@ public class OrganizerHelper {
         log.error("Caught SQL exception getting recipe names " + query, se);
       }
     }
-    
+
     return recipes;
   }
 
   // This must match PDbBase.isRecipeEqual
-  private void getRecipeProperties(DbRecipe dbRecipe, 
-                                   Connection conn, 
+  private void getRecipeProperties(DbRecipe dbRecipe,
+                                   Connection conn,
                                    Map substitutions) throws SQLException
   {
     Statement stmt = conn.createStatement();
@@ -864,7 +865,7 @@ public class OrganizerHelper {
   protected RecipeComponent getDatabaseRecipe(String recipeId,
                                               String recipeName) {
     createLogger();
-    
+
     String query = null;
     RecipeComponent rc = null;
 
@@ -873,7 +874,7 @@ public class OrganizerHelper {
     rc = organizer.getRecipe(recipeName);
     if (rc != null)
       return rc;
-    
+
     try {
       Connection conn = DBUtils.getConnection();
       try {
@@ -964,7 +965,7 @@ public class OrganizerHelper {
       if(log.isErrorEnabled()) {
         log.error("Caught SQL exception getting DBRecipe " + query, se);
       }
-    }    
+    }
     return rc;
   }
 
@@ -976,7 +977,7 @@ public class OrganizerHelper {
       try {
         String query = DBUtils.getQuery("queryRecipeProperties", substitutions);
         ResultSet rs = stmt.executeQuery(query);
-        
+
 	// If the recipe has an Assembly, it is Complex
         while(rs.next()) {
           if(rs.getString(1).equalsIgnoreCase(ComplexRecipeBase.ASSEMBLY_PROP)) {
@@ -996,9 +997,9 @@ public class OrganizerHelper {
         log.error("SQLException checking recipe type", sqe);
       }
     }
-    
+
     return retVal;
-  }  
+  }
 
   private String getRecipeAssembly(Connection conn, Map substitutions) {
     String assemblyId = null;
@@ -1007,7 +1008,7 @@ public class OrganizerHelper {
       try {
         String query = DBUtils.getQuery("queryRecipeProperties", substitutions);
         ResultSet rs = stmt.executeQuery(query);
-        
+
         while(rs.next()) {
           if(rs.getString(1).equalsIgnoreCase(ComplexRecipeBase.ASSEMBLY_PROP)) {
             assemblyId = rs.getString(2);
@@ -1024,11 +1025,11 @@ public class OrganizerHelper {
         log.error("SQLException getting recipe Assembly Id", sqe);
       }
     }
-    
+
     return assemblyId;
   }
 
-  private void setRecipeComponentProperties(DbRecipe dbRecipe, 
+  private void setRecipeComponentProperties(DbRecipe dbRecipe,
                                             RecipeComponent rc) {
     if (rc != null && dbRecipe != null && dbRecipe.props != null)
       rc.setProperties(dbRecipe.props);
@@ -1042,7 +1043,7 @@ public class OrganizerHelper {
   private static Class[] fourStringConstructor = {String.class, String.class, String.class, String.class};
 
   private static Class[] multiConstructor = {String.class, String[].class};
-  
+
   // Warning: only use this for _simple_ recipes or for
   // and empty Complex recipe
   protected RecipeComponent createRecipe(String name, Class cls) {
@@ -1062,7 +1063,7 @@ public class OrganizerHelper {
       return null;
 
     createLogger();
-    
+
     try {
       Constructor constructor = cls.getConstructor(con);
       RecipeComponent recipe =
@@ -1127,7 +1128,7 @@ public class OrganizerHelper {
 	}
       }
     }
-      
+
     // Now delete the basic definition of the recipe.
     PDbBase pdb = new PDbBase();
     try {
@@ -1161,10 +1162,10 @@ public class OrganizerHelper {
    */
   public SocietyComponent createSociety(String name, String socName, Class cls) {
     createLogger();
-    
+
     try {
       Constructor constructor = cls.getConstructor(twoStringConstructor);
-      SocietyComponent sc = 
+      SocietyComponent sc =
         (SocietyComponent) constructor.newInstance(new String[] {name, socName});
       sc.initProperties();
       sc.saveToDatabase();
@@ -1184,13 +1185,13 @@ public class OrganizerHelper {
    * @param cls the class to create
    */
 
-  public SocietyComponent createSociety(String name, String[] filenames, 
+  public SocietyComponent createSociety(String name, String[] filenames,
                                         Class cls) {
     createLogger();
-    
+
     try {
       Constructor constructor = cls.getConstructor(multiConstructor);
-      SocietyComponent sc = 
+      SocietyComponent sc =
         (SocietyComponent) constructor.newInstance(new Object[] {name, filenames});
       sc.initProperties();
       sc.saveToDatabase();
@@ -1206,7 +1207,7 @@ public class OrganizerHelper {
 
   protected SocietyComponent createSocietyFromFile() {
     // display file chooser to allow user to select file that defines society
-    JFileChooser chooser = 
+    JFileChooser chooser =
       new JFileChooser(System.getProperty("org.cougaar.install.path"));
     chooser.setDialogTitle("Select directory of Agent INI files or a single Node INI to load");
     chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -1228,7 +1229,7 @@ public class OrganizerHelper {
       name = name.substring(0, name.length()-4);
     if (!organizer.isUniqueSocietyName(name))
       name = organizer.getUniqueSocietyName(name, false);
-    if (name == null) return null; 
+    if (name == null) return null;
 
     if (file.isDirectory()) {
       String[] filenames =

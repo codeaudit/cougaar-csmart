@@ -1,12 +1,12 @@
-/* 
+/*
  * <copyright>
  *  Copyright 2001-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -26,6 +26,8 @@ import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
 import org.cougaar.tools.csmart.core.cdata.RelationshipData;
 import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.experiment.DBExperiment;
+import org.cougaar.tools.csmart.experiment.ExperimentBase;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.util.ResultsFileFilter;
 
@@ -74,38 +76,38 @@ public class BasicMetric extends RecipeBase
   // FIXME: Should use org.cougaar.workspace -- see bug 1668
   //  public static final String PROP_RESULTSDIR_DESC = "Relative path in which to save results files";
   //  private Property propResultsDir;
-  
+
   // Verb to search for - default null
   public static final String PROP_TVERB = "Task Verb";
   public static final String PROP_TVERB_DFLT = org.cougaar.glm.ldm.Constants.Verb.GETLOGSUPPORT;
   public static final String PROP_TVERB_DESC = "Task Verb to search for and count";
   private Property propTVerb;
-  
+
   public static final String PROP_BBSERV = "Blackboard Statistics Service On";
   public static final boolean PROP_BBSERV_DFLT = false;
   public static final String PROP_BBSERV_DESC = "Turn Blackboard metrics collection on or off";
   private Property propBBServ;
-  
+
   public static final String PROP_PRSERV = "Prototype Registry Service On";
   public static final boolean PROP_PRSERV_DFLT = false;
   public static final String PROP_PRSERV_DESC = "Turn Prototype Registry metrics on or off";
   private Property propPRServ;
-  
+
   public static final String PROP_NODESERV = "Node Metrics Service On";
   public static final boolean PROP_NODESERV_DFLT = false;
   public static final String PROP_NODESERV_DESC = "Turn Node metrics on or off";
-  private Property propNodeServ;  
-  
+  private Property propNodeServ;
+
   public static final String PROP_MSTATSSERV = "Message Stats Service On";
   public static final boolean PROP_MSTATSSERV_DFLT = false;
   public static final String PROP_MSTATSSERV_DESC = "Turn Message Transport metrics on or off";
-  private Property propMStatsServ;  
-  
+  private Property propMStatsServ;
+
   public static final String PROP_MWATCHSERV = "Message Watcher Service On";
   public static final boolean PROP_MWATCHSERV_DFLT = false;
   public static final String PROP_MWATCHSERV_DESC = "Turn Message Watcher on or off";
   private Property propMWatchServ;
-  
+
   private static final String MetricsPlugin_name =
     "org.cougaar.tools.csmart.runtime.plugin.MetricsPlugin";
   private static final String MetricsInitializerPlugin_name =
@@ -120,13 +122,13 @@ public class BasicMetric extends RecipeBase
   public BasicMetric() {
     this("Basic Metric");
   }
-  
+
   public BasicMetric(String name) {
     super(name);
   }
 
   public void initProperties() {
-    
+
     propSampleInterval = addProperty(PROP_SAMPLEINTERVAL, PROP_SAMPLEINTERVAL_DFLT);
     propSampleInterval.setToolTip(PROP_SAMPLEINTERVAL_DESC);
 
@@ -172,7 +174,7 @@ public class BasicMetric extends RecipeBase
   public URL getDescription() {
     return getClass().getResource(DESCRIPTION_RESOURCE_NAME);
   }
-  
+
   public String getMetricName() {
     return getShortName();
   }
@@ -200,7 +202,7 @@ public class BasicMetric extends RecipeBase
 
   private transient int numAgents = 0; // numAgents collecting stats
   private transient RelationshipData metricRelate = null; // name of agent doing controling
-  
+
   private ComponentData addInitPICD(ComponentData data) {
     GenericComponentData plugin = new GenericComponentData();
     plugin.setType(ComponentData.PLUGIN);
@@ -256,7 +258,7 @@ public class BasicMetric extends RecipeBase
   }
 
   private void addRelationship(AgentComponentData data) {
-    if (metricRelate == null) 
+    if (metricRelate == null)
       return;
     // Only add the relationship if its not already there
     AgentAssetData aad = data.getAgentAssetData();
@@ -270,7 +272,7 @@ public class BasicMetric extends RecipeBase
     }
     aad.addRelationship(metricRelate);
   }
-  
+
   public ComponentData modifyComponentData(ComponentData data) {
     numAgs2 = 0;                // Gets counted as metrics plugins are inserted
     ComponentData picd = addMetricsComponentData(data);
@@ -284,10 +286,10 @@ public class BasicMetric extends RecipeBase
       }
       return data;
     }
-    
+
     // Then, reset the value of the first parameter
     picd.setParameter(0, new Integer(numAgs2));
-   
+
     return data;
   }
 
@@ -297,7 +299,7 @@ public class BasicMetric extends RecipeBase
 
     // Find the Experiment.
     // From it, get a count of the Agents in the Society & set the numAgents
-    if (numAgents == 0 && data.getOwner() instanceof Experiment) {
+    if (numAgents == 0 && data.getOwner() instanceof ExperimentBase) {
       Experiment exp = (Experiment)data.getOwner();
       List ags = exp.getAgentsList();
       if (ags != null)

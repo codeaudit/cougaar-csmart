@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2000-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -40,7 +40,7 @@ public class OrganizerMouseListener extends MouseAdapter {
   private JPopupMenu experimentMenu = new JPopupMenu();
   private JPopupMenu folderMenu = new JPopupMenu();
   private JPopupMenu rootMenu = new JPopupMenu();
-  
+
   private JMenu newExperimentMenu = new JMenu(ActionUtil.NEW_EXPERIMENT_ACTION);
   private JMenu newExperimentInFolderMenu = new JMenu(ActionUtil.NEW_EXPERIMENT_ACTION);
   private JMenu newRecipeMenu = new JMenu(ActionUtil.NEW_RECIPE_ACTION);
@@ -117,7 +117,7 @@ public class OrganizerMouseListener extends MouseAdapter {
       else
         rootMenu.add((JMenuItem)rootMenuItems[i]);
     }
-    for (int i = 0; i < experimentMenuItems.length; i++) 
+    for (int i = 0; i < experimentMenuItems.length; i++)
       experimentMenu.add((Action)experimentMenuItems[i]);
     for (int i = 0; i < societyMenuItems.length; i++)
       societyMenu.add((Action)societyMenuItems[i]);
@@ -140,7 +140,7 @@ public class OrganizerMouseListener extends MouseAdapter {
   public void mouseClicked(MouseEvent e) {
     if (e.isPopupTrigger()) doPopup(e);
   }
-  
+
   /**
    * If the event is a popup trigger, then display the appropriate
    * popup menu which depends on the type of object selected in the workspace
@@ -150,7 +150,7 @@ public class OrganizerMouseListener extends MouseAdapter {
   public void mousePressed(MouseEvent e) {
     if (e.isPopupTrigger()) doPopup(e);
   }
-  
+
   /**
    * If the event is a popup trigger, then display the appropriate
    * popup menu which depends on the type of object selected in the workspace
@@ -193,7 +193,7 @@ public class OrganizerMouseListener extends MouseAdapter {
       folderMenu.show(workspace, e.getX(), e.getY());
     }
   }
-  
+
   private void configureMenu(JPopupMenu menu) {
     int n = menu.getComponentCount();
     for (int i = 0; i < n; i++) {
@@ -203,7 +203,7 @@ public class OrganizerMouseListener extends MouseAdapter {
           enableActions((JMenu)c);
         else if (c instanceof JMenuItem) {
           Action action = ((JMenuItem)c).getAction();
-          if (action != null) 
+          if (action != null)
             ActionUtil.setActionAllowed(action, organizer);
         }
       }
