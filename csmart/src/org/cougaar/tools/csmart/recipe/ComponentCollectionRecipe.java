@@ -321,11 +321,21 @@ public class ComponentCollectionRecipe extends ComplexRecipeBase
     ((ComponentCollectionRecipe)component).modified = this.modified;
     ((ComponentCollectionRecipe)component).oldAssemblyId = getAssemblyId();
 
+
     for(int i=0; i < getChildCount(); i ++) {
       ConfigurableComponent child = (ConfigurableComponent)getChild(i);
-      if(child.getProperty(PROP_TARGET_COMPONENT_QUERY) != null) {
+      Property prop = child.getProperty(PROP_TARGET_COMPONENT_QUERY);
+      if(prop != null) {
+        String propName = prop.getName().toString();
+        for(int j=0; j < component.getChildCount(); j++) {
+          ConfigurableComponent newChild = (ConfigurableComponent)component.getChild(j);
+          if(newChild.getShortName().equals(child.getShortName()))
+            newChild.addProperty(propName.substring(name.lastIndexOf(".")+1), prop.getValue());
+        }
+
       }
     }
+
     return component;
   }
 
