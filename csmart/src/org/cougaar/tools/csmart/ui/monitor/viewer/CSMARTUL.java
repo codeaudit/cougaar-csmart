@@ -101,6 +101,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   private static CSMART csmart; // top level viewer
   private JMenu windowMenu;
   private static String agentURL = null; // agent to contact initially
+  private static String agentProtocol = "http";
   private static String agentHost = "localhost";
   // default agent port
   public static int agentPort = 8800;
@@ -424,16 +425,19 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 
   private void openMetrics() {
     File file = readFile("mtr", "Metrics files");
-    if (file != null) {
+    if (file != null && file.canRead()) {
       Window w = 
 	(Window)new CSMARTMetricsFrame(NamedFrame.METRICS, file);
       myWindows.add(w);      
+    } else {
+      if (log.isInfoEnabled())
+	log.info("openMetrics: no (readable) file selected");
     }
   }
 
   private void openGraph() {
     File file = readFile("dot", "graph files");
-    if (file != null) {
+    if (file != null && file.canRead()) {
       CSMARTGraph graph = readGraphFromFile(file);
       if (graph == null)
 	return;
@@ -453,6 +457,9 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 			new ULPlanFilter(graph));
       else
 	JOptionPane.showMessageDialog(this, "Unknown graph type: " + graphType);
+    } else {
+      if (log.isInfoEnabled())
+	log.info("openGraph: no (readable) file selected");
     }
   }
 
@@ -471,10 +478,11 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     String ext = filter.getExtension(file);
     if (ext == null || !ext.equals(extension)) {
       JOptionPane.showMessageDialog(this,
-				    "File must have extension: " +
-				    extension + " " + file.getName());
+				    "File (" + file.getName() + ") must have extension: '" +
+				    extension + "'.");
       return null;
     }
+    
     return file;
   }
 
@@ -509,8 +517,10 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     Experiment[] exp = CSMART.getRunningExperiments();
 
     Vector experimentNames = new Vector(exp.length + 1);
-    for (int i = 0; i < exp.length; i++) 
-      experimentNames.add(exp[i].getExperimentName());
+    for (int i = 0; i < exp.length; i++) {
+      if (! experimentNames.contains(exp[i].getExperimentName()))
+	experimentNames.add(exp[i].getExperimentName());
+    }
     experimentNames.add("No experiment -- custom URL");
     JComboBox cb = new JComboBox(experimentNames);
     JPanel panel = new JPanel();
@@ -554,27 +564,46 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     if (result != JOptionPane.OK_OPTION)
       return;
     agentURL = tf.getText();
-    int startIndex;
-    int endIndex;
+    int startIndex = 0;
+    int endIndex = -1;
 
     if (agentURL.indexOf("://") != -1) {
+      agentProtocol = agentURL.substring(0, agentURL.indexOf("://"));
       startIndex = agentURL.indexOf("://") + 3;
-      endIndex = agentURL.indexOf(":", startIndex);
-      if (endIndex != -1)
-	agentHost = agentURL.substring(startIndex, endIndex);
     }
-    startIndex = agentURL.lastIndexOf(':');
+   
+
+    endIndex = agentURL.indexOf(":", startIndex);
+    if (endIndex != -1)
+      agentHost = agentURL.substring(startIndex, endIndex);
+    else 
+      agentHost = agentURL.substring(startIndex);
+
+    startIndex = endIndex;
     if (startIndex != -1) {
       String s = agentURL.substring(startIndex+1);
       try {
         agentPort = Integer.parseInt(s);
       } catch (Exception e) {
         if(log.isErrorEnabled()) {
-          log.error("CSMARTUL: ", e);
+          log.error("setURLToMonitor got bad agentPort: " + s);
         }
+	agentURL = agentURL.substring(0, startIndex + 1) + agentPort;
       }
+    } else {
+      if (log.isDebugEnabled())
+	log.debug("setURLToMonitor got not port, using protocol defaults");
+      // no port given
+      if (agentProtocol.equalsIgnoreCase("http"))
+	agentPort = 80;
+      else if (agentProtocol.equalsIgnoreCase("https"))
+	agentPort = 443;
     }
 
+    if (agentURL.indexOf("://") == -1)
+      agentURL = agentProtocol + "://" + agentURL;
+
+    //    log.debug("protocol: " + agentProtocol + ", host: " + agentHost + ", port: " + agentPort);
 //      if (startIndex != -1) {
 //        endIndex = agentURL.lastIndexOf('/');
 //        if (endIndex != -1) {
@@ -893,14 +922,14 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       }
 
       // for debugging
-      if(log.isDebugEnabled()) {
-        Set keys = properties.keySet();
-        log.debug("Property names/values........");
-        for (Iterator j = keys.iterator(); j.hasNext(); ) {
-          String s = (String)j.next();
-          log.debug(s + "," + properties.get(s));
-        }
-      }
+//       if(log.isDebugEnabled()) {
+//         Set keys = properties.keySet();
+//         log.debug("Property names/values........");
+//         for (Iterator j = keys.iterator(); j.hasNext(); ) {
+//           String s = (String)j.next();
+//           log.debug(s + "," + properties.get(s));
+//         }
+//       }
       // end for debugging
 
     }
@@ -941,18 +970,22 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     if (agentName == null) {
       return;
     }
-    String sLimit = JOptionPane.showInputDialog("Limit (e.g. 200): ");
-    if (sLimit == null) {
+    String sLimit = JOptionPane.showInputDialog("Limit (e.g. 200, negative for all): ", "200");
+    if (sLimit == null || sLimit.trim().equals("")) {
       return;
     }
     try {
       limit = Integer.parseInt(sLimit);
     } catch (NumberFormatException nfe) {
       if(log.isErrorEnabled()) {
-        log.error("Illegal number: "+sLimit, nfe);
+        log.error("Illegal number: "+sLimit);
       }
       return;
     }
+
+    if (limit == 0)
+      return;
+
     String sIsDown = JOptionPane.showInputDialog("TraceChildren (true/false): ");
     if (sIsDown == null) {
       return;
@@ -1141,7 +1174,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 
   private void makeTopologyGraph() {
     Window w =
-      new TopologyFrame("Topology", "victoria.bbn.com", 8800, "3ID");
+      new TopologyFrame("Topology", "localhost", 8800, "NCA");
     myWindows.add(w);
   }
 
