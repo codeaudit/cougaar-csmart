@@ -25,6 +25,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.net.URL;
 import java.lang.reflect.Array;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.border.EtchedBorder;
@@ -37,7 +39,7 @@ import org.cougaar.tools.csmart.ui.experiment.PropTableModelBase;
  */
 
 public class PropertyTable extends JTable {
-  private static class Model extends PropTableModelBase {
+  private class Model extends PropTableModelBase {
     boolean isEditable;
 
     public Model(boolean isEditable) {
@@ -80,8 +82,25 @@ public class PropertyTable extends JTable {
         }
         p.setValue(value);
       } catch (InvalidPropertyValueException e) {
-        System.err.println("TreeBuilder: can't set value in property: " + e);
-        e.printStackTrace();
+        Object[] goodValues = new TreeSet(p.getAllowedValues()).toArray();
+        JList goodValueList = new JList(goodValues);
+        goodValueList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        Object[] msg = {
+          "Invalid Property Value: " + value,
+          "Use one of the following:",
+          goodValueList
+        };
+        JOptionPane.showMessageDialog(PropertyTable.this,
+                                      msg,
+                                      "Invalid Property Value",
+                                      JOptionPane.ERROR_MESSAGE);
+        int selected = goodValueList.getSelectedIndex();
+        if (selected >= 0) {
+          Range goodRange = (Range) goodValues[selected];
+          if (goodRange.getMinimumValue().equals(goodRange.getMaximumValue())) {
+            p.setValue(goodRange.getMinimumValue());
+          }
+        }
       }
     }
   }
