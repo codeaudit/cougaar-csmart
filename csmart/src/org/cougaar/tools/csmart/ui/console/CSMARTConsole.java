@@ -1325,14 +1325,14 @@ public class CSMARTConsole extends JFrame {
   }
 
   /**
-   * This checks all the societies in the experiment to determine if
+   * This checks all the societies and metric recipes in the experiment to determine if
    * any of them generated this metrics file.
    * Creating a new File from the filename works because acceptFile
    * just looks at the filename.
    */
   private boolean isResultFile(String filename) {
     File thisFile = new java.io.File(filename);
-    // FIXME!!! Add stuff to check metrics too!!!
+
     int n = experiment.getSocietyComponentCount();
     for (int i = 0; i < n; i++) {
       SocietyComponent societyComponent = experiment.getSocietyComponent(i);
