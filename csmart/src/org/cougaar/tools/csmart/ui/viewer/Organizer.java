@@ -164,9 +164,11 @@ public class Organizer extends JScrollPane {
 	    return false;
 	  Object o = path.getLastPathComponent();
 	  Object userObject = ((DefaultMutableTreeNode)o).getUserObject();
-	  if (userObject instanceof ModifiableComponent)
-	    return ((ModifiableComponent)userObject).isEditable();
-	  else
+	  if (userObject instanceof ModifiableComponent) {
+	    // FIXME: Is this where I disable click-renames?
+	    //return ((ModifiableComponent)userObject).isEditable();
+	    return false;
+	  } else
   	    return true; // renaming workspace or folder is always ok
 	}
 	return false;
@@ -198,8 +200,20 @@ public class Organizer extends JScrollPane {
             if (((Experiment)o).isModified()) {
               c.setForeground(Color.red);
             }
-          } else if (editingNodes.contains(node))
+          } else if (editingNodes.contains(node)) {
             c.setForeground(Color.gray);
+	  }
+	  // FIXME: This is where I could mark a society modified
+	  // by turning it read...
+	  else if (o instanceof SocietyComponent) {
+	    if (((SocietyComponent)o).isModified()) {
+	      c.setForeground(Color.red);
+	    }
+	  } else if (o instanceof RecipeComponent) {
+	    if (((RecipeComponent)o).isModified()) {
+	      c.setForeground(Color.red);
+	    }
+	  }
           return c;
         }
       };
