@@ -21,6 +21,8 @@
 
 package org.cougaar.tools.csmart.core.property;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.lang.reflect.Constructor;
 import java.util.EventListener;
 import javax.swing.event.EventListenerList;
@@ -37,7 +39,14 @@ public abstract class ModifiableConfigurableComponent
 {
 
   /** Indicates if this Component is editable **/
-  protected boolean editable = true;
+  protected transient boolean editable = true;
+  // FIXME: Should this be marked transient?
+  // It is used basically exclusively to block doing other things
+  // while a component is in the Configuration Builder 
+  // used in CSMART.java and PropertyBuilder.java
+  // Also used in ExperimentTree to decide if a DnD action is allowed
+  // And in UnboundPropertyBuilder constructor
+  // -- if not editable, grey things out, etc
 
   /**
    * Creates a new <code>ModifiableConfigurableComponent</code> instance.
@@ -131,5 +140,12 @@ public abstract class ModifiableConfigurableComponent
       }
       return null;
     }
+  }
+
+  private void readObject(ObjectInputStream stream)
+    throws IOException, ClassNotFoundException
+  {
+    stream.defaultReadObject();
+    editable = true;
   }
 }
