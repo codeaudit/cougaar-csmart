@@ -54,7 +54,7 @@ public class CMT {
     public static final String QUERY_FILE = "CMT.q";
     public static final String ASSEMBLYID_QUERY = "queryAssemblyID";
     public static final String asbPrefix="V4_";
-    public static boolean traceQueries = false;
+    public static boolean traceQueries = true;
 
     // SHOULD REVISE CODE TO USE SINGLE dbp INSTANCE FOR ALL QUERIES
     protected static DBProperties dbp = null;
@@ -109,23 +109,27 @@ public class CMT {
 	String cloneCTs = "";
 	Iterator i=clones.keySet().iterator();
 	while(i.hasNext()){cloneCTs=cloneCTs+clones.get(i.next());}
-	return "CMT_"+cfwGroupId+"{"+threadIDs+"}"+cloneCTs;
+	return "CMT-"+cfwGroupId+"{"+threadIDs+"}"+cloneCTs;
     }
 
     public static void clearCMTasb(String assembly_id){
 	Set unusedAssemblies=querySet("unusedAssemblies",new HashMap());
 	if(unusedAssemblies.contains(assembly_id)){
-	    deleteItems(asbPrefix+"asb_component_hierarchy", "assembly_id", sqlQuote(assembly_id));
-	    deleteItems(asbPrefix+"asb_agent", "assembly_id", sqlQuote(assembly_id));
-	    deleteItems(asbPrefix+"asb_agent_pg_attr", "assembly_id", sqlQuote(assembly_id));
-	    deleteItems(asbPrefix+"asb_agent_relation", "assembly_id", sqlQuote(assembly_id));
-	    deleteItems(asbPrefix+"asb_component_arg", "assembly_id", sqlQuote(assembly_id));
-	    deleteItems(asbPrefix+"asb_oplan_agent_attr", "assembly_id", sqlQuote(assembly_id));
-	    deleteItems(asbPrefix+"asb_oplan", "assembly_id", sqlQuote(assembly_id));
-	    deleteItems(asbPrefix+"asb_assembly", "assembly_id", sqlQuote(assembly_id));
+	    reallyClearCMTasb(assembly_id);
 	}
     }
 
+    public static void reallyClearCMTasb(String assembly_id){
+	deleteItems(asbPrefix+"asb_component_hierarchy", "assembly_id", sqlQuote(assembly_id));
+	deleteItems(asbPrefix+"asb_agent", "assembly_id", sqlQuote(assembly_id));
+	deleteItems(asbPrefix+"asb_agent_pg_attr", "assembly_id", sqlQuote(assembly_id));
+	deleteItems(asbPrefix+"asb_agent_relation", "assembly_id", sqlQuote(assembly_id));
+	deleteItems(asbPrefix+"asb_component_arg", "assembly_id", sqlQuote(assembly_id));
+	deleteItems(asbPrefix+"asb_oplan_agent_attr", "assembly_id", sqlQuote(assembly_id));
+	deleteItems(asbPrefix+"asb_oplan", "assembly_id", sqlQuote(assembly_id));
+	deleteItems(asbPrefix+"asb_assembly", "assembly_id", sqlQuote(assembly_id));
+
+    }
 
 
     public static boolean hasRows (String query,Map substitutions ) {
@@ -283,7 +287,10 @@ public class CMT {
 	    addSubs(subs,":cfw_group_id",cfw_g_id);
 	    addSubs(subs,":assembly_id",assembly_id);
 	    // to make a short name for temporary tables
-	    addSubs(subs,":short_assembly_id",assembly_id.substring(assembly_id.length()/2));
+	    String shortASBId = ((String)assembly_id.substring(assembly_id.length()/2)).replace('-','_');
+	    shortASBId = shortASBId.replace('{','_');
+	    shortASBId = shortASBId.replace('}',' ');
+	    addSubs(subs,":short_assembly_id",shortASBId);
 	    addSubs(subs,":threads", sqlThreads);
 	    addSubs(subs,":oplan_ids","('093FF')");
 	    addSubs(subs,":cfw_instances",sqlListFromQuery("getCFWInstancesFromGroup",subs));
