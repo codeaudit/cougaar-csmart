@@ -25,10 +25,13 @@ import java.awt.BorderLayout;
 import java.awt.event.*;
 import javax.swing.*;
 import java.net.URL;
+import java.sql.SQLException;
 
 import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.component.ABCSocietyComponent;
 import org.cougaar.tools.csmart.ui.component.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.ui.component.RecipeComponent;
+import org.cougaar.tools.csmart.ui.component.PDbBase;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 
 /**
@@ -40,6 +43,7 @@ public class PropertyBuilder extends JFrame implements ActionListener {
   private boolean isEditable; // remember if society was editable on entering
   private static final String FILE_MENU = "File";
   private static final String EXIT_MENU_ITEM = "Exit";
+  private static final String SAVE_DB_MENU_ITEM = "Save to Database";
 
   private static final String HELP_MENU = "Help";
 
@@ -52,12 +56,18 @@ public class PropertyBuilder extends JFrame implements ActionListener {
     HELP_MENU_ITEM, ABOUT_CSMART_ITEM
   };
 
+  private JMenuItem saveMenuItem;
+
   public PropertyBuilder(ModifiableConfigurableComponent society) {
-    configComponent = society;
     // initialize menus and gui panels
     JMenuBar menuBar = new JMenuBar();
     getRootPane().setJMenuBar(menuBar);
     JMenu fileMenu = new JMenu(FILE_MENU);
+
+    saveMenuItem = new JMenuItem(SAVE_DB_MENU_ITEM);
+    saveMenuItem.addActionListener(this);
+    fileMenu.add(saveMenuItem);
+    fileMenu.addSeparator();
 
     JMenuItem exitMenuItem = new JMenuItem(EXIT_MENU_ITEM);
     exitMenuItem.addActionListener(this);
@@ -79,7 +89,7 @@ public class PropertyBuilder extends JFrame implements ActionListener {
       }
     });
 
-    isEditable = configComponent.isEditable();
+    setConfigComponent(society);
     propertyEditor = new PropertyEditorPanel(configComponent);
     getContentPane().setLayout(new BorderLayout());
     getContentPane().add(propertyEditor, BorderLayout.CENTER);
@@ -97,7 +107,9 @@ public class PropertyBuilder extends JFrame implements ActionListener {
   public void actionPerformed(ActionEvent e) {
     Object source = e.getSource();
     String s = ((AbstractButton)source).getActionCommand();
-    if (s.equals(EXIT_MENU_ITEM)) {
+    if (s.equals(SAVE_DB_MENU_ITEM)) {
+      saveToDatabase();
+    } else if (s.equals(EXIT_MENU_ITEM)) {
       exit();
       // notify top-level viewer that user quit the builder
       NamedFrame.getNamedFrame().removeFrame(this);
@@ -113,10 +125,56 @@ public class PropertyBuilder extends JFrame implements ActionListener {
     }	       
   }
 
+  private void saveToDatabase() {
+    if (configComponent instanceof RecipeComponent) {
+      try {
+        RecipeComponent rc = (RecipeComponent) configComponent;
+        PDbBase pdb = new PDbBase();
+        switch (pdb.recipeExists(rc)) {
+        case PDbBase.RECIPE_STATUS_EXISTS:
+          JOptionPane.showMessageDialog(this,
+                                        "The recipe is already in the database with the same values.",
+                                        "Write Not Needed",
+                                        JOptionPane.INFORMATION_MESSAGE);
+          return;
+        case PDbBase.RECIPE_STATUS_DIFFERS:
+          int answer =
+            JOptionPane.showConfirmDialog(this,
+                                          "Recipe "
+                                          + rc.getRecipeName()
+                                          + " already in database. Overwrite?",
+                                          "Recipe Exists",
+                                          JOptionPane.OK_CANCEL_OPTION,
+                                          JOptionPane.WARNING_MESSAGE);
+          if (answer != JOptionPane.OK_OPTION) return;
+          break;
+        case PDbBase.RECIPE_STATUS_ABSENT:
+          break;                // Just write it
+        }
+        pdb.replaceLibRecipe(rc);
+        JOptionPane.showMessageDialog(this,
+                                      "Recipe written successfully.",
+                                      "Recipe Written",
+                                      JOptionPane.INFORMATION_MESSAGE);
+      } catch (Exception sqle) {
+        sqle.printStackTrace();
+        JOptionPane.showMessageDialog(this,
+                                      "An exception occurred writing the recipe to the database",
+                                      "Error Writing Database",
+                                      JOptionPane.ERROR_MESSAGE);
+      }
+    }
+  }
+
   public void reinit(ModifiableConfigurableComponent newModifiableConfigurableComponent) {
-    configComponent = newModifiableConfigurableComponent;
-    isEditable = newModifiableConfigurableComponent.isEditable();
+    setConfigComponent(newModifiableConfigurableComponent);
     propertyEditor.reinit(configComponent);
+  }
+
+  private void setConfigComponent(ModifiableConfigurableComponent newConfigComponent) {
+    configComponent = newConfigComponent;
+    isEditable = configComponent.isEditable();
+    saveMenuItem.setEnabled(configComponent instanceof RecipeComponent);
   }
 
   public static void main(String[] args) {
