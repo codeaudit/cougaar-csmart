@@ -199,7 +199,9 @@ public class ComponentDataXML extends XMLUtils {
         addChildToDocument(doc, children[i], element);
       }
     }
-    parent.appendChild(element);
+    if(element != null) {
+      parent.appendChild(element);
+    }
   }
 
 }// ComponentDataXML
