@@ -94,9 +94,6 @@ public class CSMARTConsole extends JFrame {
   Hashtable runningNodes; // maps NodeComponents to RemoteProcesses
   Object runningNodesLock = new Object();
   ArrayList oldNodes; // node components to destroy before running again
-  NodeComponent[] nodesToRun; // node components that contain agents to run
-  String[] hostsToRunOn;      // hosts that are assigned nodes to run
-  ArrayList hostsToUse; // Hosts that are actually having stuff run on them
   Hashtable nodeListeners; // ConsoleNodeListener referenced by node name
   Hashtable nodePanes;     // ConsoleTextPane referenced by node name
   // if this appears in node stdout, notify user
@@ -662,9 +659,7 @@ public class CSMARTConsole extends JFrame {
   /**
    * User selected "Run" button.
    * Set the next trial values.
-   * For each host which is assigned a node,
-   * and each node that is assigned an agent,
-   * start the node on that host, 
+   * Start each node
    * and create a status button and
    * tabbed pane for it.
    */
@@ -672,26 +667,6 @@ public class CSMARTConsole extends JFrame {
   private void runButton_actionPerformed() {
     destroyOldNodes(); // Get rid of any old stuff before creating the new
     userStoppedTrials = false;
-    ArrayList nodesToUse = new ArrayList();
-    hostsToUse = new ArrayList(); // hosts that nodes are on
-    HostComponent[] hosts = experiment.getHostComponents();
-    for (int i = 0; i < hosts.length; i++) {
-      NodeComponent[] nodes = hosts[i].getNodes();
-      for (int j = 0; j < nodes.length; j++) {
-	AgentComponent[] agents = nodes[j].getAgents();
-	// skip nodes that have no agents
-	if (agents == null || agents.length == 0)
-	  continue;
-	nodesToUse.add(nodes[j]);
-	// record host for each node
-	hostsToUse.add(hosts[i].getShortName());
-      }
-    }
-    nodesToRun =
-      (NodeComponent[])nodesToUse.toArray(new NodeComponent[nodesToUse.size()]);
-    hostsToRunOn = 
-      (String[])hostsToUse.toArray(new String[hostsToUse.size()]);
-
     // this state should be detected earlier and the run button disabled
     if (!haveMoreTrials()) {
       if(log.isWarnEnabled()) {
@@ -704,7 +679,7 @@ public class CSMARTConsole extends JFrame {
     // set where to store results
     experiment.setResultDirectory(csmart.getResultDir());
 
-    if (nodesToRun.length != 0) 
+    if (experiment.getNodeComponents().length != 0)
       runTrial();
   }
 
@@ -744,8 +719,6 @@ public class CSMARTConsole extends JFrame {
           // if its servlet exists
 	  final String glsAgent = findServlet();
           if(glsAgent != null) {
-	    // FIXME: If swing is too busy, is it possible
-	    // the callbacks arent heard?
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                   JInternalFrame jif = 
@@ -1257,147 +1230,137 @@ public class CSMARTConsole extends JFrame {
    * Create a node and add a tab and status button for it.
    * Create a node event listener and pass it the status button
    * so that it can update it.
-   * Returns true if successful and false otherwise.
    */
   private void prepareToCreateNodes() {
-    // first need to set configuration file name property in ALL nodes
-    // as these are all used by each experiment configuration writer
-//      for (int i = 0; i < nodesToRun.length; i++) {
-//        NodeComponent nodeComponent = nodesToRun[i];
-//        nodeComponent.addProperty("ConfigurationFileName",
-//                                  nodeComponent.getShortName() + currentTrial);
-//      }
-    for (int i = 0; i < nodesToRun.length; i++) {
-      NodeComponent nodeComponent = nodesToRun[i];
-      String hostName = hostsToRunOn[i];
-      final String nodeName = nodeComponent.getShortName();
-      // create an unique node name to circumvent server problems
-      String uniqueNodeName = nodeName;
+    HostComponent[] hostsToRunOn = experiment.getHostComponents();
+    for (int i = 0; i < hostsToRunOn.length; i++) {
+      String hostName = hostsToRunOn[i].getShortName();
+      NodeComponent[] nodesToRun = hostsToRunOn[i].getNodes();
+      for (int j = 0; j < nodesToRun.length; j++) {
+        NodeComponent nodeComponent = nodesToRun[j];
+        final String nodeName = nodeComponent.getShortName();
+        // create an unique node name to circumvent server problems
+        String uniqueNodeName = nodeName;
 
-      // get arguments from NodeComponent and pass them to ApplicationServer
-      // note that these properties augment any properties that
-      // are passed to the server in a properties file on startup
-      Properties properties = getNodeMinusD(nodeComponent);
-      java.util.List args = getNodeArguments(nodeComponent);
+        // get arguments from NodeComponent and pass them to ApplicationServer
+        // note that these properties augment any properties that
+        // are passed to the server in a properties file on startup
+        Properties properties = getNodeMinusD(nodeComponent);
+        java.util.List args = getNodeArguments(nodeComponent);
 
-      // TODO: experiment.getTrialID can return null
-      // if not connected to database
-      // and properties.setProperty generates a null pointer exception
-      // when passed a null value
-      properties.setProperty(Experiment.EXPERIMENT_ID, 
-                             experiment.getTrialID());
+        // TODO: experiment.getTrialID can return null
+        // if not connected to database
+        // and properties.setProperty generates a null pointer exception
+        // when passed a null value
+        properties.setProperty(Experiment.EXPERIMENT_ID, 
+                               experiment.getTrialID());
 
-      //Don't override if it's already set
-      if (properties.getProperty("org.cougaar.core.persistence.clear") 
-          == null) {
-        properties.setProperty("org.cougaar.core.persistence.clear",
-                               "true");
-      }
-
-      // create a status button
-      NodeStatusButton statusButton = createStatusButton(nodeName, hostName);
-
-      ConsoleStyledDocument doc = new ConsoleStyledDocument();
-      ConsoleTextPane textPane = new ConsoleTextPane(doc, statusButton);
-      JScrollPane scrollPane = new JScrollPane(textPane);
-
-      // create a node event listener to get events from the node
-      OutputListener listener;
-      String logFileName = getLogFileName(nodeName);
-      try {
-        listener = new ConsoleNodeListener(this,
-                                           nodeComponent,
-                                           logFileName,
-                                           statusButton,
-                                           doc);
-      } catch (Exception e) {
-        if(log.isErrorEnabled()) {
-          log.error("Unable to create output for: " + nodeName, e);
-        }
-        continue;
-      }
-
-      if (notifyCondition != null)
-        textPane.setNotifyCondition(notifyCondition);
-      ((ConsoleStyledDocument)textPane.getStyledDocument()).setBufferSize(viewSize);
-      if (notifyOnStandardError)
-        statusButton.setNotifyOnStandardError(true);
-      if (displayFilter != null)
-        ((ConsoleNodeListener)listener).setFilter(displayFilter);
-      nodeListeners.put(nodeName, listener);
-      nodePanes.put(nodeName, textPane);
-
-      OutputPolicy outputPolicy = new OutputPolicy(10);
-      Iterator fileIter = experiment.getConfigFiles(nodesToRun);
-
-      int remotePort = getAppServerPort(properties);
-      RemoteHost remoteAppServer;
-      try {
-        remoteAppServer = 
-          remoteHostRegistry.lookupRemoteHost(
-              hostName, remotePort, true);
-      } catch (Exception e) {
-        if(log.isErrorEnabled()) {
-          log.error(
-              "CSMARTConsole: unable to contact app-server on " + 
-              hostName + " : " + remotePort, e);
+        //Don't override if it's already set
+        if (properties.getProperty("org.cougaar.core.persistence.clear") 
+            == null) {
+          properties.setProperty("org.cougaar.core.persistence.clear",
+                                 "true");
         }
 
-        JOptionPane.showMessageDialog(this,
-                                      "Unable to contact app-server on " +
-                                      hostName + " : " + remotePort +
-                                      "; check that server is running");
-        continue;
-      }
+        // create a status button
+        NodeStatusButton statusButton = createStatusButton(nodeName, hostName);
 
-      RemoteFileSystem remoteFS;
-      try {
-        remoteFS = remoteAppServer.getRemoteFileSystem();
-      } catch (Exception e) {
-        if(log.isErrorEnabled()) {
-          log.error(
-              "CSMARTConsole: unable to access app-server file system on " + 
-              hostName + " : " + remotePort, e);
-        }
+        ConsoleStyledDocument doc = new ConsoleStyledDocument();
+        ConsoleTextPane textPane = new ConsoleTextPane(doc, statusButton);
+        JScrollPane scrollPane = new JScrollPane(textPane);
 
-        JOptionPane.showMessageDialog(this,
-                                      "Unable to access app-server file system on " + 
-                                      hostName + " : " + remotePort +
-                                      "; check that server is running");
-        continue;
-      }
-
-      while(fileIter.hasNext()) {
-        String filename = (String)fileIter.next();
-        OutputStream out = null;
+        // create a node event listener to get events from the node
+        OutputListener listener;
+        String logFileName = getLogFileName(nodeName);
         try {
-          out = remoteFS.write(filename);
-          experiment.writeContents(filename, out);
-        } catch(Exception e) {
+          listener = new ConsoleNodeListener(this,
+                                             nodeComponent,
+                                             logFileName,
+                                             statusButton,
+                                             doc);
+        } catch (Exception e) {
           if(log.isErrorEnabled()) {
-            log.error(
-                "Caught an Exception writing leaf on " +
-                hostName + " : " + remotePort, e);
+            log.error("Unable to create output for: " + nodeName, e);
           }
-        } finally {
+          continue;
+        }
+
+        if (notifyCondition != null)
+          textPane.setNotifyCondition(notifyCondition);
+        ((ConsoleStyledDocument)textPane.getStyledDocument()).setBufferSize(viewSize);
+        if (notifyOnStandardError)
+          statusButton.setNotifyOnStandardError(true);
+        if (displayFilter != null)
+          ((ConsoleNodeListener)listener).setFilter(displayFilter);
+        nodeListeners.put(nodeName, listener);
+        nodePanes.put(nodeName, textPane);
+
+        OutputPolicy outputPolicy = new OutputPolicy(10);
+        Iterator fileIter = experiment.getConfigFiles(nodesToRun);
+
+        int remotePort = getAppServerPort(properties);
+        RemoteHost remoteAppServer;
+        try {
+          remoteAppServer = 
+            remoteHostRegistry.lookupRemoteHost(hostName, remotePort, true);
+        } catch (Exception e) {
+          if(log.isErrorEnabled()) {
+            log.error("CSMARTConsole: unable to contact app-server on " + 
+                      hostName + " : " + remotePort, e);
+          }
+          JOptionPane.showMessageDialog(this,
+                                        "Unable to contact app-server on " +
+                                        hostName + " : " + remotePort +
+                                        "; check that server is running");
+          continue;
+        }
+
+        RemoteFileSystem remoteFS;
+        try {
+          remoteFS = remoteAppServer.getRemoteFileSystem();
+        } catch (Exception e) {
+          if(log.isErrorEnabled()) {
+            log.error("CSMARTConsole: unable to access app-server file system on " + 
+                      hostName + " : " + remotePort, e);
+          }
+          JOptionPane.showMessageDialog(this,
+                                        "Unable to access app-server file system on " + 
+                                        hostName + " : " + remotePort +
+                                        "; check that server is running");
+          continue;
+        }
+
+        while(fileIter.hasNext()) {
+          String filename = (String)fileIter.next();
+          OutputStream out = null;
           try {
-            out.close();
+            out = remoteFS.write(filename);
+            experiment.writeContents(filename, out);
           } catch(Exception e) {
             if(log.isErrorEnabled()) {
-              log.error("Caught exception closing stream", e);
+              log.error("Caught an Exception writing leaf on " +
+                        hostName + " : " + remotePort, e);
+            }
+          } finally {
+            try {
+              out.close();
+            } catch(Exception e) {
+              if(log.isErrorEnabled()) {
+                log.error("Caught exception closing stream", e);
+              }
             }
           }
         }
-      }
 
-      NodeCreationInfo nci =
-        new NodeCreationInfo(remoteAppServer, uniqueNodeName, 
-                             properties, args,
-                             listener, outputPolicy, 
-                             nodeName, hostName,
-                             nodeComponent, scrollPane, statusButton,
-                             logFileName);
-      nodeCreationInfoList.add(nci);
+        NodeCreationInfo nci =
+          new NodeCreationInfo(remoteAppServer, uniqueNodeName, 
+                               properties, args,
+                               listener, outputPolicy, 
+                               nodeName, hostName,
+                               nodeComponent, scrollPane, statusButton,
+                               logFileName);
+        nodeCreationInfoList.add(nci);
+      }
     }
   }
 
@@ -1723,19 +1686,16 @@ public class CSMARTConsole extends JFrame {
     }
     HostComponent[] hosts = experiment.getHostComponents();
     for (int i = 0; i < hosts.length; i++) {
-      String hostName = hosts[i].getShortName();
-
+      NodeComponent[] nodes = hosts[i].getNodes();
       // Skip hosts that have no node
-      if (! hostsToUse.contains(hostName))
-	continue;
-
+      if (nodes.length == 0)
+        continue;
+      String hostName = hosts[i].getShortName();
       // get host port from first node on this host
       // TODO: note that if the user specified different server ports for
       // different nodes on the same host, this won't work
       Properties properties = null;
-      NodeComponent[] nodes = hosts[i].getNodes();
-      if (nodes.length != 0) 
-        properties = getNodeMinusD(nodes[0]);
+      properties = getNodeMinusD(nodes[0]);
       int remotePort = getAppServerPort(properties);
       RemoteHost remoteAppServer;
       try {
