@@ -1163,7 +1163,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     }
     // if experiment name is already unique, then don't ask user for new one
     // TODO: make sure that name is unique in Organizer
-    // TODO: rename experiment in Organizer
     if (ExperimentDB.isExperimentNameInDatabase(experiment.getShortName())) {
       String name = "";
       while (true) {
@@ -1174,8 +1173,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
                                                   null, null, name);
         if (name == null) return;
         if (!ExperimentDB.isExperimentNameInDatabase(name)) {
-          // TODO: update name
-          System.out.println("WARNING: Need to save experiment under new name");
+          experiment.setName(name);
           break;
         }
         int answer = JOptionPane.showConfirmDialog(this,

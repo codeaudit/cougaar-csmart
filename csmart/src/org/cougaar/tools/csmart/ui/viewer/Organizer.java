@@ -1373,15 +1373,6 @@ public class Organizer extends JScrollPane {
         getUniqueExperimentName(experimentNames.generateName(experimentName));
       if (experimentName == null)
         return;
-      // make sure that user didn't use another experiment name in the database
-      //      if (ExperimentDB.isExperimentNameInDatabase(experimentName)) {
-      //        int answer = JOptionPane.showConfirmDialog(this,
-      //						 "Use an unique name",
-      //						 "Experiment Name Not Unique",
-      //						 JOptionPane.OK_CANCEL_OPTION,
-      //						 JOptionPane.ERROR_MESSAGE);
-      //        return; // user just starts over from here
-      //      }
     }
 
     // if defining new experiment, select society template next
@@ -1653,32 +1644,6 @@ public class Organizer extends JScrollPane {
   }
 
   private DefaultMutableTreeNode newExperiment(DefaultMutableTreeNode node) {
-//      String[] options = { "From Database", "Built In" };
-//      String result = 
-//        (String)JOptionPane.showInputDialog(this, "Type of Experiment",
-//                                            "Type of Experiment",
-//                                            JOptionPane.QUESTION_MESSAGE, null,
-//                                            options, options[0]);
-//      if (result == null)
-//        return null;
-//      if (result.equals("From Database"))
-//        return newExperimentFromDatabase(node);
-//      String name = experimentNames.generateName();
-//      while (true) {
-//        name = (String) JOptionPane.showInputDialog(this, "Enter Experiment Name",
-//  						  "Experiment Name",
-//  						  JOptionPane.QUESTION_MESSAGE,
-//  						  null, null,
-//  						  name);
-//        if (name == null) return null;
-//        if (!experimentNames.contains(name)) break;
-//        int answer = JOptionPane.showConfirmDialog(this,
-//  						 "Use an unique name",
-//  						 "Experiment Name Not Unique",
-//  						 JOptionPane.OK_CANCEL_OPTION,
-//  						 JOptionPane.ERROR_MESSAGE);
-//        if (answer != JOptionPane.OK_OPTION) return null;
-//      }
     String name = getUniqueExperimentName(experimentNames.generateName());
     if (name == null) return null;
 
