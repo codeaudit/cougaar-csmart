@@ -18,10 +18,9 @@ import java.util.*;
 import org.cougaar.core.cluster.*;
 import org.cougaar.core.society.UID;
 import org.cougaar.core.util.*;
-import org.cougaar.domain.glm.ldm.Constants;
-import org.cougaar.domain.glm.ldm.asset.Organization;
 import org.cougaar.domain.planning.ldm.asset.Asset;
 import org.cougaar.domain.planning.ldm.asset.Entity;
+import org.cougaar.domain.planning.ldm.plan.Role;
 import org.cougaar.domain.planning.ldm.plan.HasRelationships;
 import org.cougaar.domain.planning.ldm.plan.Relationship;
 import org.cougaar.domain.planning.ldm.plan.RelationshipSchedule;
@@ -37,6 +36,8 @@ import org.cougaar.util.*;
  */
 
 public class PSP_ClusterInfo extends PSP_BaseAdapter implements PlanServiceProvider, UISubscriber {
+
+  public static final Role SELF_ROLE = Role.getRole("Self");
 
   public PSP_ClusterInfo() {
     super();
@@ -126,8 +127,8 @@ public class PSP_ClusterInfo extends PSP_BaseAdapter implements PlanServiceProvi
       while (schedIter.hasNext()) {
 	Relationship relationship = (Relationship)schedIter.next();
 	// skip relationships with self
-	if ((relationship.getRoleA().equals(Constants.Role.SELF)) ||
-	    (relationship.getRoleB().equals(Constants.Role.SELF)))
+	if ((relationship.getRoleA().equals(SELF_ROLE)) ||
+	    (relationship.getRoleB().equals(SELF_ROLE)))
 	  continue;
 	Object otherObject = schedule.getOther(relationship);
 	// skip relationships with non-assets; does this occur???
