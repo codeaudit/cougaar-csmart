@@ -671,9 +671,11 @@ public class PropertyEditorPanel extends JPanel
         relationshipsMenu.show(tree, x, y);
       else if (name.equals("Property Groups"))
         propertyGroupsMenu.show(tree, x, y);
-    } else if (o instanceof AssetComponent)
-      agentMenu.show(tree, x, y);
-    else if (o instanceof AgentComponent)
+    } else if (o instanceof AssetComponent) {
+      // Bug 1883: Don't allow deleting the AssetData, since you can't
+      // add it back in again...
+      //agentMenu.show(tree, x, y);
+    } else if (o instanceof AgentComponent)
       agentMenu.show(tree, x, y);
     else if (o instanceof RelationshipComponent)
       agentMenu.show(tree, x, y);
@@ -715,6 +717,10 @@ public class PropertyEditorPanel extends JPanel
                                           JOptionPane.QUESTION_MESSAGE,
                                           null, null, "");
     if (name == null) return;
+
+    name = name.trim();
+    if (name.equals(""))
+      return;
 
     DefaultMutableTreeNode selNode =
       (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
