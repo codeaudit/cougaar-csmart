@@ -558,7 +558,7 @@ public class ScalabilityXAgent
     for (Iterator iter = supporting.iterator(); iter.hasNext(); ) {
       RelationshipData relData = new RelationshipData();
       relData.setType(RelationshipData.SUPPORTING);
-      relData.setCluster(((ScalabilityXAgent) iter.next()).getFullName().toString());
+      relData.setSupported(((ScalabilityXAgent) iter.next()).getFullName().toString());
       relData.setRole("ScalabilityProvider");
       assetData.addRelationship(relData);
     }
@@ -566,20 +566,20 @@ public class ScalabilityXAgent
       RelationshipData relData = new RelationshipData();
       
       relData.setType(RelationshipData.SUPPORTING);
-      relData.setCluster(superior.getFullName().toString());
+      relData.setSupported(superior.getFullName().toString());
       relData.setRole("ScalabilityControlProvider");
       assetData.addRelationship(relData);
 
       relData = new RelationshipData();
       relData.setType(RelationshipData.SUPPORTING);
-      relData.setCluster(superior.getFullName().toString());
+      relData.setSupported(superior.getFullName().toString());
       relData.setRole("ScalabilityStatisticsProvider");
       assetData.addRelationship(relData);
 
       relData = new RelationshipData();
       relData.setType(RelationshipData.SUPERIOR);
-      relData.setCluster(superior.getFullName().toString());
-      relData.setRole("");
+      relData.setSupported(superior.getFullName().toString());
+      relData.setRole("Subordinate");
       assetData.addRelationship(relData);
 
     }

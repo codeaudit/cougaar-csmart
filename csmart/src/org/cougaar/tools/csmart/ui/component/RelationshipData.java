@@ -26,30 +26,20 @@ import java.io.Serializable;
 
 public class RelationshipData implements Serializable {
   
-  public static final String SUPERIOR = "Superior";
-  public static final String SUPPORTING = "Supporting";
-
-  private String cluster = null;
   private String type = null;
   private String role = null;
   private String item = null;
-  private String startTime = null;
-  private String stopTime = null;
-  private String relationship = null;
+  private long startTime = 0L;
+  private long endTime = 0L;
+  private String supported = null;
+
+  // Types of relationship (not really important if everything else is correct)
+  public static final String SUPERIOR = "Superior";
+  public static final String SUPPORTING = "Supporting";
 
   public RelationshipData() {
-    setStartTime("");
-    setStopTime("");
   }
 
-  public void setCluster(String cluster) {
-    this.cluster = cluster;
-  }
-
-  public String getCluster() {
-    return this.cluster;
-  }
-  
   public void setType(String type) {
     this.type = type;
   }
@@ -80,18 +70,18 @@ public class RelationshipData implements Serializable {
    *
    * @param String start time.
    */
-  public void setStartTime(String start) {
+  public void setStartTime(long start) {
     this.startTime = start;
   }
 
   /**
-   * Sets the Stop time for the time-phased object.
+   * Sets the End time for the time-phased object.
    * Data is in the format of: 03/25/1959 12:00 am
    *
-   * @param String stop time.
+   * @param String end time.
    */
-  public void setStopTime(String stop) {
-    this.stopTime = stop;
+  public void setEndTime(long end) {
+    this.endTime = end;
   }
 
   /**
@@ -100,26 +90,26 @@ public class RelationshipData implements Serializable {
    *
    * @return start time.
    */
-  public String getStartTime() {
+  public long getStartTime() {
     return startTime;
   }
 
   /**
-   * Gets the Stop time for the time 
+   * Gets the End time for the time 
    * phased object. 
    *
-   * @return stop time
+   * @return end time
    */
-  public String getStopTime() {
-    return stopTime;
+  public long getEndTime() {
+    return endTime;
   }
   
-  public void setRelationship(String relationship) {
-     this.relationship = relationship;
+  public void setSupported(String supported) {
+     this.supported = supported;
    }
  
-   public String getRelationship() {
-     return this.relationship;
+   public String getSupported() {
+     return this.supported;
    }
 
 }

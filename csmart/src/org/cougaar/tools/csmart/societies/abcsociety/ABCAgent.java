@@ -498,7 +498,7 @@ public class ABCAgent
 	relData.setRole(role);
 	relData.setItem(supplies[i].trim());
 	relData.setType(supplies[i].substring(supplies[i].lastIndexOf(".")+1));
-	relData.setCluster(supplies[i].trim());
+	relData.setSupported(supplies[i].trim());
 	assetData.addRelationship(relData);
       }
     }

@@ -359,7 +359,7 @@ public class BasicMetric extends ModifiableConfigurableComponent
 	metricRelate.setRole(MetricControl_Role);
 	metricRelate.setItem(data.getName()); // name
 	metricRelate.setType(data.getName().substring(data.getName().lastIndexOf(".") + 1));
-	metricRelate.setCluster(data.getName()); // name
+	metricRelate.setSupported(data.getName()); // name
 	// and to the first, add the MetricsInitializerPlugIn
 	picd = addInitPICD(data);
       }

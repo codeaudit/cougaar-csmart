@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 
 import org.cougaar.util.DBProperties;
 import org.cougaar.util.DBConnectionPool;
@@ -179,15 +180,16 @@ public class CMTAgent
 	  RelationshipData rd = new RelationshipData();
 	  String supported = rs.getString(1);
 	  String role = rs.getString(2);
-	  String startDate = rs.getString(3);
-	  String stopDate = rs.getString(4);
+	  Timestamp startDate = rs.getTimestamp(3);
+	  Timestamp endDate = rs.getTimestamp(4);
 
-	  rd.setRelationship(supported);
+	  rd.setSupported(supported);
 	  rd.setRole(role);
-	  rd.setStartTime(startDate);
-	  if (stopDate != null) {
-	    rd.setStopTime(stopDate);
-	  }
+	  if (startDate != null) {
+            rd.setStartTime(startDate.getTime());
+            System.out.println("setting start time to " + startDate);
+          }
+          if (endDate != null) rd.setEndTime(endDate.getTime());
 	  assetData.addRelationship(rd);
 	}
 	rs.close();

@@ -25,6 +25,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Collection;
+import java.util.Date;
 
 import org.cougaar.tools.server.ConfigurationWriter;
 
@@ -325,12 +326,12 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
 	  writer.print(quote(rel.getRole()) + "  ");
 	  writer.print(quote(rel.getItem()) + "  ");
 	  writer.print(quote(rel.getType()) + "  ");
-	  writer.print(quote(rel.getCluster()) + "  ");
-	  writer.print(quote(rel.getStartTime()) + "  ");
-	  writer.println(quote(rel.getStopTime()));
+	  writer.print(quote(rel.getSupported()) + "  ");
+	  writer.print(quote(new Date(rel.getStartTime()).toString()) + "  ");
+	  writer.println(quote(new Date(rel.getEndTime()).toString()));
 	} else if(assetData.isOrg()) {
 	  writer.print(rel.getType() + " ");
-	  writer.print(quote(rel.getCluster()) + " ");
+	  writer.print(quote(rel.getSupported()) + " ");
 	  writer.println(quote(rel.getRole()));
 	} else if(assetData.isTPOrg()){
 	  // To Do: Deals with Realtionship.ini file
