@@ -285,7 +285,6 @@ public class CMTSociety
     ComponentData[] children = data.getChildren();
 
     for(int i=0; i < children.length; i++) {
-      System.out.println("Child Name: " + children[i].getName());
       ComponentData child = children[i];
       if(child.getType() == ComponentData.AGENT) {
 
