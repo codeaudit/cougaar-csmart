@@ -248,6 +248,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    *
    */
   public void removeSocietyComponent() {
+    if (this.societyComponent == null)
+      return;
     removeListeners((ModifiableConfigurableComponent)societyComponent);
     this.societyComponent = null;
     fireModification();
@@ -343,6 +345,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * @param recipe 
    */
   public void removeRecipeComponent(RecipeComponent recipe) {
+    if (! this.recipes.contains(recipe))
+      return;
     this.recipes.remove(recipe);
     removeListeners((ModifiableConfigurableComponent)recipe);
     fireModification();
@@ -560,9 +564,12 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * @param trialID - New Trial ID
    */
   public void setTrialID(String trialID) {
+    if (this.trialID == trialID)
+      return;
     this.trialID = trialID;
     defaultNodeArguments.setReadOnlyProperty(EXPERIMENT_ID, trialID);
     modified = true;
+    // FIXME: Should this be a fireModification?
   }
 
   public String getTrialID() {
@@ -832,8 +839,11 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * @param expID 
    */
   public void setExperimentID(String expID) {
+    if (this.expID == expID)
+      return;
     this.expID = expID;
     modified = true;
+    // FIXME: Should this be a fireModification()?
   }
 
   public String getExperimentID() {
@@ -849,7 +859,14 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   }
 
   public void setResultDirectory(File resultDirectory) {
+    // Dont say it was modified if it wasnt
+    if (this.resultDirectory == null && resultDirectory == null)
+      return;
+    if (this.resultDirectory != null && this.resultDirectory.equals(resultDirectory))
+      return;
     this.resultDirectory = resultDirectory;
+
+    // FIXME: Is this really worth a modification?
     fireModification();
   }
 
@@ -859,6 +876,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * @param newName - New Component Name
    */
   public void setName(String newName) {
+    // If name is same, don't fire modification
+    if(getExperimentName().equals(newName))
+      return;
     super.setName(newName);
     fireModification();
   }
@@ -901,6 +921,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     ModifiableComponent society = getSocietyComponent();
     if (society != null) {
       ModifiableComponent copiedSocietyComponent = null;
+
+      // FIXME: USe a name based on the original society!!
       copiedSocietyComponent = society.copy("Society for " + uniqueName);
       if (copiedSocietyComponent != null) {
         // FIXME: Must save the copied society to the DB!
@@ -913,6 +935,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     for (int i = 0; i < getRecipeComponentCount(); i++) {
       ModifiableComponent mc = getRecipeComponent(i);
       ModifiableComponent copiedComponent = null;
+      // FIXME: USe a name based on the original recipe!!
       copiedComponent = mc.copy("Recipe for " + uniqueName);
       if (copiedComponent != null) {
         experimentCopy.addComponent(copiedComponent);
@@ -1057,7 +1080,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       Map.Entry entry = (Map.Entry) i.next();
       theSoc.addParameter("-D" + entry.getKey() + "=" + entry.getValue());
     }
-    modified = true;
   }
 
   private void readObject(ObjectInputStream ois)
@@ -1153,6 +1175,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * @param hostComponent - <code>HostComponent</code> to remove.
    */
   public void removeHost(HostComponent hostComponent) {
+    if (! hosts.contains(hostComponent))
+      return;
     hosts.remove(hostComponent);
     // Let the host disassociate itself from nodes
     ((ExperimentHost)hostComponent).dispose();           
@@ -1175,6 +1199,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     if(hosts.contains(testHost)) {
       throw new IllegalArgumentException("Host Already Exists in Society");
     } else {
+      if (hostComponent.getFullName().equals(name))
+	return;
       hosts.remove(hostComponent);
       hostComponent.setName(name);
       hosts.add(hostComponent);
@@ -1253,6 +1279,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   }
 
   private ExperimentHost addHostComponent(ExperimentHost host) {
+    if (hosts.contains(host))
+      return host;
     hosts.add(host);
     installListeners(host);
     fireModification();
@@ -1290,6 +1318,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * @param nc <code>NodeComponent</code> of the Node to remove
    */
   public void removeNode(NodeComponent nc) {
+    if (! nodes.contains(nc))
+      return;
     ExperimentNode expNode = (ExperimentNode) nc;
     nodes.remove(nc);
     expNode.dispose();         // Let the node disassociate itself from agents
@@ -1309,6 +1339,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     if(nodeExists(name)) {
       throw new IllegalArgumentException("Node name already exists!");
     } else {
+      if (nc.getFullName().equals(name))
+	return;
       nodes.remove(nc);
       nc.setName(name);
       nodes.add(nc);
@@ -1333,6 +1365,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   }
 
   private void addNodeComponent(ExperimentNode node) {
+    if (nodes.contains(node))
+      return;
     nodes.add(node);
     installListeners(node);
     fireModification();
