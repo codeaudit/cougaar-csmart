@@ -43,3 +43,5 @@ the Blackboard for that society
 -- Specify a directory for saving Metrics files to, if not already done
 -- Hit Excel button to launch excel on a specified metrics file
 
+Known Problems
+1) If the area under the menu is not being refreshed in the CSMART Performance Analyzer tool after the File-Open menu item is invoked, then you need to update your version of Java to jdk1.3.1_01 (see http://developer.java.sun.com/developer/bugParade/bugs/4189244.html).
