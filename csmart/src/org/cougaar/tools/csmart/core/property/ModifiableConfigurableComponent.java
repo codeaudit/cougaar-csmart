@@ -37,7 +37,7 @@ public abstract class ModifiableConfigurableComponent
 {
 
   /** Indicates if this Component is editable **/
-  protected boolean editable = false;
+  protected boolean editable = true;
 
   /**
    * Creates a new <code>ModifiableConfigurableComponent</code> instance.
