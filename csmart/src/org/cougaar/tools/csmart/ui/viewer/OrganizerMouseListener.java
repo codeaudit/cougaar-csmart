@@ -211,12 +211,12 @@ public class OrganizerMouseListener extends MouseAdapter {
   };
 
   private Object[] experimentMenuItems = {
-    configureAction,
     buildExperimentAction,
     runExperimentAction,
     duplicateAction,
     deleteExperimentAction,
     renameExperimentAction,
+    configureAction,
   };
 
   private Object[] societyMenuItems = {
