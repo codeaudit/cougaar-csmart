@@ -31,18 +31,7 @@ import org.cougaar.tools.csmart.scalability.ScalabilityMetricsFileFilter;
 
 import org.cougaar.tools.csmart.ui.experiment.Experiment;
 
-import org.cougaar.tools.csmart.ui.component.AgentComponent;
-import org.cougaar.tools.csmart.ui.component.AgentComponentData;
-import org.cougaar.tools.csmart.ui.component.ComponentData;
-import org.cougaar.tools.csmart.ui.component.ConfigurableComponentPropertyAdapter;
-import org.cougaar.tools.csmart.ui.component.MetricComponent;
-import org.cougaar.tools.csmart.ui.component.ModifiableConfigurableComponent;
-import org.cougaar.tools.csmart.ui.component.NodeComponent;
-import org.cougaar.tools.csmart.ui.component.Property;
-import org.cougaar.tools.csmart.ui.component.PropertyEvent;
-import org.cougaar.tools.csmart.ui.component.PropertiesListener;
-import org.cougaar.tools.csmart.ui.component.RelationshipTimePhasedData;
-import org.cougaar.tools.csmart.ui.component.GenericComponentData;
+import org.cougaar.tools.csmart.ui.component.*;
 import org.cougaar.tools.csmart.ui.viewer.Organizer;
 
 /**
@@ -172,7 +161,7 @@ public class BasicMetric extends ModifiableConfigurableComponent
   }
 
   private transient int numAgents = 0; // numAgents collecting stats
-  private transient RelationshipTimePhasedData metricRelate = null; // name of agent doing controling
+  private transient RelationshipData metricRelate = null; // name of agent doing controling
   private transient int numAgs2 = 0;
   
   public ComponentData addComponentData(ComponentData data) {
@@ -198,7 +187,7 @@ public class BasicMetric extends ModifiableConfigurableComponent
     if (data.getType().equals(ComponentData.AGENT)) {
       numAgs2++;
       if (metricRelate == null) {
-	metricRelate = new RelationshipTimePhasedData();
+	metricRelate = new RelationshipData();
 	metricRelate.setRole(MetricControl_Role);
 	metricRelate.setItem(data.getName()); // name
 	metricRelate.setType(data.getName().substring(data.getName().lastIndexOf(".") + 1));
@@ -254,7 +243,7 @@ public class BasicMetric extends ModifiableConfigurableComponent
     if (metricRelate == null) 
       return;
     // Only add the relationship if its not already there
-    RelationshipTimePhasedData[] relats = data.getRelationshipData();
+    RelationshipData[] relats = data.getRelationshipData();
     for (int i = 0; i < relats.length; i++) {
       if (relats[i].equals(metricRelate))
 	return;
