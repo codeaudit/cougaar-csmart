@@ -260,6 +260,15 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
       data.setType(type);
     }
 
+    // HACK 10.0 ClusterIdentifier->MessageAddress
+    if (name.equals("ClusterIdentifier")) {
+      if (log.isWarnEnabled()) {
+	log.warn("ClusterIdentifier obsolete. Replacing with MessageAddress.");
+      }
+      data.setName("MessageAddress");
+      data.setType("MessageAddress");
+    }
+
     if(data.getName().equals("HomeLocation")) {
       data.setValue(parseHomeLocation((String)arguments[0]));
     // This is a serious hack!  For now, can not see any way around it.
