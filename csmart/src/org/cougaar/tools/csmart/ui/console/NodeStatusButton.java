@@ -90,6 +90,7 @@ public class NodeStatusButton extends JRadioButton implements Observer {
    */
   public NodeStatusButton(Icon icon) {
     super(icon);
+    model.addObserver(this);
   }
 
   /**
