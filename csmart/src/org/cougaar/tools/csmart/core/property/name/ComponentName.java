@@ -33,12 +33,13 @@ public class ComponentName extends MultiName implements CompositeName {
   private BaseComponent component;
 
   public ComponentName(BaseComponent cc, String name) {
-    super(new SimpleName(name));
+    super(SimpleName.getSimpleName(name));
     component = cc;
   }
 
   public void setComponent(BaseComponent cc) {
     component = cc;
+    decache();
   }
 
   public BaseComponent getConfigurableComponent() {
