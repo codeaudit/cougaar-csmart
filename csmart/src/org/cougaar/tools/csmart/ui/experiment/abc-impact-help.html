@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>Impact Help</title>
+  </head>
+
+  <body>
+    <h1>Impact Configuration Help</h1>
+    The Impact adds an Kinetic or Cyber Impact to the Society.
+    <ul>
+      <li>Cyber Events            [Integer, 0 - MAX]</li>
+      <li>Kinetic Events          [Integer, 0 - MAX]</li>
+      <li>Samples Per Second      [String, 0 - 4]</li>
+      <li>In Messages Per Second  [String, 0 - ?]</li>
+      <li>Out Messages Per Second [String, 0 - ?]</li>
+    </ul>
+
+    Currently, there are two types of impacts, Cyber and Kinetic impacts. A typical 
+    configuration can have multiple impacts of each type. The amount of impacts in
+    a configuration is specified by 'Cyber Events' and 'Kinetic Events'.<br>
+    <br>
+    A <a href="cyber-impact-help.html>Cyber Impact</a> simulates a cyber event such as a
+    denial of service attack on a specific target. <br>
+    <br>
+    A <a href="kinetic-impact-help.html>Kinetic Impact</a> simulates a real world event such 
+    as a flood on a specific target. <br>
+    <br>
+    'Samples Per Second' specifies how many times per second Messages should be released from 
+    the queues.  For example, if this is set to "0.25", then the Messages will only be released 
+    from the queues every 4 seconds and would result in "bursts" of I/O every 4 seconds.
+    <br><br>
+    A good value is "2", which will make the Binder's behavior mostly transparent to the application.  
+    The maximum supported value is "4".  This value should not be changed from the default value.
+    <br><br>
+    'In Messages Per Second'  specifies how many messages can be received by an Agent per second.
+    This is used to specify an upper-bound on the Agent's simulated network performance.  
+    <br><br>
+    For example, "2" would allow at most two messages per second to enter the Agent, with additional 
+    messages buffered up.
+    <br><br>
+    'Out Messages Per Second' specifies how many messages can be send by an Agent per second.
+    <br><br>
+  </body>
+</html>
