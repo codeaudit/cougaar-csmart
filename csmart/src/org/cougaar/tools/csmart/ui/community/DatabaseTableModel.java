@@ -43,10 +43,26 @@ public class DatabaseTableModel extends AbstractTableModel {
   private ArrayList rows = new ArrayList();
   private ResultSetMetaData metaData;
   private String communityName;
+
+  private String assemblyId = null;
+
   private transient Logger log;
+
+  private HashMap subs = new HashMap();
 
   public DatabaseTableModel() {
     log = CSMART.createLogger(this.getClass().getName());
+  }
+
+  public DatabaseTableModel(String assemblyId) {
+    log = CSMART.createLogger(this.getClass().getName());
+    setAssemblyId(assemblyId);
+  }
+
+  public void setAssemblyId(String assemblyId) {
+    this.assemblyId = assemblyId;
+    // FIXME must this be sqlquoted.
+    subs.put(":assembly_id:", assemblyId);
   }
 
   /**

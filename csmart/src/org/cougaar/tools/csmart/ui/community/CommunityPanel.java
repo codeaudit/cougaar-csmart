@@ -112,12 +112,18 @@ public class CommunityPanel extends JPanel {
   public void reinit(Experiment experiment) {
     this.experiment = experiment;
     splitPane.remove(treePane);
+    if (experiment != null)
+      ((CommunityTable)communityTable).setAssemblyId(experiment.getCommAsbID());
+    else
+      ((CommunityTable)communityTable).setAssemblyId(null);
     treePane = createTreeDisplay();
     splitPane.setRightComponent(treePane);
   }
 
   private JTable createTable() {
     CommunityTable communityTable =  new CommunityTable();
+    if (experiment != null)
+      communityTable.setAssemblyId(experiment.getCommAsbID());
     communityTableUtils = (CommunityTableUtils)communityTable.getModel();
     return communityTable;
   }

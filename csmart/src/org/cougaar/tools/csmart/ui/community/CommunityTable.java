@@ -47,6 +47,10 @@ public class CommunityTable extends JTable {
     communityTableUtils = (CommunityTableUtils)getModel();
     myTableModelListener = new MyTableModelListener();
   }
+  
+  public void setAssemblyId(String id) {
+    ((DatabaseTableModel)getModel()).setAssemblyId(id);
+  }
 
   public boolean isCellEditable(int row, int column) {
     return getModel().isCellEditable(row, column);
