@@ -206,7 +206,7 @@ public class PDbBase {
         substitutions.put(":description:", "No description available");
         executeUpdate(dbp.getQuery("insertLibRecipe", substitutions));
         int order = 0;
-        for (Iterator j = rc.getPropertyNames(); j.hasNext(); ) {
+        for (Iterator j = rc.getLocalPropertyNames(); j.hasNext(); ) {
             CompositeName pname = (CompositeName) j.next();
             Property prop = rc.getProperty(pname);
             Object val = prop.getValue();
@@ -238,7 +238,8 @@ public class PDbBase {
     }
 
     protected String getNextId(String queryName, String prefix) {
-        DecimalFormat format = new DecimalFormat(prefix + "0000");
+        DecimalFormat format = new DecimalFormat("0000");
+        format.setPositivePrefix(prefix);
         substitutions.put(":max_id_pattern:", prefix + "____");
         String id = format.format(1); // Default
         try {

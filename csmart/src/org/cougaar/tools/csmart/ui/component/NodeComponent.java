@@ -56,8 +56,6 @@ public interface NodeComponent extends ComponentProperties {
    * Set arguments.
    */
 
-  void setArguments(Properties arguments);
-
   /**
    * Get arguments.
    */

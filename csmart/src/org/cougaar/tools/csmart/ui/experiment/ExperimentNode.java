@@ -24,6 +24,7 @@ package org.cougaar.tools.csmart.ui.experiment;
 import org.cougaar.tools.csmart.ui.component.*;
 import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.tools.csmart.util.ReadOnlyProperties;
 import java.io.Serializable;
 import java.util.*;
 
@@ -41,7 +42,7 @@ public class ExperimentNode
 
   private List agents = new ArrayList();
   private Experiment experiment;
-  private Properties arguments = null;
+  private ReadOnlyProperties arguments = null;
 
   public ExperimentNode(String nodeName, Experiment experiment) {
     super(nodeName);
@@ -59,13 +60,14 @@ public class ExperimentNode
    */
 
   private void addDefaultArgumentsToNode(String nodeName) {
-    arguments = new Properties(experiment.getDefaultNodeArguments());
-    arguments.put("org.cougaar.node.name", nodeName);
+    arguments =
+      new ReadOnlyProperties(Collections.singleton("org.cougaar.node.name"),
+                             experiment.getDefaultNodeArguments());
+    arguments.setReadOnlyProperty("org.cougaar.node.name", nodeName);
   }
 
   public void rename(String newName) {
-    Properties args = getArguments();
-    args.setProperty("org.cougaar.node.name", newName);
+    arguments.setReadOnlyProperty("org.cougaar.node.name", newName);
     setName(newName); // invokes setName in ConfigurableComponent
   }
 
@@ -112,9 +114,9 @@ public class ExperimentNode
    * Set arguments.
    */
 
-  public void setArguments(Properties arguments) {
-    this.arguments = arguments;
-  }
+//    public void setArguments(Properties arguments) {
+//      this.arguments = arguments;
+//    }
 
   /**
    * Get arguments.
@@ -132,17 +134,9 @@ public class ExperimentNode
   public NodeComponent copy(Experiment experimentCopy) {
     NodeComponent nodeCopy = new ExperimentNode(getShortName(), 
                                                 experimentCopy);
-    Properties newProperties = 
-      new Properties(experimentCopy.getDefaultNodeArguments());
-    Properties myProps = getArguments();
-    // only copy the non-default properties
-    Enumeration props = myProps.keys();
-    while (props.hasMoreElements()) {
-      String propertyName = (String)props.nextElement();
-      newProperties.setProperty(propertyName, 
-                                myProps.getProperty(propertyName));
-    }
-    nodeCopy.setArguments(newProperties);
+    Properties newProps = nodeCopy.getArguments();
+    newProps.clear();
+    newProps.putAll(getArguments());
     return nodeCopy;
   }
 }

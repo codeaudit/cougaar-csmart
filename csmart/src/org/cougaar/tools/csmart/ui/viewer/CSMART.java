@@ -50,6 +50,7 @@ import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
 import org.cougaar.tools.csmart.ui.component.ComponentProperties;
 import org.cougaar.tools.csmart.ui.component.HostComponent;
+import org.cougaar.tools.csmart.ui.component.RecipeComponent;
 import org.cougaar.tools.csmart.ui.component.SocietyComponent;
 import org.cougaar.tools.csmart.ui.component.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.ui.console.ExperimentDB;
@@ -491,17 +492,25 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   public void runBuilder(ModifiableConfigurableComponent cc, boolean alwaysNew,
 			 boolean openForEditing) {
     if (!cc.isEditable() && openForEditing) {
-      int result = JOptionPane.showConfirmDialog(this,
-				    cc.getShortName() + " is not editable; create copy?",
-				    "Component Not Editable",
-				    JOptionPane.YES_NO_OPTION,
-				    JOptionPane.WARNING_MESSAGE);
-      if (result != JOptionPane.YES_OPTION) {
-	openForEditing = false;
-	//	return;
-      } else {
-	cc = organizer.copyComponent(cc, null);
-      }
+      Object[] options = { "Edit", "View", "Copy", "Cancel" };
+      int result = 
+        JOptionPane.showOptionDialog(this,
+                                     cc.getShortName() + " has been run",
+                                     "Not Editable",
+                                     JOptionPane.DEFAULT_OPTION,
+                                     JOptionPane.WARNING_MESSAGE,
+                                     null,
+                                     options,
+                                     options[0]);
+      if (result == 0) {
+        // edit it anyway
+        cc.setEditable(true);
+      } else if (result == 2) {
+        // copy it
+        cc = organizer.copyComponent(cc, null);
+      } else if (result != 1)
+        // user cancelled
+        return;
     }
     // note that cc is guaranteed non-null when this is called
     Class[] paramClasses = { ModifiableConfigurableComponent.class };
@@ -516,13 +525,21 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
    * If an tree builder is not editing this society,
    * then start a new tree builder to edit this society.
    */
-  private void runMultipleBuilders(ComponentProperties[] comps) {
+//    private void runMultipleBuilders(ComponentProperties[] comps) {
+//      for (int i = 0; i < comps.length; i++) {
+//        if (! (comps[i] instanceof ModifiableConfigurableComponent))
+//  	continue;
+//        String s = "Configuration Builder: " + comps[i].getShortName();
+//        if (NamedFrame.getNamedFrame().getFrame(s) == null) 
+//  	runBuilder((ModifiableConfigurableComponent)comps[i], true, true);
+//      }
+//    }
+
+  private void runMultipleBuilders(ModifiableConfigurableComponent[] comps) {
     for (int i = 0; i < comps.length; i++) {
-      if (! (comps[i] instanceof ModifiableConfigurableComponent))
-	continue;
       String s = "Configuration Builder: " + comps[i].getShortName();
       if (NamedFrame.getNamedFrame().getFrame(s) == null) 
-	runBuilder((ModifiableConfigurableComponent)comps[i], true, true);
+  	runBuilder(comps[i], true, true);
     }
   }
 
@@ -671,16 +688,28 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       if (about != null)
 	Browser.setPage(about);
     } else if (s.equals(views[0])) {
+      // Configuration Builder is used to edit both societies and recipes
+      ArrayList components = new ArrayList();
+      RecipeComponent[] recipes = organizer.getSelectedRecipes();
+      if (recipes != null) 
+        for (int i = 0; i < recipes.length; i++)
+          components.add(recipes[i]);
       SocietyComponent[] societies = organizer.getSelectedSocieties();
-      // try to create a society if none exists
-      if (societies == null || societies.length == 0) {
+      if (societies != null)
+        for (int i = 0; i < societies.length; i++)
+          components.add(societies[i]);
+      // if no recipes or societies, then try to create a society
+      if (components.size() == 0) {
 	organizer.addSociety();
 	societies = organizer.getSelectedSocieties();
+        if (societies != null)
+          for (int i = 0; i < societies.length; i++)
+            components.add(societies[i]);
       }
-      if (societies.length == 1)
-	runBuilder((ModifiableConfigurableComponent)societies[0], false, true);
-      else if (societies.length > 1) {
-	runMultipleBuilders((ComponentProperties [])societies);
+      if (components.size() == 1)
+	runBuilder((ModifiableConfigurableComponent)components.get(0), false, true);
+      else if (components.size() > 1) {
+	runMultipleBuilders((ModifiableConfigurableComponent[])components.toArray(new ModifiableConfigurableComponent[components.size()]));
       }
     } else if (s.equals(views[1])) {
     } else if (s.equals(views[2])) {
@@ -819,8 +848,9 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     }
   }
 
-  public String getUniqueExperimentName(String name) {
-    return organizer.getUniqueExperimentName(name);
+  public String getUniqueExperimentName(String name, 
+                                        boolean allowExistingName) {
+    return organizer.getUniqueExperimentName(name, allowExistingName);
   }
   
   public static void launch(String[] args) {

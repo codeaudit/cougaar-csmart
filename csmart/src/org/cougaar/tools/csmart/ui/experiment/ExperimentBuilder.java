@@ -38,6 +38,7 @@ import org.cougaar.tools.csmart.ui.component.PopulateDb;
 public class ExperimentBuilder extends JFrame implements ModificationListener {
   private static final String FILE_MENU = "File";
   private static final String SAVE_MENU_ITEM = "Save";
+  private static final String SAVE_AS_MENU_ITEM = "Save As...";
   private static final String EXIT_MENU_ITEM = "Close";
   private static final String FIND_MENU = "Find";
   private static final String FIND_HOST_MENU_ITEM = "Find Host...";
@@ -78,6 +79,11 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
     new AbstractAction(SAVE_MENU_ITEM) {
       public void actionPerformed(ActionEvent e) {
         save();
+      }
+    },
+    new AbstractAction(SAVE_AS_MENU_ITEM) {
+      public void actionPerformed(ActionEvent e) {
+        saveAs();
       }
     },
     new AbstractAction(EXIT_MENU_ITEM) {
@@ -184,7 +190,9 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
   }
 
   private void exit() {
-    saveSilently(); // if experiment from database was modified, save it
+    //    saveSilently(); // if experiment from database was modified, save it
+    if (modified)
+      saveAs();
     // before exiting, restore experiment's and society's editability
     // FIXME Restore on society!!!!
     experiment.setEditInProgress(false);
@@ -201,7 +209,9 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
    */
 
   public void reinit(Experiment newExperiment) {
-    saveSilently();
+    //    saveSilently();
+    if (modified)
+      saveAs();
     // restore editable flag on previous experiment
     experiment.setEditInProgress(false);
     experiment = newExperiment;
@@ -260,9 +270,9 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
       int answer =
         JOptionPane.showConfirmDialog(this, msg,
                                       "No Modifications",
-                                      JOptionPane.OK_CANCEL_OPTION,
+                                      JOptionPane.YES_NO_OPTION,
                                       JOptionPane.WARNING_MESSAGE);
-      if (answer != JOptionPane.OK_OPTION) return;
+      if (answer != JOptionPane.YES_OPTION) return;
       setModified(true);
     }
     saveHelper();
@@ -272,9 +282,26 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
    * Silently save experiment from database if modified.
    */
 
-  private void saveSilently() {
-    if (modified && experiment.isInDatabase())
-      saveHelper();
+//    private void saveSilently() {
+//      if (modified && experiment.isInDatabase())
+//        saveHelper();
+//    }
+
+  private void saveAs() {
+    if (!experiment.isInDatabase())
+      return;
+    if (!modified) 
+      setModified(true);
+    // get unique name in both database and CSMART or
+    // reuse existing name
+    if (ExperimentDB.isExperimentNameInDatabase(experiment.getShortName())) {
+      String name = csmart.getUniqueExperimentName(experiment.getShortName(),
+                                                   true);
+      if (name == null)
+        return;
+      experiment.setName(name);
+    }
+    saveHelper();
   }
 
   private void saveHelper() {
@@ -285,7 +312,8 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
     try {
       new Thread("Save") {
         public void run() {
-          doSave();
+          //          doSave();
+          experiment.saveToDb(saveToDbConflictHandler);
           GUIUtils.timeConsumingTaskEnd(c);
           GUIUtils.timeConsumingTaskEnd(csmart);
         }
@@ -296,21 +324,22 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
     }
   }
 
-  private void doSave() {
-    if (experiment.isCloned()) {
-      experiment.saveToDb(saveToDbConflictHandler);
-      return;
-    }
+  //  private void doSave() {
+//      if (experiment.isCloned()) {
+//        experiment.saveToDb(saveToDbConflictHandler);
+//        return;
+//      }
     // get unique name in both database and CSMART
-    if (ExperimentDB.isExperimentNameInDatabase(experiment.getShortName())) {
-      String name = csmart.getUniqueExperimentName(experiment.getShortName());
-      if (name == null)
-        return;
-      experiment.setName(name);
-    }
-    experiment.saveToDb(saveToDbConflictHandler);
-    experiment.setCloned(true);
-  }
+//      if (ExperimentDB.isExperimentNameInDatabase(experiment.getShortName())) {
+//        String name = csmart.getUniqueExperimentName(experiment.getShortName(),
+//                                                     true);
+//        if (name == null)
+//          return;
+//        experiment.setName(name);
+//      }
+    //    experiment.saveToDb(saveToDbConflictHandler);
+//    experiment.setCloned(true);
+  //  }
 
 //    private void find() {
 //      String s = JOptionPane.showInputDialog(this, "Find Host, Node or Agent:",

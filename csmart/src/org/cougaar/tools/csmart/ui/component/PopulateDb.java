@@ -57,6 +57,9 @@ import org.cougaar.util.DBConnectionPool;
 public class PopulateDb extends PDbBase {
     private String exptId;
     private String trialId;
+    private String cmtType;
+    private String hnaType;
+    private String csmiType;
     private String hnaAssemblyId;
     private String csmiAssemblyId;
 
@@ -189,18 +192,34 @@ public class PopulateDb extends PDbBase {
         if (exptId == null) throw new IllegalArgumentException("null exptId");
         if (trialId == null) throw new IllegalArgumentException("null trialId");
         if (ch == null) throw new IllegalArgumentException("null conflict handler");
+        this.cmtType = cmtType;
+        this.hnaType = hnaType;
+        this.csmiType = csmiType;
         this.exptId = exptId;
         this.trialId = trialId;
         this.conflictHandler = ch;
         substitutions.put(":expt_id:", exptId);
         substitutions.put(":cmt_type:", cmtType);
-        if (createNew) {
-            cloneTrial(hnaType, trialId, experimentName);
+        String oldExperimentName = getOldExperimentName();
+        if (!experimentName.equals(oldExperimentName)) {
+            cloneTrial(hnaType, trialId, experimentName, "Modified " + oldExperimentName);
             writeEverything = true;
         } else {
             cleanTrial(cmtType, hnaType, csmiType, trialId);
             writeEverything = false;
         }
+        setNewAssemblyIds();
+    }
+
+    private String getOldExperimentName() throws SQLException {
+        ResultSet rs = executeQuery(stmt, dbp.getQuery("queryExptName", substitutions));
+        if (rs.next()) {
+            return rs.getString(1);
+        }
+        return "";
+    }
+
+    private void setNewAssemblyIds() throws SQLException {
         hnaAssemblyId = addAssembly(hnaType);
         if (hnaType.equals(csmiType))
             csmiAssemblyId = hnaAssemblyId;
@@ -242,11 +261,11 @@ public class PopulateDb extends PDbBase {
         return csmiAssemblyId;
     }
 
-    private void cloneTrial(String idType, String oldTrialId, String experimentName)
+    private void cloneTrial(String idType, String oldTrialId, String experimentName, String description)
         throws SQLException
     {
-        newExperiment(idType, experimentName);
-        newTrial(idType, experimentName); // Trial and experiment have same name
+        newExperiment("EXPT", experimentName, description);
+        newTrial(exptId + ".TRIAL", experimentName, description); // Trial and experiment have same name
         copyCMTAssemblies(oldTrialId, trialId);
         copyCMTThreads(oldTrialId, trialId);
     }
@@ -284,11 +303,19 @@ public class PopulateDb extends PDbBase {
         executeUpdate(dbp.getQuery("cleanTrialRecipe", substitutions));
     }
 
-    private void newExperiment(String idType, String experimentName) throws SQLException {
+    private void newExperiment(String idType, String experimentName, String description)
+        throws SQLException
+    {
         String exptIdPrefix = idType + "-";
+        ResultSet rs = executeQuery(stmt, dbp.getQuery("queryExptCFWGroupId", substitutions));
+        if (rs.next()) {
+            substitutions.put(":cfw_group_id:", rs.getString(1));
+        } else {
+            substitutions.put(":cfw_group_id:", "unknown");
+        }
         substitutions.put(":expt_type:", idType);
         substitutions.put(":expt_name:", experimentName);
-        substitutions.put(":description:", experimentName);
+        substitutions.put(":description:", description);
         exptId = getNextId("queryMaxExptId", exptIdPrefix);
         substitutions.put(":expt_id:", exptId);
         executeUpdate(dbp.getQuery("insertExptId", substitutions));
@@ -298,14 +325,14 @@ public class PopulateDb extends PDbBase {
         return trialId;
     }
 
-    private void newTrial(String idType, String trialName)
+    private void newTrial(String idType, String trialName, String description)
         throws SQLException
     {
         String trialIdPrefix = idType + "-";
         substitutions.put(":trial_type:", idType);
         trialId = getNextId("queryMaxTrialId", trialIdPrefix);
         substitutions.put(":trial_id:", trialId);
-        substitutions.put(":description:", "Modified Trial");
+        substitutions.put(":description:", description);
         substitutions.put(":trial_name:", trialName);
         executeUpdate(dbp.getQuery("insertTrialId", substitutions));
     }
@@ -412,7 +439,10 @@ public class PopulateDb extends PDbBase {
         throws SQLException
     {
         cleanTrial("", "", "", trialId);
-        return populate(data, 1f, hnaAssemblyId);
+        String cmtAssemblyId = addAssembly(cmtType);
+        setNewAssemblyIds();
+        componentArgs.clear();
+        return populate(data, 1f, cmtAssemblyId);
     }
 
     /**

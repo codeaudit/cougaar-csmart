@@ -52,6 +52,7 @@ public interface ComponentProperties extends Serializable {
   /** Get a property using its local name **/
   Property getProperty(String localName);
   Iterator getPropertyNames();
+  Iterator getLocalPropertyNames();
   List getPropertyNamesList();
   void addPropertiesListener(PropertiesListener l);
   void removePropertiesListener(PropertiesListener l);
@@ -59,6 +60,7 @@ public interface ComponentProperties extends Serializable {
   ComponentData addComponentData(ComponentData data);
   ComponentData modifyComponentData(ComponentData data);
   ComponentData modifyComponentData(ComponentData data, PopulateDb pdb);
+  boolean componentWasRemoved();
 
   ComponentProperties copy(ComponentProperties result);
 

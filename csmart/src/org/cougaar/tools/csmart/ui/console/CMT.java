@@ -696,8 +696,6 @@ public class CMT {
 	queries.add(makeDeleteQuery(asbPrefix+"expt_trial_mod_recipe", "trial_id", trial_id));
 	queries.add(makeDeleteQuery(asbPrefix+"expt_trial", "expt_id", expt_id));
 	queries.add(makeDeleteQuery(asbPrefix+"expt_experiment", "expt_id", expt_id));
-        queries.add(makeDeleteQuery(asbPrefix+"alib_component", "component_alib_id",
-                                    society_id));
 	executeQueries(queries);
 	clearUnusedCMTassemblies();
     }

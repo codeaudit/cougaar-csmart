@@ -147,6 +147,7 @@ public class PropertyTable extends JTable {
           if (min.equals(allowedRange.getMaximumValue())) {
             if (comboBox == null) {
               comboBox = new JComboBox();
+              comboBox.setEditable(true);
             }
             comboBox.addItem(min);
           } else {

@@ -80,6 +80,7 @@ public class GenericComponentData implements ComponentData, Serializable {
   }
 
   public void setChildren(ComponentData[] child) {
+    this.children.clear();
     for(int i=0; i < child.length; i++) {
       this.children.add(child[i]);
     }

@@ -31,6 +31,7 @@ import org.cougaar.tools.csmart.ui.component.*;
 import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
 import org.cougaar.tools.csmart.ui.viewer.Organizer;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.tools.csmart.util.ReadOnlyProperties;
 import org.cougaar.tools.server.ConfigurationWriter;
 import org.cougaar.core.society.Node;
 import org.cougaar.core.cluster.ClusterImpl;
@@ -43,12 +44,12 @@ import org.cougaar.core.cluster.ClusterImpl;
  */
 public class Experiment extends ModifiableConfigurableComponent implements ModificationListener, java.io.Serializable {
   private static final String DESCRIPTION_RESOURCE_NAME = "description.html";
-  public static final String PROP_PREFIX = "-DPROP$";
+  public static final String PROP_PREFIX = "PROP$";
   private List societies = new ArrayList();
   private List hosts = new ArrayList();
   private List nodes = new ArrayList();
   private List recipes = new ArrayList();
-  private Properties defaultNodeArguments;
+  private ReadOnlyProperties defaultNodeArguments;
   private transient List listeners = null;
   private File resultDirectory; // where to store results
   private int numberOfTrials = 1;
@@ -64,7 +65,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   private String variationScheme = variationSchemes[0];
   private boolean editable = true;
   private boolean runnable = true;
-  private boolean cloned = false;
+  //  private boolean cloned = false;
   private transient boolean editInProgress = false;
 
   private String expID = null; // An Experiment has a single ExpID
@@ -101,8 +102,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   }
 
   private void setDefaultNodeArguments() {
-    defaultNodeArguments = new Properties();
-    defaultNodeArguments.put("org.cougaar.core.cluster.persistence.enabled", "false");
+    defaultNodeArguments = new ReadOnlyProperties(Collections.singleton("org.cougaar.experiment.id"));
+    defaultNodeArguments.put("org.cougaar.core.cluster.persistence.enable", "false");
     defaultNodeArguments.put("user.timezone", "GMT");
     defaultNodeArguments.put("org.cougaar.core.cluster.startTime", "08/10/2005");
     defaultNodeArguments.put("csmart.log.severity", "PROBLEM");
@@ -121,7 +122,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
                                CSMART.getDatabaseUserName());
       defaultNodeArguments.put("org.cougaar.configuration.password", 
                                CSMART.getDatabaseUserPassword());
-      defaultNodeArguments.put("org.cougaar.experiment.id", getTrialID());
+      defaultNodeArguments.setReadOnlyProperty("org.cougaar.experiment.id", getTrialID());
     }
     try {
       defaultNodeArguments
@@ -132,16 +133,17 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     }
   }
 
-  private void setDefaultNodeArguments(Properties props) {
-    defaultNodeArguments = props;
-  }
-
   public Properties getDefaultNodeArguments() {
     return defaultNodeArguments;
   }
 
   public void setExperimentID(String expID) {
     this.expID = expID;
+  }
+
+  public void setTrialID(String trialID) {
+    this.trialID = trialID;
+    defaultNodeArguments.setReadOnlyProperty("org.cougaar.experiment.id", trialID);
   }
 
   // This method should get called by Organizer
@@ -262,7 +264,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public void setEditable(boolean editable) {
     if (editable == this.editable) return;
     this.editable = editable;
-    System.err.println("new editable " + editable);
+    //    System.err.println("new editable " + editable);
     for (int i = 0; i < getComponentCount(); i++)
       getComponent(i).setEditable(editable);
     fireModification();
@@ -363,15 +365,10 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       experimentCopy = new Experiment(uniqueName, expID, trialID);
     else
       experimentCopy = new Experiment(uniqueName);
-    Properties myProps = getDefaultNodeArguments();
-    Enumeration props = myProps.propertyNames();
-    Properties newProperties = new Properties();
-    while (props.hasMoreElements()) {
-      String propertyName = (String)props.nextElement();
-      newProperties.setProperty(propertyName, 
-                                myProps.getProperty(propertyName));
-    }
-    experimentCopy.setDefaultNodeArguments(newProperties);
+    Properties newProps = experimentCopy.getDefaultNodeArguments();
+    newProps.clear();
+    newProps.putAll(getDefaultNodeArguments());
+
     // this copies the society and the agents
     for (int i = 0; i < getComponentCount(); i++) {
       ModifiableConfigurableComponent sc = getComponent(i);
@@ -494,6 +491,69 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     fireModification();
   }
 
+  /**
+   * Insure that we have a valid nameserver specification. There are
+   * several possibilities: If the default node nameserver argument
+   * has been set, try to make that be the name server. Parse out the
+   * host name part. Then scan all the hosts of nodes having agents
+   * and check to see if any such host matches that specified by the
+   * default node nameserver argument. If it does, keep that
+   * nameserver. If it doesn't (or if there was no default node
+   * nameserver argument) then use the first host as the nameserver.
+   **/
+  public void updateNameServerHostName() {
+    Properties defaultNodeArgs = getDefaultNodeArguments();
+    String oldNameServer = defaultNodeArgs.getProperty("org.cougaar.name.server");
+    String newNameServer = null;
+    String dfltNameServer = null;
+    String nameServerHost = null;
+    if (oldNameServer != null) {
+      int colon = oldNameServer.indexOf(':');
+      if (colon >= 0) {
+        nameServerHost = oldNameServer.substring(0, colon);
+      } else {
+        nameServerHost = oldNameServer;
+      }
+    }
+
+    HostComponent[] hosts = getHosts();
+  hostLoop:
+    for (int i = 0; i < hosts.length; i++) {
+      NodeComponent[] nodes = hosts[i].getNodes();
+      for (int j = 0; j < nodes.length; j++) {
+	AgentComponent[] agents = nodes[j].getAgents();
+	// skip nodes that have no agents
+	if (agents == null || agents.length == 0)
+	  continue;
+        String thisHost = hosts[i].getShortName();
+        if (thisHost.equals(nameServerHost)) {
+          newNameServer = oldNameServer;
+          break hostLoop;       // Use existing nameserver definition
+        }
+        if (dfltNameServer == null) { // First host is default
+          dfltNameServer = thisHost + ":" + CSMARTConsole.NAME_SERVER_PORTS;
+          if (oldNameServer == null) {
+            break hostLoop;     // Use dfltNameServer
+          }
+        }
+      }
+    }
+    if (newNameServer == null) newNameServer = dfltNameServer;
+
+    // set new server in all nodes
+    NodeComponent[] nodes = getNodesInner();
+    for (int i = 0; i < nodes.length; i++) {
+      NodeComponent node = nodes[i];
+      Properties arguments = node.getArguments();
+      // Insure no per-node override exists
+      arguments.remove("org.cougaar.name.server");
+    }
+    // Now install experiment-wide setting.
+    if (newNameServer != null) {
+      defaultNodeArgs.setProperty("org.cougaar.name.server", newNameServer);
+    }
+  }
+
   private void addNodeComponent(ExperimentNode node) {
     nodes.add(node);
     node.addModificationListener(this);
@@ -602,6 +662,12 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * removed from the nodes.
    */
   public NodeComponent[] getNodes() {
+    NodeComponent[] result = getNodesInner();
+    updateNameServerHostName(); // Be sure this is update-to-date
+    return result;
+  }
+
+  private NodeComponent[] getNodesInner() {
     List agents = getAgentsList();
     for (Iterator i = nodes.iterator(); i.hasNext(); ) {
       NodeComponent nc = (NodeComponent) i.next();
@@ -627,13 +693,13 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     fireModification();
   }
 
-  public boolean isCloned() {
-    return cloned;
-  }
+//    public boolean isCloned() {
+//      return cloned;
+//    }
 
-  public void setCloned(boolean newCloned) {
-    cloned = newCloned;
-  }
+//    public void setCloned(boolean newCloned) {
+//      cloned = newCloned;
+//    }
 
   public String getExperimentID() {
     if (inDatabase) {
@@ -676,6 +742,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 
   public void saveToDb(PopulateDb.ConflictHandler ch) {
     try {
+      updateNameServerHostName(); // Be sure this is up-to-date
       Set writtenNodes = new HashSet();
       List components = getComponents();
       NodeComponent[] nodesToWrite = getNodes();
@@ -686,9 +753,13 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       theSoc.setOwner(this); // the experiment
       theSoc.setParent(null);
       addDefaultNodeArguments(theSoc);
+      //      PopulateDb pdb =
+      //        new PopulateDb("CMT", "CSHNA", "CSMI", getExperimentName(),
+      //                       getExperimentID(), trialID, !isCloned(), ch);
+      // TODO: isCloned argument to PopulateDB is going away
       PopulateDb pdb =
         new PopulateDb("CMT", "CSHNA", "CSMI", getExperimentName(),
-                       getExperimentID(), trialID, !isCloned(), ch);
+                       getExperimentID(), trialID, true, ch);
       setExperimentID(pdb.getExperimentId());
       trialID = pdb.getTrialId();
 
@@ -720,19 +791,26 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       // root soc object, and do a getOwner and go from there. Ugly.
     
       // Now ask each component in turn to add its stuff
+      boolean componentWasRemoved = false;
       for (int i = 0, n = components.size(); i < n; i++) {
         ComponentProperties soc = (ComponentProperties) components.get(i);
 //          System.out.println(soc + ".addComponentData");
         soc.addComponentData(theSoc);
+        componentWasRemoved |= soc.componentWasRemoved();
       }
-
-      if (pdb.populateHNA(theSoc)) setCloned(true);
+      if (componentWasRemoved) pdb.repopulateCMT(theSoc);
+      pdb.populateHNA(theSoc);
+      //      if (pdb.populateHNA(theSoc)) setCloned(true);
 
       // then give everyone a chance to modify what they've collectively produced
       for (int i = 0, n = components.size(); i < n; i++) {
         ComponentProperties soc = (ComponentProperties) components.get(i);
         soc.modifyComponentData(theSoc, pdb);
-        if (pdb.populateCSMI(theSoc)) setCloned(true);
+        if (soc.componentWasRemoved()) {
+          pdb.repopulateCMT(theSoc);
+        }
+        pdb.populateCSMI(theSoc);
+        //        if (pdb.populateCSMI(theSoc)) setCloned(true);
       }
       pdb.setModRecipes(recipes);
       pdb.close();
@@ -776,6 +854,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
         // FIXME!!
         ac.setOwner(null); // the society that contains this agent FIXME!!!
         ac.setParent(nc);
+        addPropertiesAsParameters(ac, agents[j]);
         nc.addChild((ComponentData)ac);
       }
     }

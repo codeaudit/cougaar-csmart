@@ -55,8 +55,6 @@ public class CMTAgent
   // if there are no properties so put it's name.
   private Property propName;
   private Property propComponentID;
-  private Property propAssemblyID;
-  private Property propCategory;
 
   private String name;
   private List assemblyID;
@@ -68,6 +66,11 @@ public class CMTAgent
     this("Name", new ArrayList());
   }
 
+  public CMTAgent(String name) {
+    super(name);
+    this.name = name;
+    this.assemblyID = null;
+  }
   public CMTAgent(String name, List assemblyID) {
     super(name);
     this.name = name;
@@ -147,6 +150,53 @@ public class CMTAgent
 
     String orgClass = queryOrgClass();
     assetData.setAssetClass(orgClass);
+    String assemblyMatch = getAssemblyMatch();
+
+    if (assemblyMatch != null) {
+      substitutions.put(":assemblyMatch", assemblyMatch);
+      substitutions.put(":agent_name", name);
+
+      // Add all Relationship data
+      try {
+        Connection conn = DBUtils.getConnection();
+        try {
+          Statement stmt = conn.createStatement();	
+          String query = DBUtils.getQuery(QUERY_AGENT_RELATIONS, substitutions);
+	
+          ResultSet rs = stmt.executeQuery(query);
+          while(rs.next()) {
+            RelationshipData rd = new RelationshipData();
+            String supported = rs.getString(1);
+            String role = rs.getString(2);
+            Timestamp startDate = rs.getTimestamp(3);
+            Timestamp endDate = rs.getTimestamp(4);
+
+            rd.setSupported(supported);
+            rd.setRole(role);
+            if (startDate != null) {
+              rd.setStartTime(startDate.getTime());
+            }
+            if (endDate != null) rd.setEndTime(endDate.getTime());
+            assetData.addRelationship(rd);
+          }
+          rs.close();
+          stmt.close();
+
+        } finally {
+          conn.close();
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+        throw new RuntimeException("Error" + e);
+      }
+    }
+    data.addAgentAssetData(assetData);
+
+    return data;
+  }
+
+  private String getAssemblyMatch() {
+    if (assemblyID == null) return null; // No assemblies
     StringBuffer assemblyMatch = new StringBuffer();
     assemblyMatch.append("in (");
     Iterator iter = assemblyID.iterator();
@@ -154,58 +204,17 @@ public class CMTAgent
     while (iter.hasNext()) {
       String val = (String)iter.next();
       if (first) {
-	first = false;
+        first = false;
       } else {
-	assemblyMatch.append(", ");
+        assemblyMatch.append(", ");
       }
       assemblyMatch.append("'");
       assemblyMatch.append(val);
       assemblyMatch.append("'");
     }
     assemblyMatch.append(")");
-
-    substitutions.put(":assemblyMatch", assemblyMatch.toString());
-    substitutions.put(":agent_name", name);
-
-    // Add all Relationship data
-    try {
-      Connection conn = DBUtils.getConnection();
-      try {
-	Statement stmt = conn.createStatement();	
-	String query = DBUtils.getQuery(QUERY_AGENT_RELATIONS, substitutions);
-	
-	ResultSet rs = stmt.executeQuery(query);
-	while(rs.next()) {
-	  RelationshipData rd = new RelationshipData();
-	  String supported = rs.getString(1);
-	  String role = rs.getString(2);
-	  Timestamp startDate = rs.getTimestamp(3);
-	  Timestamp endDate = rs.getTimestamp(4);
-
-	  rd.setSupported(supported);
-	  rd.setRole(role);
-	  if (startDate != null) {
-            rd.setStartTime(startDate.getTime());
-          }
-          if (endDate != null) rd.setEndTime(endDate.getTime());
-	  assetData.addRelationship(rd);
-	}
-	rs.close();
-	stmt.close();
-
-      } finally {
-	conn.close();
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-      throw new RuntimeException("Error" + e);
-    }
-
-    data.addAgentAssetData(assetData);
-
-    return data;
+    return first ? "is null" : assemblyMatch.toString();
   }
-
 
   public ComponentData addComponentData(ComponentData data) {
 
@@ -215,72 +224,57 @@ public class CMTAgent
       name = name.substring(dotPos + 1);
     }
 
-    StringBuffer assemblyMatch = new StringBuffer();
-    assemblyMatch.append("in (");
-    Iterator iter = assemblyID.iterator();
-    boolean first = true;
-    while (iter.hasNext()) {
-      String val = (String)iter.next();
-      if (first) {
-	first = false;
-      } else {
-	assemblyMatch.append(", ");
-      }
-      assemblyMatch.append("'");
-      assemblyMatch.append(val);
-      assemblyMatch.append("'");
-    }
-    assemblyMatch.append(")");
+    String assemblyMatch = getAssemblyMatch();
+    if (assemblyMatch != null) {
+      substitutions.put(":assemblyMatch", assemblyMatch);
 
-    substitutions.put(":assemblyMatch", assemblyMatch.toString());
+      substitutions.put(":agent_name", name);
 
-    substitutions.put(":agent_name", name);
+      data.setAlibID((String)propComponentID.getValue());
 
-    data.setAlibID((String)propComponentID.getValue());
-
-    // Get Plugin Names
-    try {
-      Connection conn = DBUtils.getConnection();
+      // Get Plugin Names
       try {
-	Statement stmt = conn.createStatement();	
-	String query = dbp.getQuery(QUERY_PLUGIN_NAME, substitutions);
+        Connection conn = DBUtils.getConnection();
+        try {
+          Statement stmt = conn.createStatement();	
+          String query = dbp.getQuery(QUERY_PLUGIN_NAME, substitutions);
 	
-	ResultSet rs = stmt.executeQuery(query);
-	while(rs.next()) {
-	  GenericComponentData plugin = new GenericComponentData();
-          String pluginClassName = rs.getString(1);
-          String pluginName = rs.getString(4);
-	  plugin.setType(ComponentData.PLUGIN);
-          plugin.setClassName(pluginClassName);
-	  plugin.setParent(data);
-	  plugin.setOwner(this);
-	  plugin.setName(pluginName);	  
-	  String alibId =rs.getString(2);
-	  plugin.setAlibID(alibId);
-	  substitutions.put(":comp_alib_id", alibId);
-	  substitutions.put(":comp_id", rs.getString(3));
-	  Statement stmt2 = conn.createStatement();
-	  String query2 = dbp.getQuery(QUERY_PLUGIN_ARGS, substitutions);
-	  ResultSet rs2 = stmt.executeQuery(query2);
-	  while (rs2.next()) {
-	    String arg = rs2.getString(1);
-	    plugin.addParameter(arg);
-	  }
-	  rs2.close();
-	  stmt2.close();
-	  data.addChild(plugin);
-	}
-	rs.close();
-	stmt.close();
+          ResultSet rs = stmt.executeQuery(query);
+          while(rs.next()) {
+            GenericComponentData plugin = new GenericComponentData();
+            String pluginClassName = rs.getString(1);
+            String pluginName = rs.getString(4);
+            plugin.setType(ComponentData.PLUGIN);
+            plugin.setClassName(pluginClassName);
+            plugin.setParent(data);
+            plugin.setOwner(this);
+            plugin.setName(pluginName);	  
+            String alibId =rs.getString(2);
+            plugin.setAlibID(alibId);
+            substitutions.put(":comp_alib_id", alibId);
+            substitutions.put(":comp_id", rs.getString(3));
+            Statement stmt2 = conn.createStatement();
+            String query2 = dbp.getQuery(QUERY_PLUGIN_ARGS, substitutions);
+            ResultSet rs2 = stmt2.executeQuery(query2);
+            while (rs2.next()) {
+              String arg = rs2.getString(1);
+              plugin.addParameter(arg);
+            }
+            rs2.close();
+            stmt2.close();
+            data.addChild(plugin);
+          }
+          rs.close();
+          stmt.close();
 
-      } finally {
-	conn.close();
+        } finally {
+          conn.close();
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+        throw new RuntimeException("Error" + e);
       }
-    } catch (Exception e) {
-      e.printStackTrace();
-      throw new RuntimeException("Error" + e);
     }
-
     data = addAssetData(data);
 
     return data;

@@ -46,9 +46,8 @@ import org.cougaar.tools.csmart.societies.abcsociety.ABCSociety;
 import org.cougaar.tools.csmart.societies.abcsociety.BasicMetric;
 import org.cougaar.tools.csmart.societies.cmt.CMTSociety;
 import org.cougaar.tools.csmart.societies.database.DBUtils;
-import org.cougaar.tools.csmart.recipe.ComponentInsertionRecipe;
-import org.cougaar.tools.csmart.recipe.SpecificInsertionRecipe;
-import org.cougaar.tools.csmart.recipe.AgentInsertionRecipe;
+import org.cougaar.tools.csmart.recipe.*;
+
 
 /**
  * The Organizer holds all the component a user creates
@@ -95,8 +94,10 @@ public class Organizer extends JScrollPane {
     new ComboItem("Component Insertion", ComponentInsertionRecipe.class),
     new ComboItem("Specific Insertion", SpecificInsertionRecipe.class),
     new ComboItem("Agent Insertion", AgentInsertionRecipe.class),
+    new ComboItem("Parameter Insertion", ParameterInsertionRecipe.class),
     new ComboItem("Empty Metric", EmptyMetric.class),
     new ComboItem("ABCImpact", ABCImpact.class),
+    //    new ComboItem("Foo Recipe", org.cougaar.tools.csmart.recipe.FooRecipe.class),
   };
 
   // Define Unique Name sets
@@ -1203,7 +1204,8 @@ public class Organizer extends JScrollPane {
     try {
       PDbBase pdb = new PDbBase();
       try {
-        if (pdb.recipeExists(rc) == PDbBase.RECIPE_STATUS_EXISTS) {
+        int status = pdb.recipeExists(rc);
+        if (status == PDbBase.RECIPE_STATUS_EXISTS || status == PDbBase.RECIPE_STATUS_DIFFERS) {
           int answer =
             JOptionPane.showConfirmDialog(this,
                                           "Delete recipe from database?",
@@ -1328,10 +1330,12 @@ public class Organizer extends JScrollPane {
     String experimentName = (String)cb.getSelectedItem();
     final String originalExperimentName = experimentName;
     String experimentId = (String)experimentNamesMap.get(experimentName);
-    // produce an unique name for CSMART if necessary
+    // if the CSMART workspace contains an experiment with this name,
+    // then force the user to select a new unique name
     if (experimentNames.contains(experimentName)) {
       experimentName = 
-        getUniqueExperimentName(experimentNames.generateName(experimentName));
+        getUniqueExperimentName(experimentNames.generateName(experimentName),
+                                false);
       if (experimentName == null)
         return;
     }
@@ -1362,7 +1366,11 @@ public class Organizer extends JScrollPane {
             createCMTExperiment(treeNode, originalExperimentName,
                                 cmtDialog.getExperimentName(),
                                 cmtDialog.getExperimentId(), 
-                                trialId, cmtDialog.isCloned());
+                                trialId);
+//              createCMTExperiment(treeNode, originalExperimentName,
+//                                  cmtDialog.getExperimentName(),
+//                                  cmtDialog.getExperimentId(), 
+//                                  trialId, cmtDialog.isCloned());
           GUIUtils.timeConsumingTaskEnd(organizer);
         }
       }.start();
@@ -1563,6 +1571,7 @@ public class Organizer extends JScrollPane {
         ResultSet rs;
         String nodeName = (String)iter.next();
         nodeComponent = experiment.addNode(nodeName);
+        setComponentProperties((ConfigurableComponent) nodeComponent, nodeName, assemblyMatch);
         substitutions.put(":parent_name", nodeName);
         substitutions.put(":comp_alib_id", nodeName);
         // Get args of the node
@@ -1600,11 +1609,16 @@ public class Organizer extends JScrollPane {
                                      Properties props)
     throws SQLException
   {
+    boolean first = true;
     String query = DBUtils.getQuery("queryComponentArgs", substitutions);
     ResultSet rs = stmt.executeQuery(query);
     while (rs.next()) {
       String arg = rs.getString(1);
       if (arg.startsWith("-D")) {
+        if (first) {
+          props.clear();
+          first = false;
+        }
         int equalsIx = arg.indexOf('=', 2);
         String pname = arg.substring(2, equalsIx);
         String value = arg.substring(equalsIx + 1);
@@ -1720,12 +1734,17 @@ public class Organizer extends JScrollPane {
         String propName = (String) i.next();
         String propValue = (String) dbRecipe.props.get(propName);
         Property prop = mc.getProperty(propName);
-        Class propClass = prop.getPropertyClass();
-        Constructor constructor = propClass.getConstructor(new Class[] {String.class});
-        Object value = constructor.newInstance(new Object[] {propValue});
-        prop.setValue(value);
+        if (prop == null) {
+          System.err.println("Unknown property: " + propName + "=" + propValue);
+        } else {
+          Class propClass = prop.getPropertyClass();
+          Constructor constructor = propClass.getConstructor(new Class[] {String.class});
+          Object value = constructor.newInstance(new Object[] {propValue});
+          prop.setValue(value);
+        }
       } catch (Exception e) {
         System.err.println("Organizer: [setRecipeComponentProperties] Caught exception: " + e);
+        e.printStackTrace();
       }
     }
   }
@@ -1741,8 +1760,13 @@ public class Organizer extends JScrollPane {
                                    String originalExperimentName,
                                    String experimentName,
                                    String experimentId,
-                                   String trialId,
-                                   boolean isCloned) {
+                                   String trialId) {
+//    private void createCMTExperiment(DefaultMutableTreeNode node,
+//                                     String originalExperimentName,
+//                                     String experimentName,
+//                                     String experimentId,
+//                                     String trialId,
+//                                     boolean isCloned) {
     //    System.out.println("Creating society");
     // get assembly ids for trial
     ArrayList assemblyIds = getTrialAssemblyIds(experimentId, trialId);
@@ -1768,7 +1792,7 @@ public class Organizer extends JScrollPane {
                             ComponentData.SOCIETY
                             + "|"
                             + originalExperimentName);
-    experiment.setCloned(isCloned);
+    //    experiment.setCloned(isCloned);
 
     //to hold all potential agents
     List agents = new ArrayList();  
@@ -1792,6 +1816,10 @@ public class Organizer extends JScrollPane {
     }
     AgentComponent[] socagents = soc.getAgents();
     if (socagents!= null && socagents.length > 0) {
+      for (int i = 0; i < socagents.length; i++) {
+        AgentComponent ac = socagents[i];
+        setComponentProperties((ConfigurableComponent) ac, ac.getShortName(), assemblyMatch);
+      }
       agents.addAll(Arrays.asList(socagents));
     }
     AgentComponent[] allagents = (AgentComponent[])agents.toArray(new AgentComponent[agents.size()]); 
@@ -1812,6 +1840,14 @@ public class Organizer extends JScrollPane {
 //     if (!isCloned) {
 //       experiment.saveToDb(saveToDbConflictHandler);
 //     }
+
+    // if the experiment is not in the database, then save it so its runnable
+    try {
+      if (!ExperimentDB.isExperimentNameInDatabase(experimentName))
+	experiment.saveToDb(saveToDbConflictHandler);
+    } catch (RuntimeException e) {
+      System.err.println(e);
+    }
   }
 
   private void setComponentProperties(ConfigurableComponent cc,
@@ -1858,7 +1894,6 @@ public class Organizer extends JScrollPane {
                                        String assemblyMatch,
                                        String socAlibId)
   {
-    Properties props = experiment.getDefaultNodeArguments();
     try {
       Connection conn = DBUtils.getConnection();
       try {
@@ -1879,16 +1914,21 @@ public class Organizer extends JScrollPane {
 
   /**
    * Ensure that experiment name is unique in both CSMART and the database.
+   * Optionally allow re-use of existing name.
    */
 
-  public String getUniqueExperimentName(String name) {
+  public String getUniqueExperimentName(String originalName,
+                                        boolean allowExistingName) {
+    String name = null;
     while (true) {
       name = (String) JOptionPane.showInputDialog(this, "Enter Experiment Name",
                                                   "Experiment Name",
                                                   JOptionPane.QUESTION_MESSAGE,
                                                   null, null,
-                                                  name);
+                                                  originalName);
       if (name == null) return null;
+      if (name.equals(originalName) && allowExistingName)
+        return name;
       // if name is unique in CSMART
       if (!experimentNames.contains(name)) {
         // ensure that name is not in the database
@@ -1921,7 +1961,8 @@ public class Organizer extends JScrollPane {
   }
 
   private DefaultMutableTreeNode newExperiment(DefaultMutableTreeNode node) {
-    String name = getUniqueExperimentName(experimentNames.generateName());
+    String name = getUniqueExperimentName(experimentNames.generateName(),
+                                          false);
     if (name == null) return null;
 
     try {
@@ -1979,7 +2020,7 @@ public class Organizer extends JScrollPane {
     if (name != null) {
       experimentNames.remove(experiment.getExperimentName());
       experiment.setName(name);
-      experiment.setCloned(false);
+      //      experiment.setCloned(false);
       GUIUtils.timeConsumingTaskStart(organizer);
       try {
         new Thread("SaveExperiment") {
@@ -2113,8 +2154,13 @@ public class Organizer extends JScrollPane {
 	      installListeners((ModifiableConfigurableComponent) o);
 	    }
 	  } // end of for loop
+//          } catch (ClassNotFoundException cnfe) {
+//          } catch (InvalidClassException ice) {
+//          } catch (StreamCorruptedException sce) {
+//          } catch (OptionalDataException ode) {
+//          } catch (IOException ioe) {
 	} catch (Exception e) {
-	  System.err.println("Organizer: can't read file: " + f);
+	  System.err.println("Organizer: can't read file: " + f + " exception: " + e);
 	} finally {
 	  ois.close();
 	} 	  
@@ -2361,7 +2407,7 @@ public class Organizer extends JScrollPane {
     // if the copy isn't modified, this is the only place it's put in the
     // database and hence made runnable
     if (experiment.isInDatabase()) {
-      experimentCopy.setCloned(false);
+      //      experimentCopy.setCloned(false);
       GUIUtils.timeConsumingTaskStart(organizer);
       try {
         new Thread("DuplicateExperiment") {

@@ -79,8 +79,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   private static final String HOST_TYPE_MENU_ITEM = "Type";
   private static final String HOST_LOCATION_MENU_ITEM = "Location";
 
-  public static final String COMMAND_ARGUMENTS = "Command$Arguments";
-
   public HostConfigurationBuilder(Experiment experiment, 
                                   ExperimentBuilder experimentBuilder) {
     this.experiment = experiment;
@@ -419,7 +417,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     expandTree(agentTree);
     hostTree.getModel().addTreeModelListener(this);
     nodeTree.getModel().addTreeModelListener(this);
-    setNameServerHostName(); // set name server host name in all nodes
   }
 
   /**
@@ -892,7 +889,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
           hostComponent.addNode(nodeComponent);
       }
     }
-    setNameServerHostName(); // potentially update name server host
     //    setRunButtonEnabled();
   }
 
@@ -1007,7 +1003,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 	hostComponent.removeNode(nodeComponent);
       }
     }
-    setNameServerHostName(); // potentially update name server host
     //    setRunButtonEnabled();
   }
 
@@ -1063,7 +1058,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       DefaultMutableTreeNode parent = 
         (DefaultMutableTreeNode)e.getTreePath().getLastPathComponent();
       if (((ConsoleTreeObject)parent.getUserObject()).isRoot()) {
-        setNameServerHostName(); 
         experimentBuilder.setModified(true);
         return;
       }
@@ -1231,71 +1225,21 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    */
 
   public void cmdLineNodeMenuItem_actionPerformed(JTree tree) {
+    experiment.updateNameServerHostName(); // Be sure this is up-do-date
     DefaultMutableTreeNode selectedNode =
       (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
     ConsoleTreeObject cto = (ConsoleTreeObject)selectedNode.getUserObject();
     NodeComponent nodeComponent = (NodeComponent)cto.getComponent();
     Vector data = new Vector();
     // node component level properties
-    Properties properties = nodeComponent.getArguments();
-    Enumeration propertyNames = properties.propertyNames();
     NodeArgumentDialog dialog =
       new NodeArgumentDialog("Node " + nodeComponent.getShortName()
-                             + " Command Line");
-    String arguments = "";
-    while (propertyNames.hasMoreElements()) {
-      String name = (String) propertyNames.nextElement();
-      String value = properties.getProperty(name);
-      if (name.equals(COMMAND_ARGUMENTS)) {
-        arguments = value;
-      } else {
-        Vector row = new Vector(3);
-        row.add(name);
-        row.add(value);
-        row.add(properties.get(name) == null ? "*" : "");
-        data.add(row);
-      }
-    }
-    dialog.setData(data, 3);
-    dialog.setArguments(arguments);
+                             + " Command Line",
+                             nodeComponent.getArguments(), true);
     dialog.setVisible(true);
-    Vector newData = dialog.getData();
-    String args = dialog.getArguments().trim();
-    if (!args.equals("")) {
-      Vector newArgv = new Vector(2);
-      newArgv.add(COMMAND_ARGUMENTS);
-      newArgv.add(args);
-      newData.add(newArgv);
-    }
-    // the original property names
-    Set oldKeys = new HashSet(properties.keySet());
-    // for each of the entries from the dialog
-    for (int i = 0; i < newData.size(); i++) {
-      Vector row = (Vector) newData.get(i);
-      String name = (String) row.get(0);
-      // get the new and old values
-      String newValue = (String) row.get(1);
-      String oldValue = properties.getProperty(name);
-      if (oldValue == null) {
-        // if this is a new property, then add it
-        properties.setProperty(name, newValue);
-        experimentBuilder.setModified(true);
-        //        System.out.println("new=" + newValue);
-      } else if (!newValue.equals(oldValue)) {
-        // if the new value is not the same as the old value
-        // then the experiment was modified and must be saved
-        //        System.out.println("modified " + name + 
-        //                           ": new=" + newValue + ", old=" + oldValue);
-        experimentBuilder.setModified(true);
-        properties.setProperty(name, newValue);
-      } 
-      oldKeys.remove(name);
-    }
-    // remove properties whose keys weren't found in the table
-    for (Iterator i = oldKeys.iterator(); i.hasNext(); ) {
-      experimentBuilder.setModified(true);
-      properties.remove(i.next());
-    }
+    if (dialog.getValue() != JOptionPane.OK_OPTION)
+      return; // user cancelled
+    experimentBuilder.setModified(dialog.updateProperties());
   }
 
   /**
@@ -1303,54 +1247,14 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    */
 
   public void globalCmdLineMenuItem_actionPerformed() {
-    NodeArgumentDialog dialog = new NodeArgumentDialog("Global Command Line");
-    Vector data = new Vector();
-    Properties properties = experiment.getDefaultNodeArguments();
-    Enumeration propertyNames = properties.propertyNames();
-    String arguments = "";
-    while (propertyNames.hasMoreElements()) {
-      String name = (String) propertyNames.nextElement();
-      String value = properties.getProperty(name);
-      if (name.equals(COMMAND_ARGUMENTS)) {
-        arguments = value;
-      } else {
-        Vector row = new Vector(2);
-        row.add(name);
-        row.add(value);
-        row.add(null);
-        data.add(row);
-      }
-    }
-    dialog.setData(data, 2);
-    dialog.setArguments(arguments);
+    experiment.updateNameServerHostName(); // Be sure this is up-do-date
+    NodeArgumentDialog dialog = 
+      new NodeArgumentDialog("Global Command Line",
+                             experiment.getDefaultNodeArguments(), false);
     dialog.setVisible(true);
-    Vector newData = dialog.getData();
-    String newArguments = dialog.getArguments().trim();
-    if (!newArguments.equals("")) {
-      Vector newArgv = new Vector(2);
-      newArgv.add(COMMAND_ARGUMENTS);
-      newArgv.add(newArguments);
-      newData.add(newArgv);
-    }
-    Set oldKeys = new HashSet(properties.keySet());
-    for (int i = 0; i < newData.size(); i++) {
-      Vector row = (Vector) newData.get(i);
-      String name = (String) row.get(0);
-      if (name.equals("")) continue;
-      String newValue = (String) row.get(1);
-      String oldValue = properties.getProperty(name);
-      // if the new value is not the old value, then set the new value
-      if (!newValue.equals(oldValue)) {
-        experimentBuilder.setModified(true);
-        properties.setProperty(name, newValue);
-      }
-      oldKeys.remove(name);
-    }
-    // remove properties whose keys weren't found in the table
-    for (Iterator i = oldKeys.iterator(); i.hasNext(); ) {
-      experimentBuilder.setModified(true);
-      properties.remove(i.next());
-    }
+    if (dialog.getValue() != JOptionPane.OK_OPTION)
+      return; // user cancelled
+    experimentBuilder.setModified(dialog.updateProperties());
   }
 
   /**
@@ -1391,69 +1295,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 
   public void removeHostTreeSelectionListener(TreeSelectionListener listener) {
     hostTree.removeTreeSelectionListener(listener);
-  }
-
-  /**
-   * Insure that we have a valid nameserver specification. There are
-   * several possibilities: If the default node nameserver argument
-   * has been set, try to make that be the name server. Parse out the
-   * host name part. Then scan all the hosts of nodes having agents
-   * and check to see if any such host matches that specified by the
-   * default node nameserver argument. If it does, keep that
-   * nameserver. If it doesn't (or if there was no default node
-   * nameserver argument) then use the first host as the nameserver.
-   **/
-  private void setNameServerHostName() {
-    Properties defaultNodeArgs = experiment.getDefaultNodeArguments();
-    String oldNameServer = defaultNodeArgs.getProperty("org.cougaar.name.server");
-    String newNameServer = null;
-    String dfltNameServer = null;
-    String nameServerHost = null;
-    if (oldNameServer != null) {
-      int colon = oldNameServer.indexOf(':');
-      if (colon >= 0) {
-        nameServerHost = oldNameServer.substring(0, colon);
-      } else {
-        nameServerHost = oldNameServer;
-      }
-    }
-
-    HostComponent[] hosts = experiment.getHosts();
-  hostLoop:
-    for (int i = 0; i < hosts.length; i++) {
-      NodeComponent[] nodes = hosts[i].getNodes();
-      for (int j = 0; j < nodes.length; j++) {
-	AgentComponent[] agents = nodes[j].getAgents();
-	// skip nodes that have no agents
-	if (agents == null || agents.length == 0)
-	  continue;
-        String thisHost = hosts[i].getShortName();
-        if (thisHost.equals(nameServerHost)) {
-          break hostLoop;       // Use existing nameserver definition
-        }
-        if (dfltNameServer == null) { // First host is default
-          dfltNameServer = thisHost + ":" + CSMARTConsole.NAME_SERVER_PORTS;
-          if (oldNameServer == null) {
-            break hostLoop;     // Use dfltNameServer
-          }
-        }
-      }
-    }
-    if (newNameServer == null) newNameServer = dfltNameServer;
-
-    // set new server in all nodes
-    NodeComponent[] nodes = experiment.getNodes();
-    for (int i = 0; i < nodes.length; i++) {
-      NodeComponent node = nodes[i];
-      Properties arguments = node.getArguments();
-      // Insure no per-node override exists
-      arguments.remove("org.cougaar.name.server");
-    }
-    // Now install experiment-wide setting.
-    if (newNameServer != null) {
-      System.out.println("org.cougaar.name.server=" + newNameServer);
-      defaultNodeArgs.setProperty("org.cougaar.name.server", newNameServer);
-    }
   }
 
   private DefaultTreeModel createModel(final Experiment experiment, DefaultMutableTreeNode node, boolean askKids) {

@@ -1,11 +1,17 @@
-2001-11-27  Ray Tomlinson  <RTomlinson@bbn.com>
-
-	* ExperimentDB.java:
-	Add experiment name argument to deleteExperiment call.
+2001-12-05  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* CMT.java:
-	Add experiment name to deleteExperiment so that society components
-	created for the experiment can be deleted.
+	Fix bug 885
+	Remove code that tries to remove the society component when
+	deleting an experiment. This violates foreign key constraints
+	against the component_hierarchy and component_arg tables. Let the
+	assembly cleanup code take care of this.
+
+2001-11-30  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* CSMARTConsole.java:
+	Fix bug 853
+	Remove dead code involving nameserver settings.
 
 2001-11-20  Ray Tomlinson  <RTomlinson@bbn.com>
 

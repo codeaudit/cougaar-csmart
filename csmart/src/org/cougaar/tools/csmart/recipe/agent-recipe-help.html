@@ -32,6 +32,11 @@ this recipe in the Experiment Builder.<br>
 	  <td></td>
 	</tr>
 	<tr>
+	  <td><a href="#ORGASSET">Include Org Asset</a></td>
+	  <td>String</td>
+	  <td>True, False</td>
+	</tr>
+	<tr>
 	  <td><a href="#NOMEN">Nomenclature</a></td>
 	  <td>String</td>
 	  <td></td>
@@ -40,6 +45,11 @@ this recipe in the Experiment Builder.<br>
 	  <td><a href="#NUM_REL">Number of Relationships</a></td>
 	  <td>Integer</td>
 	  <td>0 - MAX</td>
+	</tr>
+	<tr>
+	  <td><a href="#PSPPARAM">PlanServer Parameter</a></td>
+	  <td>String</td>
+	  <td></td>
 	</tr>
 	<tr>
 	  <td><a href="#TYPE_ID">Type Identification</a></td>
@@ -72,6 +82,20 @@ A verbose nomenclature for this Organization.
 <a name="CLASS_NAME"><h3>Class Name</h3></a>
 The class for this Agent. The default is almost always correct.
 
+<a name="ITEMPG"><h3>Include Item IdentificationPG</h3></a>
+Specifies whether or not this agent includes an Item IdentificationPG.
+An ItemIdentificationPG is required for all agents that are not prototypes.
+
+<a name="ORGASSET"><h3>Include Org Asset</h3></a>
+Specifies whether or not this agent includes an org asset.
+If an Org asset is <i>True</i>, the agent will contain the following: <br>
+<ul>
+<li>org.cougaar.domain.mlm.plugin.organization.OrgDataPlugIn</li>
+<li>org.cougaar.domain.mlm.plugin.organization.OrgReportPlugIn</li>
+<li>ClusterPG</li>
+</ul>
+The items in the list above will <b>NOT</b> be included if the value is <i>False</i>
+
 <a name="NUM_REL"><h3>Number of Relationships</h3></a>
 The number of relationships which this Organization should have with
 other organizations. If you set this number to greater than 0 (and hit
@@ -87,10 +111,13 @@ relationships with Agents already added to other Experiments.
 <a name="ROLE"><h4>Role</h4></a>
 The role which this agent should have, relative to the other agent specified above.
 
+<a name="PSPParam"><h3>PlanServer Parameter</h3></a>
+Single Parameter passed to the Planserver in the form: filename=XXXX
+
 <a name="TYPE_ID"><h3>Type Identification</h3></a>
 The type identification for this agent.
 
 </body></html>
 
-<!-- Last Modified: $Date: 2001-11-29 00:44:25 $ -->
+<!-- Last Modified: $Date: 2001-12-10 21:07:16 $ -->
 <!-- By $Author: ahelsing $ -->

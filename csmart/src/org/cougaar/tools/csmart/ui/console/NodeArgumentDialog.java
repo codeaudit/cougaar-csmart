@@ -23,17 +23,20 @@ package org.cougaar.tools.csmart.ui.console;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.FileInputStream;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.DefaultTableModel;
-import java.util.Vector;
+import java.util.*;
 
 public class NodeArgumentDialog extends JDialog {
+  Properties props;
   JTable argTable;
-  DefaultTableModel nodeArgTableModel;
+  NodeArgumentTableModel model;
   JTextArea args;
+  int returnValue;
 
-  public NodeArgumentDialog(String title) {
+  public NodeArgumentDialog(String title, Properties props, boolean isLocal) {
     super((Frame)null, title, true); // display modal dialog
     Box nodeArgPanel = Box.createVerticalBox();
     JPanel argumentPanel = new JPanel();
@@ -50,10 +53,10 @@ public class NodeArgumentDialog extends JDialog {
             int rowIndex = argTable.getEditingRow();
             int colIndex = argTable.getEditingColumn();
             if (rowIndex != -1 && colIndex != -1)
-              argTable.getModel().setValueAt(((JTextField)c).getText(),
-                                             rowIndex, colIndex);
+              model.setValueAt(((JTextField)c).getText(), rowIndex, colIndex);
           } else
             System.out.println("Unexpected editor class: " + c.getClass());
+        returnValue = JOptionPane.OK_OPTION;
         setVisible(false);
       }
     });
@@ -61,6 +64,7 @@ public class NodeArgumentDialog extends JDialog {
     JButton cancelButton = new JButton("Cancel");
     cancelButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
+        returnValue = JOptionPane.CANCEL_OPTION;
         setVisible(false);
       }
     });
@@ -82,10 +86,7 @@ public class NodeArgumentDialog extends JDialog {
     JButton addButton = new JButton("Add Property");
     addButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        Vector newData = new Vector(2);
-        newData.add("");
-        newData.add("");
-        ((DefaultTableModel)argTable.getModel()).addRow(newData);
+        model.addRow("", "");
       }
     });
     tableButtonPanel.add(addButton);
@@ -94,10 +95,17 @@ public class NodeArgumentDialog extends JDialog {
       public void actionPerformed(ActionEvent e) {
         int i = argTable.getSelectedRow();
         if (i != -1)
-          ((DefaultTableModel)argTable.getModel()).removeRow(i);
+          model.removeRow(i);
       }
     });
     tableButtonPanel.add(deleteButton);
+    JButton fileButton = new JButton("Read From File");
+    fileButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        readPropertiesFromFile();
+      }
+    });
+    tableButtonPanel.add(fileButton);
     tablePanel.add(tableButtonPanel, BorderLayout.SOUTH);
 
     argumentPanel.setBorder(BorderFactory.createTitledBorder("Arguments"));
@@ -109,64 +117,110 @@ public class NodeArgumentDialog extends JDialog {
     nodeArgPanel.add(argumentPanel);
     nodeArgPanel.add(buttonPanel);
     getContentPane().add(nodeArgPanel);
+
+    addWindowListener(new WindowAdapter() {
+      public void windowClosing(WindowEvent e) {
+        returnValue = JOptionPane.CLOSED_OPTION;
+        NodeArgumentDialog.this.setVisible(false);
+      }
+    });
+
+    // initialize text area and table from properties
+    this.props = props;
+    String value = props.getProperty(CSMARTConsole.COMMAND_ARGUMENTS);
+    setArguments(value);
+    model = new NodeArgumentTableModel(props, isLocal);
+    argTable.setModel(model);
+
     pack();
   }
 
   /**
-   * Set the data to display in the table.
-   * The data argument is a vector of vectors; data.size() is the
-   * number of rows.
+   * Return a value indicating how the dialog was dismissed: one of
+   * JOptionPane.OK_OPTION, JOptionPane.CANCEL_OPTION, 
+   * JOptionPane.CLOSED_OPTION
    */
 
-  public void setData(Vector data, int nColumns) {
-    Vector columnNames = new Vector(nColumns);
-    columnNames.add("Name");
-    columnNames.add("Value");
-    if (nColumns > 2) columnNames.add("Global");
-    nodeArgTableModel = new DefaultTableModel(data, columnNames);
-    argTable.setModel(nodeArgTableModel);
+  public int getValue() {
+    return returnValue;
   }
 
-  public void setArguments(String arguments) {
+  /**
+   * Update the properties from the table.
+   * @return true if any modifications, false otherwise
+   */
+
+  public boolean updateProperties() {
+    boolean isModified = model.updateProperties();
+    String s = getArguments();
+    if (s != null && 
+        !s.equals(props.getProperty(CSMARTConsole.COMMAND_ARGUMENTS))) {
+      props.setProperty(CSMARTConsole.COMMAND_ARGUMENTS, s);
+      isModified = true;
+    }
+    return isModified;
+  }
+
+  /**
+   * Set the arguments displayed in the dialog.
+   */
+
+  private void setArguments(String arguments) {
     args.setText(arguments);
   }
 
   /**
-   * Return the data from the table.
-   * The return value is a vector of vectors; the size is the
-   * number of rows.
+   * Get the arguments displayed in the dialog.
    */
 
-  public Vector getData() {
-    return nodeArgTableModel.getDataVector();
-  }
-
-  public String getArguments() {
+  private String getArguments() {
     return args.getText();
   }
 
-  public static void main(String[] args) {
-    NodeArgumentDialog nad = new NodeArgumentDialog("Test");
-    Vector data = new Vector();
-    Vector row = new Vector();
-    row.add("Color");
-    row.add("Red");
-    data.add(row);
-    row = new Vector();
-    row.add("Number");
-    row.add("33");
-    data.add(row);
-    row = new Vector();
-    row.add("Day");
-    row.add("Friday");
-    data.add(row);
-    nad.setData(data, 2);
-    nad.setVisible(true);
-    Vector newData = nad.getData();
-    for (int i = 0; i < newData.size(); i++) {
-      row = (Vector)newData.get(i);
-      System.out.println(row.get(0) + ":" + row.get(1));
+  private void readPropertiesFromFile() {
+    String dirName = ".";
+    try {
+      dirName = System.getProperty("org.cougaar.install.path");
+    } catch (RuntimeException e) {
+      // just use default
     }
+    if (dirName == null)
+      dirName = ".";
+    JFileChooser chooser = new JFileChooser(dirName);
+    int result = chooser.showOpenDialog(this);
+    if (result != JFileChooser.APPROVE_OPTION)
+      return;
+    FileInputStream in = null;
+    Properties properties = new Properties();
+    try {
+      in = new FileInputStream(chooser.getSelectedFile());
+      properties.load(in);
+    } catch (Exception e) {
+      System.err.println("Exception reading properties file: " + e);
+      return;
+    }
+    // add all properties from the file, overwriting any existing property
+    Enumeration keys = properties.propertyNames();
+    while (keys.hasMoreElements()) {
+      String key = (String)keys.nextElement();
+      if (key.equals(CSMARTConsole.COMMAND_ARGUMENTS))
+        setArguments(properties.getProperty(key));
+      else
+        model.addRow(key, properties.getProperty(key));
+    }
+  }
+
+  public static void main(String[] args) {
+    Properties props = new Properties();
+    props.setProperty("Color", "Red");
+    props.setProperty("Number", "33");
+    props.setProperty("Day", "Friday");
+    NodeArgumentDialog nad = new NodeArgumentDialog("Test", props, true);
+    nad.setVisible(true);
+    if (nad.getValue() != JOptionPane.OK_OPTION)
+      return;
+    nad.updateProperties();
+    props.list(System.out);
   }
 
 }

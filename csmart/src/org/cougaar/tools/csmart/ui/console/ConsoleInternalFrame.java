@@ -525,7 +525,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
     JTextArea args = new JTextArea(5, 40);
     Properties props = node.getArguments();
     String commandArguments =
-      props.getProperty(HostConfigurationBuilder.COMMAND_ARGUMENTS);
+      props.getProperty(CSMARTConsole.COMMAND_ARGUMENTS);
     if (commandArguments == null)
       commandArguments = "";
     args.setText(commandArguments);

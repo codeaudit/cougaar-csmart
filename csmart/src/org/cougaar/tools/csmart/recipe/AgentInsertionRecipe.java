@@ -28,7 +28,7 @@ import java.util.Set;
 import java.util.Iterator;
 import java.util.Collection;
 import java.util.StringTokenizer;
-
+import java.util.HashSet;
 
 public class AgentInsertionRecipe extends ModifiableConfigurableComponent
   implements RecipeComponent, PropertiesListener, Serializable
@@ -36,6 +36,9 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
   private static final String DESCRIPTION_RESOURCE_NAME = "agent-insertion-recipe-description.html";
   private static final String BACKUP_DESCRIPTION = 
     "AgentInsertionRecipe provides a method for inserting new Agents into an experiment";
+
+  private static final String TRUE = "True";
+  private static final String FALSE = "False";
 
   private static final String PROP_NAME = "Agent Names";
   private static final String PROP_NAME_DFLT = "Agent";
@@ -69,6 +72,18 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
   private static final String PROP_ALTTYPEID_DFLT = "";
   private static final String PROP_ALTTYPEID_DESC = "Alternate Type Identification";
 
+  private static final String PROP_PSPPARAM = "PlanServer Parameter";
+  private static final String PROP_PSPPARAM_DFLT = "";
+  private static final String PROP_PSPPARAM_DESC = "Additional Value passed to PlanServer";
+
+  private static final String PROP_ORGASSET = "Include Org Asset";
+  private static final String PROP_ORGASSET_DFLT = TRUE;
+  private static final String PROP_ORGASSET_DESC = "Specifies if this agent should contain an Org Asset";
+
+  private static final String PROP_ITEMPG = "Include Item Identification PG";
+  private static final String PROP_ITEMPG_DFLT = TRUE;
+  private static final String PROP_ITEMPG_DESC = "Specifies if this agent should contain an Item Identification PG";
+
   private static final String PROP_ASSETCLASS = "Asset Class";
   private static final String PROP_ASSETCLASS_DFLT = "MilitaryOrganization";
   private static final String PROP_ASSETCLASS_DESC = "Asset class for this organization";
@@ -78,11 +93,13 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
   private Property propRelationCount;
   private Property[] propRelations = null;
   private Property[] propRoles = null;
-  //  private Property propUIC;
   private Property propType;
   private Property propNomenclature;
   private Property propAltTypeId;
   private Property propAssetClass;
+  private Property propPSPParameter;
+  private Property propOrgAsset;
+  private Property propItemPG;
 
   private boolean editable = true;
 
@@ -112,6 +129,20 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
 
     propAssetClass = addProperty(PROP_ASSETCLASS, PROP_ASSETCLASS_DFLT);
     propAssetClass.setToolTip(PROP_ASSETCLASS_DESC);
+
+    propPSPParameter = addProperty(PROP_PSPPARAM, PROP_PSPPARAM_DFLT);
+    propPSPParameter.setToolTip(PROP_PSPPARAM_DESC);
+
+    propOrgAsset = addProperty(PROP_ORGASSET, PROP_ORGASSET_DFLT);
+    propOrgAsset.setToolTip(PROP_ORGASSET_DESC);
+    HashSet boolSet = new HashSet();
+    boolSet.add(new StringRange(TRUE));
+    boolSet.add(new StringRange(FALSE));    
+    propOrgAsset.setAllowedValues(boolSet);
+
+    propItemPG = addProperty(PROP_ITEMPG, PROP_ITEMPG_DFLT);
+    propItemPG.setToolTip(PROP_ITEMPG_DESC);
+    propItemPG.setAllowedValues(boolSet);
 
     propRelationCount = addProperty(PROP_RELATIONCOUNT, PROP_RELATIONCOUNT_DFLT);
     propRelationCount.addPropertyListener(new ConfigurableComponentPropertyAdapter() {
@@ -215,7 +246,6 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
     for(int i=0; i < children.length; i++) {
       ComponentData child = children[i];
       if(child.getType() == ComponentData.AGENT) {
-        //System.out.println("Size: " + ((Collection)getDescendentsOfClass(InsertAgentComponent.class)).size());
         Iterator iter = ((Collection)getDescendentsOfClass(InsertAgentComponent.class)).iterator();
 
         while(iter.hasNext()) {
@@ -224,6 +254,7 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
             child.setClassName((String)propClassName.getValue());
             child.setOwner(this);            
             child.addParameter(agent.getShortName().toString());
+            child = addAssetData(child);
             agent.addComponentData(child);
           }
         }
@@ -236,6 +267,102 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
 
   public ComponentData modifyComponentData(ComponentData data, PopulateDb pdb) {
     return data;
+  }
+
+  private ComponentData addAssetData(ComponentData data) {
+    AgentAssetData assetData = new AgentAssetData((AgentComponentData)data);
+
+    System.out.println("Adding Asset Data");
+    assetData.setType(AgentAssetData.ORG);
+    assetData.setAssetClass(propAssetClass.getValue().toString());
+    assetData.setUniqueID("UTC/RTOrg");
+    if(propRelations != null ) {
+      for(int i=0; i < propRelations.length; i++) {        
+        RelationshipData rd = new RelationshipData();
+        String supported = (String)propRelations[i].getValue();
+        String role = (String)propRoles[i].getValue();
+        rd.setSupported(supported);
+        rd.setRole(role);
+        // Add the role to the asset as well.
+        assetData.addRole(role);
+        assetData.addRelationship(rd);
+      }
+    }
+    assetData.addPropertyGroup(createTypeIdentificationPG());
+
+    if ((propOrgAsset.getValue().toString().equals(TRUE))) {
+      assetData.addPropertyGroup(createClusterPG());
+    }
+
+    if ((propItemPG.getValue().toString().equals(TRUE))) {
+      assetData.addPropertyGroup(createItemIdentificationPG());
+    }
+
+    data.addAgentAssetData(assetData);
+      
+    return data;
+  }
+
+  private PropGroupData createClusterPG() {
+    PropGroupData pgd = new PropGroupData(PropGroupData.CLUSTER);
+
+    System.out.println("Creating ClusterPG");
+    
+    PGPropData pgData = new PGPropData();
+    pgData.setName("ClusterIdentifier");
+    pgData.setType("String");
+    pgData.setValue(this.getShortName());
+    pgd.addProperty(pgData);
+
+    return pgd;
+  }
+
+  private PropGroupData createTypeIdentificationPG() {
+    PropGroupData pgd = new PropGroupData(PropGroupData.TYPE_IDENTIFICATION);
+
+    System.out.println("Creating TypeIDPG");
+    
+    // Add Type Identification
+    PGPropData pgData = new PGPropData();
+    pgData.setName("TypeIdentification");
+    pgData.setType("String");
+    pgData.setValue(propType.getValue().toString());
+    pgd.addProperty(pgData);
+
+    // Add Nomenclature
+    pgData = new PGPropData();
+    pgData.setName("Nomenclature");
+    pgData.setType("String");
+    pgData.setValue(propNomenclature.getValue().toString());
+    pgd.addProperty(pgData);
+      
+    // Add AltTypeIdentification
+    pgData = new PGPropData();
+    pgData.setName("AlternateTypeIdentification");
+    pgData.setType("String");
+    pgData.setValue(propAltTypeId.getValue().toString());
+    pgd.addProperty(pgData);
+
+    return pgd;
+  }
+
+  private PropGroupData createItemIdentificationPG() {
+    PropGroupData pgd = new PropGroupData(PropGroupData.ITEM_IDENTIFICATION);
+
+    System.out.println("Creating itemIdentificationPG");
+    PGPropData pgData = new PGPropData();
+    pgData.setName("ItemIdentification");
+    pgData.setType("String");
+    pgData.setValue(this.getShortName());
+    pgd.addProperty(pgData);
+
+    pgData = new PGPropData();
+    pgData.setName("Nomenclature");
+    pgData.setType("String");
+    pgData.setValue(this.getShortName());
+    pgd.addProperty(pgData);
+
+    return pgd;
   }
 
   ///////////////////////////////////////////
@@ -324,28 +451,31 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
         plugin.setParent(data);
         plugin.setClassName(pluginClass_name);
         plugin.setOwner(this);
+        plugin.addParameter(propPSPParameter.getValue().toString());
         data.addChild(plugin);
       
-        // Add the OrgRTData plugin.
-        plugin = new GenericComponentData();
-        plugin.setType(ComponentData.PLUGIN);
-        plugin.setName("org.cougaar.domain.mlm.plugin.organization.OrgDataPlugIn");
-        plugin.setParent(data);
-        plugin.setClassName("org.cougaar.domain.mlm.plugin.organization.OrgDataPlugIn");
-        plugin.setOwner(this);
-        data.addChild(plugin);
+        if ((propOrgAsset.getValue().toString().equals(TRUE))) {
+          
+          // Add the OrgRTData plugin.
+          plugin = new GenericComponentData();
+          plugin.setType(ComponentData.PLUGIN);
+          plugin.setName("org.cougaar.domain.mlm.plugin.organization.OrgDataPlugIn");
+          plugin.setParent(data);
+          plugin.setClassName("org.cougaar.domain.mlm.plugin.organization.OrgDataPlugIn");
+          plugin.setOwner(this);
+          data.addChild(plugin);
 
-        // Add the OrgReport plugin.
-        plugin = new GenericComponentData();
-        plugin.setType(ComponentData.PLUGIN);
-        plugin.setName("org.cougaar.domain.mlm.plugin.organization.OrgReportPlugIn");
-        plugin.setParent(data);
-        plugin.setClassName("org.cougaar.domain.mlm.plugin.organization.OrgReportPlugIn");
-        plugin.setOwner(this);
-        data.addChild(plugin);
+          // Add the OrgReport plugin.
+          plugin = new GenericComponentData();
+          plugin.setType(ComponentData.PLUGIN);
+          plugin.setName("org.cougaar.domain.mlm.plugin.organization.OrgReportPlugIn");
+          plugin.setParent(data);
+          plugin.setClassName("org.cougaar.domain.mlm.plugin.organization.OrgReportPlugIn");
+          plugin.setOwner(this);
+          data.addChild(plugin);
+        }
+        //        data = addAssetData(data);
 
-        data = addAssetData(data);
-//         System.out.println("Inserted " + plugin + " into " + data.getName());
       }
       else if (data.childCount() > 0) {
         // for each child, call this same method.
@@ -361,91 +491,95 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
       return data;
     }
 
-    private ComponentData addAssetData(ComponentData data) {
-      AgentAssetData assetData = new AgentAssetData((AgentComponentData)data);
+//     private ComponentData addAssetData(ComponentData data) {
+//       AgentAssetData assetData = new AgentAssetData((AgentComponentData)data);
 
-      assetData.setType(AgentAssetData.ORG);
-      assetData.setAssetClass(propAssetClass.getValue().toString());
-      assetData.setUniqueID("UTC/RTOrg");
-      if(propRelations != null ) {
-        for(int i=0; i < propRelations.length; i++) {        
-          RelationshipData rd = new RelationshipData();
-          String supported = (String)propRelations[i].getValue();
-          String role = (String)propRoles[i].getValue();
-          rd.setSupported(supported);
-          rd.setRole(role);
-          // Add the role to the asset as well.
-          assetData.addRole(role);
-          assetData.addRelationship(rd);
-        }
-      }
+//       assetData.setType(AgentAssetData.ORG);
+//       assetData.setAssetClass(propAssetClass.getValue().toString());
+//       assetData.setUniqueID("UTC/RTOrg");
+//       if(propRelations != null ) {
+//         for(int i=0; i < propRelations.length; i++) {        
+//           RelationshipData rd = new RelationshipData();
+//           String supported = (String)propRelations[i].getValue();
+//           String role = (String)propRoles[i].getValue();
+//           rd.setSupported(supported);
+//           rd.setRole(role);
+//           // Add the role to the asset as well.
+//           assetData.addRole(role);
+//           assetData.addRelationship(rd);
+//         }
+//       }
+//       assetData.addPropertyGroup(createTypeIdentificationPG());
 
-      // Add Property Group to the asset.
-      assetData.addPropertyGroup(createTypeIdentificationPG());
-      assetData.addPropertyGroup(createClusterPG());
-      assetData.addPropertyGroup(createItemIdentificationPG());
+//       if ((propOrgAsset.getValue().toString().equals(TRUE))) {
+//         assetData.addPropertyGroup(createClusterPG());
+//       }
 
-      data.addAgentAssetData(assetData);
+//       if ((propItemPG.getValue().toString().equals(TRUE))) {
+//         assetData.addPropertyGroup(createItemIdentificationPG());
+//       }
 
-      return data;
-    }
-
-    private PropGroupData createClusterPG() {
-      PropGroupData pgd = new PropGroupData(PropGroupData.CLUSTER);
-
-      PGPropData pgData = new PGPropData();
-      pgData.setName("ClusterIdentifier");
-      pgData.setType("String");
-      pgData.setValue(getShortName());
-      pgd.addProperty(pgData);
-
-      return pgd;
-    }
-
-    private PropGroupData createTypeIdentificationPG() {
-      PropGroupData pgd = new PropGroupData(PropGroupData.TYPE_IDENTIFICATION);
-
-      // Add Type Identification
-      PGPropData pgData = new PGPropData();
-      pgData.setName("TypeIdentification");
-      pgData.setType("String");
-      pgData.setValue(propType.getValue().toString());
-      pgd.addProperty(pgData);
-
-      // Add Nomenclature
-      pgData = new PGPropData();
-      pgData.setName("Nomenclature");
-      pgData.setType("String");
-      pgData.setValue(propNomenclature.getValue().toString());
-      pgd.addProperty(pgData);
+//       data.addAgentAssetData(assetData);
       
-      // Add AltTypeIdentification
-      pgData = new PGPropData();
-      pgData.setName("AlternateTypeIdentification");
-      pgData.setType("String");
-      pgData.setValue(propAltTypeId.getValue().toString());
-      pgd.addProperty(pgData);
+//       return data;
+//     }
 
-      return pgd;
-    }
+//     private PropGroupData createClusterPG() {
+//       PropGroupData pgd = new PropGroupData(PropGroupData.CLUSTER);
 
-    private PropGroupData createItemIdentificationPG() {
-      PropGroupData pgd = new PropGroupData(PropGroupData.ITEM_IDENTIFICATION);
+//       PGPropData pgData = new PGPropData();
+//       pgData.setName("ClusterIdentifier");
+//       pgData.setType("String");
+//       pgData.setValue(this.getShortName());
+//       pgd.addProperty(pgData);
 
-      PGPropData pgData = new PGPropData();
-      pgData.setName("ItemIdentification");
-      pgData.setType("String");
-      pgData.setValue(getShortName());
-      pgd.addProperty(pgData);
+//       return pgd;
+//     }
 
-      pgData = new PGPropData();
-      pgData.setName("Nomenclature");
-      pgData.setType("String");
-      pgData.setValue(getShortName());
-      pgd.addProperty(pgData);
+//     private PropGroupData createTypeIdentificationPG() {
+//       PropGroupData pgd = new PropGroupData(PropGroupData.TYPE_IDENTIFICATION);
 
-      return pgd;
-    }
+//       // Add Type Identification
+//       PGPropData pgData = new PGPropData();
+//       pgData.setName("TypeIdentification");
+//       pgData.setType("String");
+//       pgData.setValue(propType.getValue().toString());
+//       pgd.addProperty(pgData);
+
+//       // Add Nomenclature
+//       pgData = new PGPropData();
+//       pgData.setName("Nomenclature");
+//       pgData.setType("String");
+//       pgData.setValue(propNomenclature.getValue().toString());
+//       pgd.addProperty(pgData);
+      
+//       // Add AltTypeIdentification
+//       pgData = new PGPropData();
+//       pgData.setName("AlternateTypeIdentification");
+//       pgData.setType("String");
+//       pgData.setValue(propAltTypeId.getValue().toString());
+//       pgd.addProperty(pgData);
+
+//       return pgd;
+//     }
+
+//     private PropGroupData createItemIdentificationPG() {
+//       PropGroupData pgd = new PropGroupData(PropGroupData.ITEM_IDENTIFICATION);
+
+//       PGPropData pgData = new PGPropData();
+//       pgData.setName("ItemIdentification");
+//       pgData.setType("String");
+//       pgData.setValue(this.getShortName());
+//       pgd.addProperty(pgData);
+
+//       pgData = new PGPropData();
+//       pgData.setName("Nomenclature");
+//       pgData.setType("String");
+//       pgData.setValue(this.getShortName());
+//       pgd.addProperty(pgData);
+
+//       return pgd;
+//     }
 
     public boolean equals(Object o) {
       if (o instanceof InsertAgentComponent) {

@@ -670,6 +670,10 @@ public abstract class ConfigurableComponent
     return modifyComponentData(data);
   }
 
+  public boolean componentWasRemoved() {
+    return false;
+  }
+
   public boolean hasUnboundProperties() {
     for (Iterator i = getPropertyNames(); i.hasNext(); ) {
       Property prop = (Property) getProperty((CompositeName) i.next());

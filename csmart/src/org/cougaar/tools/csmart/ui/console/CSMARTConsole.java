@@ -57,6 +57,7 @@ public class CSMARTConsole extends JFrame {
   // org.cougaar.control.port; port for contacting applications server
   public static final int APP_SERVER_DEFAULT_PORT = 8484;
   public static final String NAME_SERVER_PORTS = "8888:5555";
+  public static final String COMMAND_ARGUMENTS = "Command$Arguments";
   private static final String[] emptyStringArray = {};
   // number of characters displayed in the node output window
   private static final int DEFAULT_VIEW_SIZE = 50000;
@@ -691,7 +692,10 @@ public class CSMARTConsole extends JFrame {
     }
 
     // query user for results directory before running the first time
-    getResultDir(); 
+    if (getResultDir() == null) {
+      runButton.setSelected(false);
+      return; // abort running if user doesn't specify results directory
+    }
     if (nodesToRun.length != 0) 
       runTrial();
   }
@@ -1094,7 +1098,7 @@ public class CSMARTConsole extends JFrame {
     Properties props = nc.getArguments();
     for (Enumeration e = props.propertyNames(); e.hasMoreElements(); ) {
       String pname = (String) e.nextElement();
-      if (pname.equals(HostConfigurationBuilder.COMMAND_ARGUMENTS)) continue;
+      if (pname.equals(COMMAND_ARGUMENTS)) continue;
       result.put(pname, props.getProperty(pname));
     }
     return result;
@@ -1103,7 +1107,7 @@ public class CSMARTConsole extends JFrame {
   private String[] getNodeArguments(NodeComponent nc) {
     Properties props = nc.getArguments();
     String commandArguments =
-      props.getProperty(HostConfigurationBuilder.COMMAND_ARGUMENTS);
+      props.getProperty(COMMAND_ARGUMENTS);
     if (commandArguments == null) return emptyStringArray;
     StringTokenizer tokens = new StringTokenizer(commandArguments.trim(), "\n");
     String[] result = new String[tokens.countTokens()];

@@ -40,21 +40,21 @@ import org.cougaar.tools.csmart.societies.database.DBUtils;
  * value.
  **/
 public class AgentQueryProperty extends ConfigurableComponentProperty {
+
+    private static Set availableQueries = null;
+
     public AgentQueryProperty(ConfigurableComponent c, String name, Object value) {
         super(c, name, value);
     }
 
     public Set getAllowedValues() {
-        return getAvailableQueries();
+      //      return getAvailableQueries();
+      return null;
     }
 
-//      public void setValue(Object newValue) {
-//          if (!getAllowedValues().contains(newValue))
-//              throw new IllegalArgumentException("Unknown query: " + newValue);
-//          super.setValue(newValue);
-//      }
-
-    private static Set availableQueries = null;
+    public void setValue(Object newValue) {
+      super.setValue(newValue);
+    }
 
   private static Set getAvailableQueries() {
     String query = null;

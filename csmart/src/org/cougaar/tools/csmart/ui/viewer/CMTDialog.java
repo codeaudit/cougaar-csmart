@@ -287,8 +287,10 @@ public class CMTDialog extends JDialog {
 //      if (result == JOptionPane.NO_OPTION)
 //        return false;
     // if experiment name is in the database, then ask user for new name
+    // or allow user to re-use existing name
     if (ExperimentDB.isExperimentNameInDatabase(experimentName)) {
-      String name = organizer.getUniqueExperimentName(experimentName);
+      String name = organizer.getUniqueExperimentName(experimentName,
+                                                      true);
       if (name == null)
         return false;
       experimentName = name;
