@@ -58,7 +58,7 @@ REM Then double the backslashes
 %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\sed.exe "s/\\/\\\\\\\\/g" cip.txt > script.txt
 
 REM then do the real substitution
-%COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\sed.exe -f script.txt %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\dump_db.sql > dump_mysql_db_new.sql
+%COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\sed.exe -f script.txt %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\dump_db.sql > dump_mysql_db_new.sql
 
 DEL cip.txt
 DEL script.txt

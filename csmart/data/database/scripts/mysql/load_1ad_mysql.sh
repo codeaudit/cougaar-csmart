@@ -28,7 +28,7 @@
 # Cougaar Install Path must be set
 
 if [ "x$3" = "x" ]; then
-  echo "Usage: load_1ad_mysql.sh [Config DB Username] [Password] [MySQL Config DB database name] "
+  echo "Usage: load_erstudio_mysql.sh [Config DB Username] [Password] [MySQL Config DB database name] "
   exit
 fi
 
@@ -38,12 +38,19 @@ if [ "x$COUGAAR_INSTALL_PATH" = "x" ] ; then
   exit
 fi
 
+mysql -u$1 -p$2 $3 < $COUGAAR_INSTALL_PATH/csmart/data/database/scripts/mysql/sql/drop_v4_v6.sql
+echo "Dropping indexes from database tables."
+mysql -u$1 -p$2 $3 < $COUGAAR_INSTALL_PATH/csmart/data/database/scripts/mysql/sql/csmart-db.drop-mysql-indexes.sql
+echo "Dropping tables from database."
+mysql -u$1 -p$2 $3 < $COUGAAR_INSTALL_PATH/csmart/data/database/scripts/mysql/sql/csmart-db.drop-mysql-tables.sql
+echo "Creating tables in database."
+mysql -u$1 -p$2 $3 < $COUGAAR_INSTALL_PATH/csmart/data/database/scripts/mysql/sql/csmart-db.create-mysql-tables.sql
 
 #Change potential backslashes in COUGAAR_INSTALL_PATH to forward slashes
 echo $COUGAAR_INSTALL_PATH | tr '\\' '/' > newcip.txt
 
 #Replace variable in sql script with CIP
-sed s/:cip/$(cat newcip.txt | sed 's/\//\\\//g')/ $COUGAAR_INSTALL_PATH/csmart/data/database/scripts/mysql/load_db.sql > load_mysql_db_new.sql
+sed s/:cip/$(cat newcip.txt | sed 's/\//\\\//g')/ $COUGAAR_INSTALL_PATH/csmart/data/database/scripts/mysql/sql/csmart-db.load-mysql-tables.sql > load_mysql_db_new.sql
 rm newcip.txt
 
 if [ ! -e "$COUGAAR_INSTALL_PATH/csmart/data/database/scripts/mysql/sedscr.sh" ]; then
@@ -56,6 +63,8 @@ fi
 
 echo "Loading '.csv' files to database."
 mysql -u$1 -p$2 $3 < load_mysql_db_new.sql
+echo "Creating indexes in database tables."
+mysql -u$1 -p$2 $3 < $COUGAAR_INSTALL_PATH/csmart/data/database/scripts/mysql/sql/csmart-db.create-mysql-indexes.sql
 
 rm load_mysql_db_new.sql
 rm $COUGAAR_INSTALL_PATH/csmart/data/database/csv/*.tmp

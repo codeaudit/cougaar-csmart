@@ -5,8 +5,10 @@ DROP TABLE IF EXISTS v4_lib_machine;
 DROP TABLE IF EXISTS v4_lib_oplan_agent_attr_ref;
 DROP TABLE IF EXISTS v4_lib_optempo_ref;
 DROP TABLE IF EXISTS v6_cfw_org_group_og_member;
+DROP TABLE IF EXISTS v6_tpfdd;
 DROP TABLE IF EXISTS v6_oplan_activity;
 DROP TABLE IF EXISTS v6_oplan_loc;
+
 ################################################################
 
 #
