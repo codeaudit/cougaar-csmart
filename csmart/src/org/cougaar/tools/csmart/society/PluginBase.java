@@ -21,6 +21,7 @@
 package org.cougaar.tools.csmart.society;
 
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyAlias;
@@ -69,17 +70,50 @@ public class PluginBase
    * @return a <code>ComponentData</code> value
    */
   public ComponentData addComponentData(ComponentData data) {
-    data.setClassName(getPluginClassName());
+    // Warning: This assumes it has been handed the component in
+    // which to add itself
+    if (data.getType() != ComponentData.AGENT && data.getType() != ComponentData.NODE) {
+      if (log.isErrorEnabled()) {
+	log.error("Asked to add to non Agent/Node: " + data);
+      }
+      return data;
+    }
+
+    // Create a new componentdata
+    // set the type, etc appropriately
+    // set self as the owner
+    // set data as the parent
+    // add self to data
+    ComponentData self = new GenericComponentData();
+    self.setType(ComponentData.PLUGIN);
+    self.setOwner(this);
+    self.setParent(data);
+
+    self.setClassName(getPluginClassName());
     for(int i=0; i < nParameters; i++) {
-      data.addParameter(getProperty(PROP_PARAM + i).getValue());
+      self.addParameter(getProperty(PROP_PARAM + i).getValue());
     }
 
-    if(nParameters > 0) {
-      data.setName(getPluginClassName()+"|"+getProperty(PROP_PARAM+0).getValue());
-    } else {
-      data.setName(getPluginClassName());
+    // Figure out the component name, making it unique
+    ComponentData[] children = data.getChildren();
+    String cname = data.getName() + "|" + getPluginClassName();
+    boolean addedparam = false;
+    for (int i = 0; i < children.length; i++) {
+      ComponentData kid = children[i];
+      if (kid.getName().equals(cname)) {
+	// OK, must at least add a paramter if it has one
+	if (nParameters > 0 && ! addedparam) {
+	    cname = cname + "|" + getProperty(PROP_PARAM+0).getValue();
+	    addedparam = true;
+	} else {
+	  // OK, no params. Add a number? Maybe the others do have a param?
+	  cname = cname + children.length;
+	}
+      }
     }
+    self.setName(cname);
 
+    data.addChildDefaultLoc(self);
     return data;
   }
 
