@@ -73,6 +73,9 @@ public class RelationshipData implements Serializable {
    * @param type of relationship
    */
   public void setType(String type) {
+    if (type == null) 
+      throw new IllegalArgumentException("Attempt to set Type to null for RelationshipData: " + this);
+
     this.type = type;
   }
 
