@@ -490,6 +490,39 @@ public class PDbBase {
     }
   }
 
+  /**
+   * Store all the map values in the database.
+   *
+   * @param rc RecipeComponent to store values
+   * @param targets Values to store
+   * @return a <code>boolean</code> value
+   */
+  public static void saveTargetOverrides(RecipeComponent rc, Map targets) throws SQLException, IOException {
+    PDbBase pdb = new PDbBase();
+
+    pdb.saveTargets(rc, targets);
+  }
+
+  private void saveTargets(RecipeComponent rc, Map targets) throws SQLException {
+
+    String[] recipeIdAndClass = getRecipeIdAndClass(rc.getRecipeName());
+
+    substitutions.put(":recipe_id:", recipeIdAndClass[0]);
+    Statement stmt = getStatement();
+
+    Iterator keys = targets.keySet().iterator();
+    int index = 0;
+    while(keys.hasNext()) {
+      Object key = keys.next();
+      Object value = (Object)targets.get(key);
+      substitutions.put(":arg_name:", (String)key);
+      substitutions.put(":arg_value:", (String)value);
+      substitutions.put(":arg_order:", String.valueOf(index++));
+      executeUpdate(dbp.getQuery("insertLibRecipeProp", substitutions));
+    }
+    stmt.close();
+  }
+
   private void reallyChangeRecipeName(String oldName, String newName) throws SQLException, IOException {
     substitutions.put(":old_name:", oldName);
     substitutions.put(":new_name:", newName);
