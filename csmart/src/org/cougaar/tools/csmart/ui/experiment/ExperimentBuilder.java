@@ -375,8 +375,8 @@ public class ExperimentBuilder extends JFrame {
     // get unique name in both database and CSMART or
     // reuse existing name
     if (ExperimentDB.isExperimentNameInDatabase(experiment.getShortName())) {
-      String name = csmart.getUniqueExperimentName(experiment.getShortName(),
-                                                   true);
+      String name = 
+        CSMART.getOrganizer().getUniqueExperimentName(experiment.getShortName(), true);
       if (name == null)
         return;
       experiment.setName(name);
