@@ -45,7 +45,8 @@ public class CSMARTMetrics extends JPanel {
 
   String[] seriesLabels = {"Completed Tasks", "Unallocated", "Low Confidence Result"};
 
-  private static final String PSP_METRICS = "PSP_Metrics.PSP";
+  //  private static final String PSP_METRICS = "PSP_Metrics.PSP";
+  private static final String PSP_METRICS = "CSMART_MetricsServlet";
 
   Color seriesColors[] = {
     new Color(0x0a, 0x64, 0x0a), // Dark Green
@@ -212,7 +213,7 @@ public class CSMARTMetrics extends JPanel {
   }
 
   public void refresh() {
-    Collection objectsFromPSP = CSMARTUL.getObjectsFromPSP(PSP_METRICS);
+    Collection objectsFromPSP = CSMARTUL.getObjectsFromServlet(PSP_METRICS);
     if (objectsFromPSP == null)
       return;
     System.out.println("Received metrics: " + objectsFromPSP.size());
