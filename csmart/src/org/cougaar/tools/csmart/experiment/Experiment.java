@@ -1717,6 +1717,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   }
 
   public void writeContents(String filename, OutputStream out) throws Exception {
+    createConfigWriter();
     configWriter.writeFile(filename, out);
   }
 
@@ -1729,7 +1730,9 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    */
 
   private void createConfigWriter() {
-    configWriter = new LeafOnlyConfigWriter(getSocietyComponentData());
+    if(configWriter == null) {
+      configWriter = new LeafOnlyConfigWriter(getSocietyComponentData());
+    }
   }
 
 
