@@ -1,9 +1,9 @@
 CSMART Release Notes
 
 Release 10.4:
-This release includes a major reworking of the Console, new 
-option to run the console stand-alone from XML files, and a
-new XML society viewing tool. Additionally,
+This release includes a major reworking of the Console, and a new 
+option to run the console stand-alone from XML files.
+
 UltraLog specific configuration information has been removed. CSMART
 no longer comes with the so-called 1AD societies by default. Also,
 refconfigdb.zip has been replaced by CSV files and a load script (load_ref_data.sh).
@@ -14,40 +14,6 @@ The console rework included:
   also Model and View.
 - Fixed buttons to prevent unknown button states.
 - The complete refactoring fixed bugs: 1946, 2640, 1626, 1639, 2321, 1637.
-
-
-- Added a new tool, Viewer, (under ui/organization) for viewing and validating
-  XML based societies (description follows).
-
-The Viewer tool (ui.organization.Viewer) supports selecting agents to
-include in a society.  After selecting the appropriate agents, the user
-typically saves the society to an XML file, then applies ruby rules to the
-society in order to produce a runnable society.  This tool is intended as
-an aid in composing and validating societies that will be composed from
-CSV or XML files and ruby rules.
-
-The Viewer tool can read CSV or XML files (using the commands on the File
-menu).  These files describe agents and their facets (i.e. roles,
-echelons, superiors, etc.).  The Viewer tool displays the
-agents in a tree.  If the agent descriptions were read from a CSV file,
-then the user can select or deselect agents to include in the society by
-right-clicking on the agent name. (Agent descriptions read from XML files
-are not modifiable.)  Deselected agents are displayed in gray.  When an
-agent is deselected, neither it or its subordinates are included in the
-society.
-
-The Viewer tool can also be used to Validate supply chains.  Select the
-Validate command from the File menu and the Viewer will display a dialog
-that shows supporting relationships for all the selected agents, and any
-supporting relationships that are not filled.  The Validate algorithm
-mirrors the Service Discovery done in a running society; hence, this is
-a way to verify that Service Discovery should find necessary providers
-when the society is run.
-
-After selecting a set of agents, the Viewer tool can write the results to
-either a CSV file or an XML file (using the commands on the File menu).
-If the results are written to an XML file, then that file can be used
-as input to the ruby rules to produce a runnable society.
 
 
 More details on the console rework:
