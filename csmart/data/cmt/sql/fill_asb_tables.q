@@ -5,7 +5,7 @@ password=${org.cougaar.configuration.password}
 fillAgentV4_LIB_COMPONENT.eventual=
 insert into V4_LIB_COMPONENT (COMPONENT_LIB_ID, COMPONENT_TYPE, COMPONENT_CLASS, INSERTION_POINT, DESCRIPTION) \
 select ORG_ID, 'agent',
-'org.cougaar.core.cluster.ClusterImpl','Node.AgentManager.Agent', org_name \
+'org.cougaar.core.agent.ClusterImpl','Node.AgentManager.Agent', org_name \
 from v7_lib_organization org,V4_ASB_AGENT_PG_ATTR aapg \
 where org.org_id=aapg.component_alib_id \
 and PG_ATTRIBUTE_LIB_ID ='TypeIdentificationPG|Nomenclature'
@@ -13,7 +13,7 @@ and PG_ATTRIBUTE_LIB_ID ='TypeIdentificationPG|Nomenclature'
 
 fillAgentV4_LIB_COMPONENT=
 insert into V4_LIB_COMPONENT (COMPONENT_LIB_ID, COMPONENT_TYPE, COMPONENT_CLASS, INSERTION_POINT, DESCRIPTION) \
-select ORG_ID, 'agent', 'org.cougaar.core.cluster.ClusterImpl','Node.AgentManager.Agent', org_name \
+select ORG_ID, 'agent', 'org.cougaar.core.agent.ClusterImpl','Node.AgentManager.Agent', org_name \
 from v7_lib_organization org
 
 fillPluginV4_LIB_COMPONENT=
