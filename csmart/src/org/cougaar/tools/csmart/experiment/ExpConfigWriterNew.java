@@ -18,7 +18,7 @@
  * PERFORMANCE OF THE COUGAAR SOFTWARE.
  * </copyright>
  */
-package org.cougaar.tools.csmart.ui.experiment;
+package org.cougaar.tools.csmart.experiment;
 
 import java.io.IOException;
 import java.io.File;

@@ -19,7 +19,7 @@
  * </copyright>
  */
 
-package org.cougaar.tools.csmart.ui.experiment;
+package org.cougaar.tools.csmart.experiment;
 
 import java.io.Serializable;
 import java.net.URL;

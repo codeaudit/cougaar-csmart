@@ -19,7 +19,7 @@
  * </copyright>
  */
 
-package org.cougaar.tools.csmart.ui.experiment;
+package org.cougaar.tools.csmart.experiment;
 
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
