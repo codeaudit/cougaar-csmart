@@ -74,6 +74,15 @@ public class Analyzer extends JFrame implements ActionListener {
    * @param csmart Handle to CSMART
    * @param experiment Handle to the Experiment
    */
+  public Analyzer(CSMART csmart) {
+    this(csmart, null);
+  }
+
+  /**
+   * Display a csv file in excel.
+   * @param csmart Handle to CSMART
+   * @param experiment Handle to the Experiment
+   */
   public Analyzer(CSMART csmart, Experiment experiment) {
     createLogger();
     this.csmart = csmart;
@@ -137,20 +146,27 @@ public class Analyzer extends JFrame implements ActionListener {
 
   /**
    * Display file chooser on metrics directory specified by experiment
-   * and run excel on file chosen by user.
+   * and run excel on file chosen by user, or if no experiment,
+   * then display file chooser, then use default results directory.
    */
 
   private void showExcelFile() {
-    File resultsDir = experiment.getResultDirectory();
+    File resultsDir = null;
+    if (experiment == null)
+      resultsDir = csmart.getResultDir();
+    else
+      resultsDir = experiment.getResultDirectory();
     if (resultsDir == null) {
         JOptionPane.showMessageDialog(this, "No Results (Metrics) Directory for Experiment",
   				    "No Results Directory", 
   				    JOptionPane.WARNING_MESSAGE);
         return;
     }
-    resultsDir = new File(resultsDir, experiment.getExperimentName());
     JFileChooser fileChooser = new JFileChooser(resultsDir);
-    fileChooser.setFileFilter(new MyFileFilter(experiment));
+    if (experiment != null) {
+      resultsDir = new File(resultsDir, experiment.getExperimentName());
+      fileChooser.setFileFilter(new MyFileFilter(experiment));
+    }
     int result = fileChooser.showOpenDialog(this);
     if (result != JFileChooser.APPROVE_OPTION) 
       return;
