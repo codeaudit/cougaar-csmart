@@ -99,8 +99,16 @@ org.cougaar.core.society.InitializerServiceException: java.sql.SQLException: Gen
 	at org.cougaar.core.society.DBInitializerServiceProvider$InitializerServiceImpl.translateAttributeValue(DBInitializerServiceProvider.java:485)
 
 - If on start you get an error:
-   Table cougaar.V4_EXPT_EXPERIMENT doesn't exist on Linux, then you do not have the lower_case_table_names variable set to 1.  Check with % mysqladmin variables
-Or, you do not have a current MySQL Server (3.23.45 or greater)
+   Table cougaar.V4_EXPT_EXPERIMENT doesn't exist on Unix, then you
+   do not have the lower_case_table_names variable set to 1.  Check
+   with
+   % mysqladmin variables
+   If you do not have it set, edit /etc/my.cnf to include the line:
+   set-variable   =   lower_case_table_names=1
+   and restart your server, as per the Install instructions.
+   
+An alternate cause, is that you do not have a current MySQL Server
+(3.23.45 or greater for Unix)
 
 Running CSMART
 - Ensure that csmart, planserver, server, grappa, jcchart, xerces,
