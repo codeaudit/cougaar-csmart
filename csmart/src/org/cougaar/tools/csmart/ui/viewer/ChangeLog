@@ -1,11 +1,14 @@
-2001-11-27  Ray Tomlinson  <RTomlinson@bbn.com>
+2001-11-29  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* Organizer.java:
-	Add experiment name argument to deleteExperiment.
-	Restore the properties of Host and Node components from the
-	database.
-	Change the getHosts query to only retrieve hosts that are part of
-	the experiment instead of all the hosts in the database.
+	Fix bug 844
+	Create a ConflictHandler and use when calling saveToDb.
+
+	* GUIUtils.java:
+	Fix bug 844
+	Create ConflictHandler implementation using
+	JOptionPane.showOptionDialog to be used by Organizer and
+	ExperimentBuilder when saving an experiment to the database.
 
 2001-11-19  Ray Tomlinson  <RTomlinson@bbn.com>
 

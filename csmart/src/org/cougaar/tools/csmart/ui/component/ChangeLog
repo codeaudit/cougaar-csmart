@@ -1,3 +1,20 @@
+2001-11-29  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* PopulateDb.java:
+	Fix bug 844
+	Compare the component data against what is in the database and
+	there is a difference, let the user choose whether to overwrite
+	the component data or not. This permits recipes to be revised such
+	that lib and alib components need to be altered, but guards
+	against unintentional modifications of the database.
+	Make sure that none of the data being written for components is
+	null.
+	Add ConflictHandler interface so give an opportunity to the caller
+	for deciding how to handle conflicts between existing data in the
+	database and data to written for an experiment. The handler can
+	use a GUI to get the answer. This approach avoids putting GUI
+	components in the database manipulation code.
+
 2001-11-28  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* PopulateDb.java:

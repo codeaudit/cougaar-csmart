@@ -1,3 +1,13 @@
+2001-11-29  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ExperimentBuilder.java:
+	Fix bug 844
+	Create a ConflictHandler and use when calling saveToDb.
+
+	* Experiment.java:
+	Fix bug 844
+	Pass through the Conflict handler in saveToDb.
+
 2001-11-28  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* Experiment.java:
