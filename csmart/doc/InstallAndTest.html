@@ -438,9 +438,9 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
     <a href="http://www.cougaar.org">Cougaar</a>
     finds the appropriate file.</li><p>
 
-  <li>If you plan to run CSMART with metrics and use the Inventory Manager,
-    which is typical, you must modify "configs/common/LDMDomains.ini"
-    to include the CSMART domain.  Append this line to the end
+  <li>If you plan to run CSMART with metrics (BasicMetric CSMART recipe),
+    which is common, you must modify "configs/common/LDMDomains.ini"
+    to include the CSMART domain (otherwise the CSMART domain is not required).  Append this line to the end
     of the file:
        <pre>
       csmart=org.cougaar.tools.csmart.runtime.ldm.CSMARTDomain
@@ -780,7 +780,7 @@ installation using
     <ol>
     <li>Select "Default Workspace". This is where experiments and societies are stored.</li><p>
 
-    <li>Right-click, select "New Experiment", and then, "From File".</li><p>
+    <li>Right-click, select "New Experiment", and then, "From Database".</li><p>
 
     <li>Select an experiment, "TINY-1AD-TRANS" is a simple place to start.   Then a UI to select "Threads &amp; Groups" will popup.</li><p>
 
