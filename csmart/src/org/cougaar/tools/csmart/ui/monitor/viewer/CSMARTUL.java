@@ -387,10 +387,10 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       else if (graphType.equals(CSMARTGraph.GRAPH_TYPE_SOCIETY))
 	new ULSocietyFrame(NamedFrame.AGENT + ": <" + fileName + ">", graph);
       else if (graphType.equals(CSMARTGraph.GRAPH_TYPE_THREAD))
-	new ULPlanFrame(NamedFrame.THREAD + ": <" + fileName + ">", graph, null, null);
+	new ULPlanFrame(NamedFrame.THREAD + ": <" + fileName + ">", graph, null);
       else if (graphType.equals(CSMARTGraph.GRAPH_TYPE_PLAN))
 	new ULPlanFrame(NamedFrame.PLAN + ": <" + fileName + ">", graph,
-			new ULPlanFilter(graph), null);
+			new ULPlanFilter(graph));
       else
 	JOptionPane.showMessageDialog(this, "Unknown graph type: " + graphType);
     }
@@ -604,7 +604,6 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     ULPlanFilter filter = new ULPlanFilter(communityToAgents);
     if (!filter.preFilter())
       return; // user cancelled filter
-    // new code
     Vector agentsToContact = filter.getAgentsSelected();
     for (int i = 0; i < agentsToContact.size(); i++) {
       String URL = 
@@ -612,7 +611,6 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       if (URL != null)
   	agentURLs.add(URL);
     }
-    // end new code
     String PSPId = PSP_PLAN;
     String filterValue = filter.getIgnoreObjectTypes();
     Collection objectsFromPSP =
@@ -633,7 +631,11 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       String UID = (String)properties.get(PropertyNames.UID_ATTR);
       // filter duplicates by UID
       if (!UIDs.contains(UID)) {
-	nodeObjects.add(new ULPlanNode(properties));
+	String agentName = (String)properties.get(PropertyNames.AGENT_ATTR);
+	String communityName = "";
+	if (agentName != null)
+	  communityName = (String)agentToCommunity.get(agentName);
+	nodeObjects.add(new ULPlanNode(properties, communityName));
 	UIDs.add(UID);
       } else {
 	duplicates++;
@@ -661,7 +663,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 	(Window)new ULPlanFrame(NamedFrame.PLAN, 
 				new CSMARTGraph(nodeObjects, 
 						CSMARTGraph.GRAPH_TYPE_PLAN),
-				filter, communityToAgents);
+				filter);
       myWindows.add(w);
     }
   }
@@ -869,25 +871,28 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 	assetPropertyTrees.add(properties);
 	continue;
       }
-      nodeObjects.add(new ULPlanNode(properties));
+      String agent = (String)properties.get(PropertyNames.AGENT_ATTR);
+      String community = "";
+      if (agent != null)
+	community = (String)agentToCommunity.get(agent);
+      nodeObjects.add(new ULPlanNode(properties, community));
     }
     // now pick up the correct assets
     Collection c = getAssets(assetPropertyTrees);
-    for (Iterator i = c.iterator(); i.hasNext(); )
-      nodeObjects.add(new ULPlanNode((PropertyTree)i.next()));
+    for (Iterator i = c.iterator(); i.hasNext(); ) {
+      PropertyTree properties = (PropertyTree)i.next();
+      String agent = (String)properties.get(PropertyNames.AGENT_ATTR);
+      String community = "";
+      if (agent != null)
+	community = (String)agentToCommunity.get(agent);
+      nodeObjects.add(new ULPlanNode(properties, community));
+    }
     if (nodeObjects.size() != 0) {
-      // for debugging
-      communityToAgents = new Hashtable();
-      Vector agentURLs = getAgents();
-      if (agentURLs == null)
-	return; // no information to graph
-      communityToAgents.put("CommunityOne", agentURLs);
-      // end for debugging
       Window w = 
 	(Window)new ULPlanFrame(NamedFrame.PLAN, 
 				new CSMARTGraph(nodeObjects, 
 						CSMARTGraph.GRAPH_TYPE_PLAN),
-				new ULPlanFilter(communityToAgents), communityToAgents);
+				new ULPlanFilter(communityToAgents));
       myWindows.add(w);
     }
   }
