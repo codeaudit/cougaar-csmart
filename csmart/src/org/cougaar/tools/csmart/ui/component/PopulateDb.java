@@ -30,6 +30,8 @@ public class PopulateDb {
     public static final String DATABASE = "org.cougaar.configuration.database";
     public static final String QUERY_FILE = "PopulateDb.q";
     public static final String INSERT_ALIB_COMPONENT = "insertAlibComponent";
+    public static final String INSERT_LIB_COMPONENT = "insertLibComponent";
+    public static final String CHECK_LIB_COMPONENT = "checkLibComponent";
     public static final String INSERT_COMPONENT_HIERARCHY = "insertComponentHierarchy";
     public static final String CHECK_COMPONENT_HIERARCHY = "checkComponentHierarchy";
     public static final String INSERT_COMPONENT_ARG = "insertComponentArg";
@@ -63,6 +65,7 @@ public class PopulateDb {
 
     private Connection dbConnection;
     private Statement stmt;
+    private Statement updateStmt;
     private Map propertyInfos = new HashMap();
     private Set preexistingItems = new HashSet();
     private Set writableComponents = new HashSet();
@@ -201,6 +204,7 @@ public class PopulateDb {
         }
         dbConnection = DBConnectionPool.getConnection(database, username, password);
         stmt = dbConnection.createStatement();
+        updateStmt = dbConnection.createStatement();
         this.exptId = exptId;
         this.trialId = trialId;
         substitutions.put(":cmt_type:", cmtType);
@@ -252,7 +256,7 @@ public class PopulateDb {
     {
         substitutions.put(":trial_id:", oldTrialId);
         substitutions.put(":csm_id_pattern:", csmType + "-____");
-        executeUpdate(stmt, dbp.getQuery(CLEAN_TRIAL_ASSEMBLY, substitutions));
+        executeUpdate(dbp.getQuery(CLEAN_TRIAL_ASSEMBLY, substitutions));
     }
 
     private void newExperiment(String idType, String experimentName) throws SQLException {
@@ -282,7 +286,7 @@ public class PopulateDb {
         substitutions.put(":expt_id:", exptId);
         substitutions.put(":description:", exptId);
         substitutions.put(":name:", exptId);
-        executeUpdate(stmt, dbp.getQuery(INSERT_EXPT_ID, substitutions));
+        executeUpdate(dbp.getQuery(INSERT_EXPT_ID, substitutions));
     }
 
     public String getTrialId() {
@@ -318,7 +322,7 @@ public class PopulateDb {
         substitutions.put(":expt_id:", exptId);
         substitutions.put(":description:", "Modified Trial");
         substitutions.put(":trial_name:", trialName);
-        executeUpdate(stmt, dbp.getQuery(INSERT_TRIAL_ID, substitutions));
+        executeUpdate(dbp.getQuery(INSERT_TRIAL_ID, substitutions));
     }
 
     private String addAssembly(String idType)
@@ -350,8 +354,8 @@ public class PopulateDb {
         substitutions.put(":assembly_id:", sqlQuote(assemblyId));
         substitutions.put(":expt_id:", exptId);
         substitutions.put(":trial_id:", trialId);
-        executeUpdate(stmt, dbp.getQuery(INSERT_ASSEMBLY_ID, substitutions));
-        executeUpdate(stmt, dbp.getQuery(INSERT_TRIAL_ASSEMBLY, substitutions));
+        executeUpdate(dbp.getQuery(INSERT_ASSEMBLY_ID, substitutions));
+        executeUpdate(dbp.getQuery(INSERT_TRIAL_ASSEMBLY, substitutions));
         return assemblyId;
     }
 
@@ -360,7 +364,7 @@ public class PopulateDb {
     {
         substitutions.put(":old_trial_id:", oldTrialId);
         substitutions.put(":new_trial_id:", newTrialId);
-        executeUpdate(stmt, dbp.getQuery(COPY_CMT_ASSEMBLIES, substitutions));
+        executeUpdate(dbp.getQuery(COPY_CMT_ASSEMBLIES, substitutions));
     }
 
     public void setPreexistingItems(ComponentData data) {
@@ -386,17 +390,18 @@ public class PopulateDb {
      * additional code to be added for each executeUpdate for
      * debugging purposes.
      **/
-    private void executeUpdate(Statement stmt, String query) throws SQLException {
+    private int executeUpdate(String query) throws SQLException {
         if (query == null) throw new IllegalArgumentException("executeUpdate: null query");
         try {
             long startTime = 0;
             if (log != null)
                 startTime = System.currentTimeMillis();
-            stmt.executeUpdate(query);
+            int result = updateStmt.executeUpdate(query);
             if (log != null) {
                 long endTime = System.currentTimeMillis();
                 log.println((endTime - startTime) + " " + query);
             }
+            return result;
         } catch (SQLException sqle) {
             System.err.println("SQLException query: " + query);
             throw sqle;
@@ -492,16 +497,25 @@ public class PopulateDb {
             substitutions.put(":component_lib_id:", getComponentLibId(data));
             substitutions.put(":component_alib_id:", getComponentAlibId(data));
             substitutions.put(":component_category:", getComponentCategory(data));
-            ResultSet rs = executeQuery(stmt, dbp.getQuery(CHECK_ALIB_COMPONENT, substitutions));
+            ResultSet rs = executeQuery(stmt, dbp.getQuery(CHECK_LIB_COMPONENT, substitutions));
+            if (rs.next()) {    // Already exists
+            } else {            // Need to add it
+                substitutions.put(":component_class:", sqlQuote(data.getClassName()));
+                substitutions.put(":insertion_point:", getComponentInsertionPoint(data));
+                substitutions.put(":description:", sqlQuote("Added " + data.getType()));
+                executeUpdate(dbp.getQuery(INSERT_LIB_COMPONENT, substitutions));
+            }
+            rs.close();
+            rs = executeQuery(stmt, dbp.getQuery(CHECK_ALIB_COMPONENT, substitutions));
             if (rs.next()) {    // Already exists
                 // Use the one that is there
             } else {
-                executeUpdate(stmt, dbp.getQuery(INSERT_ALIB_COMPONENT, substitutions));
+                executeUpdate(dbp.getQuery(INSERT_ALIB_COMPONENT, substitutions));
                 Object[] params = data.getParameters();
                 for (int i = 0; i < params.length; i++) {
                     substitutions.put(":argument_value:", sqlQuote(params[i].toString()));
                     substitutions.put(":argument_order:", sqlQuote(String.valueOf(i + 1)));
-                    executeUpdate(stmt, dbp.getQuery(INSERT_COMPONENT_ARG, substitutions));
+                    executeUpdate(dbp.getQuery(INSERT_COMPONENT_ARG, substitutions));
                     result = true;
                 }
                 result = true;
@@ -526,7 +540,7 @@ public class PopulateDb {
                 ResultSet rs =
                     executeQuery(stmt, dbp.getQuery(CHECK_COMPONENT_HIERARCHY, substitutions));
                 if (!rs.next()) {
-                    executeUpdate(stmt, dbp.getQuery(INSERT_COMPONENT_HIERARCHY, substitutions));
+                    executeUpdate(dbp.getQuery(INSERT_COMPONENT_HIERARCHY, substitutions));
                     result = true;
                 }
             }
@@ -555,7 +569,7 @@ public class PopulateDb {
         substitutions.put(":agent_org_prototype:", sqlQuote(assetData.getAssetClass()));
         if (isAdded) {
             // finish populating a new agent
-            executeUpdate(stmt, dbp.getQuery(INSERT_AGENT_ORG, substitutions));
+            executeUpdate(dbp.getQuery(INSERT_AGENT_ORG, substitutions));
             PropGroupData[] pgs = assetData.getPropGroups();
             for (int i = 0; i < pgs.length; i++) {
                 PropGroupData pg = pgs[i];
@@ -576,7 +590,7 @@ public class PopulateDb {
                         for (int k = 0; k < values.length; k++) {
                             substitutions.put(":attribute_value:", sqlQuote(values[k]));
                             substitutions.put(":attribute_order:", String.valueOf(k + 1));
-                            executeUpdate(stmt, dbp.getQuery(INSERT_ATTRIBUTE, substitutions));
+                            executeUpdate(dbp.getQuery(INSERT_ATTRIBUTE, substitutions));
                         }
                     } else {
                         if (prop.isListType())
@@ -584,7 +598,7 @@ public class PopulateDb {
                                                        + propInfo.toString());
                         substitutions.put(":attribute_value:", sqlQuote(prop.getValue().toString()));
                         substitutions.put(":attribute_order:", "1");
-                        executeUpdate(stmt, dbp.getQuery(INSERT_ATTRIBUTE, substitutions));
+                        executeUpdate(dbp.getQuery(INSERT_ATTRIBUTE, substitutions));
                     }
                 }
             }
@@ -673,8 +687,35 @@ public class PopulateDb {
             String nodeName = data.getName();
             return sqlQuote(nodeName);
         }
+        if (componentType.equals(ComponentData.HOST)) {
+            String hostName = data.getName();
+            return sqlQuote(hostName);
+        }
         ComponentData parent = data.getParent();
         return sqlQuote(data.getType() + "|" + getFullName(data));
+    }
+
+    /**
+     * Get the component insertion point for the component described
+     * by the specified ComponentData. Each type of component has a
+     * different insertion point. Some have none.
+     **/
+    private String getComponentInsertionPoint(ComponentData data) {
+        if (data == null) return sqlQuote(null);
+        String componentType = data.getType();
+        if (componentType.equals(ComponentData.PLUGIN)) {
+            return sqlQuote("Node.AgentManager.Agent.PluginManager.Plugin");
+        }
+        if (componentType.equals(ComponentData.AGENT)) {
+            return sqlQuote("Node.AgentManager.Agent");
+        }
+        if (componentType.equals(ComponentData.NODE)) {
+            return sqlQuote("Node");
+        }
+        if (componentType.equals(ComponentData.HOST)) {
+            return sqlQuote(null);
+        }
+        return sqlQuote(null);
     }
 
     /**
