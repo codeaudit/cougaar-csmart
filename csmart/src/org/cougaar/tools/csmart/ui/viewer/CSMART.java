@@ -892,9 +892,20 @@ public class CSMART extends JFrame {
     result.append("OS: "+os+" ("+osv+")\n");
 
     // Some properties valus: install.path, config.path,
+    result.append("org.cougaar.tools.csmart.doWorkspace=" + System.getProperty("org.cougaar.tools.csmart.doWorkspace") + "\n");
+    result.append("org.cougaar.config.path=" + System.getProperty("org.cougaar.config.path") + "\n");
+    result.append("org.cougaar.install.path=" + System.getProperty("org.cougaar.install.path") + "\n");
     // dbMode, isMySQL
     // What tools are open
     // whats loaded in the workspace
+//     if (experimentToEdit != null) {
+//       result.append("Working with experiment " + experimentToEdit.getFullName().toString() + " (ID: " + experimentToEdit.getExperimentID() + ", trial: " + experimentToEdit.getTrialID() + ") which says to isEditable: " + experimentToEdit.isEditable() + " and to isEditInProgress: " + experimentToEdit.isEditInProgress() + " and to isModified: " + experimentToEdit.isModified() + " and to isRunInProgress: " + experimentToEdit.isRunInProgress() + " and to isRunnable: " + experimentToEdit.isRunnable() + "\n");
+//       SocietyComponent soc = experimentToEdit.getSocietyComponent();
+//       if (soc != null) {
+// 	result.append("  made of society " + soc.getFullName() + " (ID: " + soc.getAssemblyId() + ") whic says to isModified: " + soc.isModified() + " and to isRunning: " + soc.isRunning() + " and to isEditable: " + soc.isEditable() + "\n");
+//       }
+//       result.append("   and which also has " + experimentToEdit.getRecipeComponentCount() + " recipes\n");
+//     }
     // results directory setting
     // but probably not the cougaar.rc contents
 
