@@ -37,7 +37,7 @@ import org.cougaar.tools.csmart.core.db.PopulateDb;
  * 
  * The gui uses this interface to get and set properties.
  */
-public interface ComponentProperties extends Serializable {
+public interface BaseComponent extends ComposableComponent, Serializable {
 
   /**
    * Gets the short name of this component.  All component names
@@ -60,6 +60,14 @@ public interface ComponentProperties extends Serializable {
    * @return a <code>CompositeName</code> value of the full component name.
    */
   CompositeName getFullName();
+
+  /**
+   * Set the name of this component.  The name is relative to the
+   * parent and must be distinct in that context.
+   * @param newName the new name for this component.
+   */
+
+  void setName(String newName);
 
   /**
    * Initialize the properties of a new instance. All components
@@ -91,6 +99,17 @@ public interface ComponentProperties extends Serializable {
    * @return <Property> object for the property.
    */
   Property getProperty(String localName);
+
+  /**
+   * Add a property with a given value. A new Property is created
+   * having the given name and value. In addition the other fields of
+   * the property set to default values consistent with the class of
+   * the value.
+   * @param name the name of the property
+   * @param value must be one of the supported value types
+   * @return a <code>Property</code> object for the new Property
+   **/
+  Property addProperty(String name, Object value);
 
   /**
    * Returns a <code>Iterator</code> of all known property names for
@@ -159,12 +178,12 @@ public interface ComponentProperties extends Serializable {
   boolean componentWasRemoved();
 
   /**
-   * Makes a copy of a <code>ComponentProperties</code> Object.
+   * Makes a copy of a <code>BaseComponent</code> Object.
    *
    * @param result object to copy
    * @return a <code>ComponentProperties</code> copy
    */
-  ComponentProperties copy(ComponentProperties result);
+  BaseComponent copy(BaseComponent result);
 
   /**
    * Test if this has any unbound properties (properties for which
