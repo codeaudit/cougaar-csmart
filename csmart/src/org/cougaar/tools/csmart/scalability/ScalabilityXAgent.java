@@ -331,22 +331,33 @@ public class ScalabilityXAgent
   }
 
   private void adjustAllocators() {
+    //    System.err.println(this.getFullName() + " in adjustAllocators");
     int newLeafAllocatorCount = ((Integer) propLeafAllocatorCount.getValue()).intValue();
     int newOrgAllocatorCount = ((Integer) propOrgAllocatorCount.getValue()).intValue();
     int totalAllocatorCount = newLeafAllocatorCount + newOrgAllocatorCount;
+//      System.err.println("New Leafcount: " + newLeafAllocatorCount);
+//      System.err.println("New Orgcount: " + newOrgAllocatorCount);
+//      System.err.println("New Totalcount: " + totalAllocatorCount);
+//      System.err.println("Had " + leafAllocators.size() + " leaf allocators");
     while (leafAllocators.size() > 0) {
       ConfigurableComponent child =
         (ConfigurableComponent) leafAllocators.get(leafAllocators.size() - 1);
       removeChild(child);
       leafAllocators.remove(child);
     }
-    while (orgAllocators.size() > newOrgAllocatorCount) {
+    //System.err.println("Now have " + leafAllocators.size() + " leaf allocators");
+    //System.err.println("Had " + orgAllocators.size() + " org allocators. Will trim excess.");
+    //while (orgAllocators.size() > newOrgAllocatorCount) {
+    while (orgAllocators.size() > 0) {
+      //System.err.println("Removing an org allocator");
       ConfigurableComponent child =
         (ConfigurableComponent) orgAllocators.get(orgAllocators.size() - 1);
       removeChild(child);
       orgAllocators.remove(child);
     }
+    //System.err.println("Now have " + orgAllocators.size() + " org allocators");
     while (leafAllocators.size() < newLeafAllocatorCount) {
+      //System.err.println("Adding a leaf Plugin");
       ScalabilityXPlugIn plugin =
         new ScalabilityXPlugIn("ScalabilityLeaf", ScalabilityLeafPlugIn_name);
       int index = leafAllocators.size();
@@ -357,7 +368,10 @@ public class ScalabilityXAgent
       addInvisibleParameter(plugin, index, "Index");
       addInvisibleParameter(plugin, totalAllocatorCount, "TotalAllocatorCount");
     }
+    //System.err.println("Now have " + leafAllocators.size() + " leaf allocators");
+    //System.err.println("About to add org allocators");
     while (orgAllocators.size() < newOrgAllocatorCount) {
+      //System.err.println("Have " + orgAllocators.size() + " orgallocs. Adding an org allocator with args: " + (level + 1) + ", " + (orgAllocators.size() + leafAllocators.size()) + ", " + totalAllocatorCount);
       ScalabilityXPlugIn plugin =
         new ScalabilityXPlugIn("ScalabilityAllocator", ScalabilityAllocatorPlugIn_name);
       int index = orgAllocators.size() + leafAllocators.size();
@@ -368,6 +382,8 @@ public class ScalabilityXAgent
       addInvisibleParameter(plugin, index, "Index");
       addInvisibleParameter(plugin, totalAllocatorCount, "TotalAllocatorCount");
     }
+    //System.err.println("Now have " + orgAllocators.size() + " org allocators");
+    //System.err.println(this.getFullName() + " done adjusting allocators");
   }
 
   private void addLdmPlugIn() {
