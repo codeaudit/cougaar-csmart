@@ -20,8 +20,6 @@
  */ 
 package org.cougaar.tools.csmart.recipe;
 
-
-
 import java.io.Serializable;
 import java.net.URL;
 import java.sql.SQLException;
@@ -31,7 +29,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
+
 import org.cougaar.core.agent.ClusterImpl;
+import org.cougaar.util.log.Logger;
+
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
@@ -51,7 +52,6 @@ import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.core.property.range.IntegerRange;
 import org.cougaar.tools.csmart.core.property.range.StringRange;
 import org.cougaar.tools.csmart.society.AgentComponent;
-import org.cougaar.util.log.Logger;
 
 /**
  * Recipe to add a complete Agent to the society.  This agent
@@ -60,7 +60,7 @@ import org.cougaar.util.log.Logger;
 public class CompleteAgentRecipe extends ComplexRecipeBase
   implements Serializable
 {
-  protected static final String DESCRIPTION_RESOURCE_NAME = 
+  protected static String DESCRIPTION_RESOURCE_NAME = 
     "complete-agent-recipe-description.html";
 
   /**
@@ -179,9 +179,10 @@ public class CompleteAgentRecipe extends ComplexRecipeBase
     // Now let all components add their data.
     addComponentData(cd);
 
-    modifyComponentData(cd);
+    return modifyComponentData(cd);
 
-    return addComponentData(cd);
+    // FIXME: Why call this twice?
+    //    return addComponentData(cd);
   }
 
   private static final void generateAgentComponentData(AgentComponent agent, 
@@ -197,13 +198,4 @@ public class CompleteAgentRecipe extends ComplexRecipeBase
     parent.addChild((ComponentData)ac);
   }
 
-  public ModifiableComponent copy(String name) {
-    ComponentData cdata = getComponentData();
-    cdata.setName(name);
-    CompleteAgentRecipe comp = new CompleteAgentRecipe(cdata, null);
-    comp.initProperties();
-    comp.modified = this.modified;
-    comp.oldAssemblyId = getAssemblyId();
-    return comp;
-  }
 }
