@@ -1,7 +1,7 @@
 csmart/doc/CSMART-README.txt
 
 This is the Cougaar Society Monitoring, Analysis and Reporting Tool
-(CSMART), v9.0
+(CSMART), v9.2
 Use CSMART to configure, execute and monitor large distributed Cougaar societies.
 
 See "http://www.cougaar.org" for an overview of Cougaar.
