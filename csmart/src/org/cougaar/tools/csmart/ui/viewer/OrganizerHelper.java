@@ -22,6 +22,7 @@
 package org.cougaar.tools.csmart.ui.viewer;
 
 import java.io.IOException;
+import java.io.File;
 import java.io.ObjectInputStream;
 import java.lang.reflect.Constructor;
 import java.sql.SQLException;
@@ -29,6 +30,7 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.util.*;
+import javax.swing.JFileChooser;
 
 import org.cougaar.util.log.Logger;
 
@@ -47,8 +49,8 @@ import org.cougaar.tools.csmart.recipe.RecipeBase;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
-//import org.cougaar.tools.csmart.society.cmt.CMTSociety;
 import org.cougaar.tools.csmart.society.db.SocietyDBComponent;
+import org.cougaar.tools.csmart.society.file.SocietyFileComponent;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
@@ -107,13 +109,13 @@ public class OrganizerHelper {
       
       if(id != null) {
         String societyName = DBUtils.getSocietyName(id);
-        soc = (SocietyDBComponent)organizer.getSociety(societyName);
-        if (soc == null) {
+        SocietyComponent sc = organizer.getSociety(societyName);
+        if (sc != null && (sc instanceof SocietyDBComponent))
+          soc = (SocietyDBComponent)sc;
+        else {
           soc = new SocietyDBComponent(societyName, id);
           soc.initProperties();
         } 
-      } else {
-        soc = null;
       }
     } else { // We need to create a new trial.
       // Need to have the experiment id, trial id, and multiplicity
@@ -757,7 +759,48 @@ public class OrganizerHelper {
     }
   }
 
-  
+
+  protected SocietyComponent createSocietyFromFile() {
+    // display file chooser to allow user to select file that defines society
+    JFileChooser chooser = 
+      new JFileChooser(SocietyFinder.getInstance().getPath());
+    chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+    File file = null;
+    SocietyComponent sc = null;
+    while (file == null) {
+      int result = chooser.showDialog(organizer, "OK");
+      if (result != JFileChooser.APPROVE_OPTION)
+	return null;
+      file = chooser.getSelectedFile();
+    }
+    // create society from agent files or single node file
+    String name = "";
+    name = file.getName();
+    if (name.endsWith(".ini"))
+      name = name.substring(0, name.length()-4);
+    if (!organizer.isUniqueSocietyName(name))
+      name = organizer.getUniqueSocietyName(name, true);
+    if (name == null) return null; 
+
+    if (file.isDirectory()) {
+      String[] filenames =
+        SocietyFinder.getInstance().getAgentFilenames(file);
+
+      if (filenames == null || filenames.length == 0) {
+	// Found no Agents
+	if (log.isWarnEnabled()) {
+	  log.warn("Found no agent in dir " + file.getPath());
+	}
+	return null;
+      }
+
+      sc = createSociety(name, filenames, SocietyFileComponent.class);
+    } else {
+      sc = createSociety(file.getPath(), name, SocietyFileComponent.class);
+    }
+    return sc;
+  }
+
   // Class for holding name/Class pairs in UIs
   // TODO: this is defined in Organizer as well
   // possibly needs to be in some utility class

@@ -34,6 +34,8 @@ import org.cougaar.util.log.Logger;
 
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
+import org.cougaar.tools.csmart.core.property.ComposableComponent;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.PropertiesListener;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
@@ -75,7 +77,7 @@ public abstract class SocietyBase
 
   protected String assemblyId;
   public String oldAssemblyId;
-  public boolean modified = true;
+  protected boolean modified = true;
 
   // modification event
   public static final int SOCIETY_SAVED = 2;
@@ -406,10 +408,14 @@ public abstract class SocietyBase
     super.fireModification();
   }
 
+  // only listen on local properties
+  // modifications of properties of agents, plugins, binders, etc. 
+  // should be propagated, such that this society knows it's been modified
+
   private void installListeners() {
     addPropertiesListener(this);
-    for (Iterator i = getProperties(); i.hasNext(); ) {
-      Property p = (Property)i.next();
+    for (Iterator i = getLocalPropertyNames(); i.hasNext(); ) {
+      Property p = getProperty((CompositeName)i.next());
       p.addPropertyListener(myPropertyListener);
     }
   }
@@ -420,9 +426,9 @@ public abstract class SocietyBase
       getProperty(addedProperty.getName().last().toString());
     if (myProperty != null) {
       setPropertyVisible(addedProperty, true);
+      addedProperty.addPropertyListener(myPropertyListener);
+      fireModification();
     }
-    addedProperty.addPropertyListener(myPropertyListener);
-    fireModification();
   }
 
   public void propertyRemoved(PropertyEvent e) {
@@ -440,5 +446,24 @@ public abstract class SocietyBase
           fireModification();
         }
       };
+
+  ModificationListener myModificationListener = 
+    new ModificationListener() {
+        public void modified(ModificationEvent e) {
+          fireModification();
+        }
+      };
+
+  public int addChild(ComposableComponent c) {
+    ((ModifiableConfigurableComponent)c).addModificationListener(myModificationListener);
+    fireModification();
+    return super.addChild(c);
+  }
+
+  public void removeChild(ComposableComponent c) {
+    ((ModifiableConfigurableComponent)c).removeModificationListener(myModificationListener);
+    fireModification();
+    super.removeChild(c);
+  }
 
 }// SocietyBase

@@ -22,6 +22,7 @@
 package org.cougaar.tools.csmart.core.property;
 
 import java.lang.reflect.Constructor;
+import java.util.EventListener;
 import javax.swing.event.EventListenerList;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
@@ -71,6 +72,13 @@ public abstract class ModifiableConfigurableComponent
    * @param l ModificationListener for this component.
    */
   public void addModificationListener(ModificationListener l) {
+    // ensure that we don't add the same event listener twice
+    EventListenerList listeners = getEventListenerList();
+    EventListener[] modListeners = 
+      listeners.getListeners(ModificationListener.class);
+    for (int i = 0; i < modListeners.length; i++)
+      if (modListeners[i].equals(l))
+        return; // it's already listening
     getEventListenerList().add(ModificationListener.class, l);
   }
 

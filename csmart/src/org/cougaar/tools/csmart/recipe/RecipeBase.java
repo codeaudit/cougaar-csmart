@@ -78,15 +78,16 @@ public abstract class RecipeBase
     return getShortName();
   }
 
-  public void addModificationListener(ModificationListener l)
-  {
-    getEventListenerList().add(ModificationListener.class, l);
-  }
+  // not needed; these are the same as in ModifiableConfigurableComponent
+//    public void addModificationListener(ModificationListener l)
+//    {
+//      getEventListenerList().add(ModificationListener.class, l);
+//    }
 
-  public void removeModificationListener(ModificationListener l)
-  {
-    getEventListenerList().remove(ModificationListener.class, l);
-  }
+//    public void removeModificationListener(ModificationListener l)
+//    {
+//      getEventListenerList().remove(ModificationListener.class, l);
+//    }
 
   public Property addBooleanProperty(String name, boolean dflt) {
     Property tmp = addProperty(name, new Boolean(dflt));
@@ -187,9 +188,11 @@ public abstract class RecipeBase
     super.fireModification();
   }
 
+  // only listen on local properties
+
   public void installListeners() {
     addPropertiesListener(this);
-    for (Iterator i = getPropertyNames(); i.hasNext(); ) {
+    for (Iterator i = getLocalPropertyNames(); i.hasNext(); ) {
       Property p = getProperty((CompositeName)i.next());
       p.addPropertyListener(myPropertyListener);
     }

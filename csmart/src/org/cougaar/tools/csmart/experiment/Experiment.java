@@ -50,10 +50,7 @@ import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ModificationEvent;
 import org.cougaar.tools.csmart.core.property.ModificationListener;
-import org.cougaar.tools.csmart.core.property.PropertiesListener;
 import org.cougaar.tools.csmart.core.property.Property;
-import org.cougaar.tools.csmart.core.property.PropertyEvent;
-import org.cougaar.tools.csmart.core.property.PropertyListener;
 import org.cougaar.tools.csmart.core.property.name.ComponentName;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.recipe.RecipeBase;
@@ -318,20 +315,10 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 
   private void installListeners(ModifiableConfigurableComponent component) {
     component.addModificationListener(myModificationListener);
-    component.addPropertiesListener(myPropertiesListener);
-    for (Iterator i = component.getProperties(); i.hasNext(); ) {
-      Property p = (Property) i.next();
-      p.addPropertyListener(myPropertyListener);
-    }
   }
 
   private void removeListeners(ModifiableConfigurableComponent component) {
     component.removeModificationListener(myModificationListener);
-    component.removePropertiesListener(myPropertiesListener);
-    for (Iterator i = component.getProperties(); i.hasNext(); ) {
-      Property p = (Property) i.next();
-      p.removePropertyListener(myPropertyListener);
-    }
   }
 
   ////////////////////////////////////////////
@@ -1119,30 +1106,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     modified = true;
     super.fireModification();
   }
-
-  PropertiesListener myPropertiesListener =
-    new PropertiesListener() {
-        public void propertyAdded(PropertyEvent e) {
-          e.getProperty().addPropertyListener(myPropertyListener);
-          fireModification();
-        }
-
-        public void propertyRemoved(PropertyEvent e) {
-          e.getProperty().removePropertyListener(myPropertyListener);
-          fireModification();
-        }
-      };
-
-  PropertyListener myPropertyListener =
-    new PropertyListener() {
-        public void propertyValueChanged(PropertyEvent e) {
-          fireModification();
-        }
-
-        public void propertyOtherChanged(PropertyEvent e) {
-          fireModification();
-        }
-      };
 
   // Private Methods
 

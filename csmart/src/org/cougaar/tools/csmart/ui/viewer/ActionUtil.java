@@ -22,8 +22,10 @@
 package org.cougaar.tools.csmart.ui.viewer;
 
 import java.util.Enumeration;
+import javax.swing.Action;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
@@ -34,31 +36,16 @@ import org.cougaar.tools.csmart.society.SocietyComponent;
  */
 public class ActionUtil {
 
-  /** Configuration String **/
   public static String CONFIGURE_ACTION = "Configure";
-
-  /** Build String **/
   public static String BUILD_ACTION = "Build";
-
-  /** Run String **/
   public static String RUN_ACTION = "Run";
-
-  /** Duplicate String **/
   public static String DUPLICATE_ACTION = "Duplicate";
-
-  /** Delete String **/
   public static String DELETE_ACTION = "Delete";
-
-  /** Rename String **/
   public static String RENAME_ACTION = "Rename";
-
-  /** New Experiment String **/
   public static String NEW_EXPERIMENT_ACTION = "New Experiment";
-
   public static String NEW_EXPERIMENT_FROM_DB_ACTION = "From Database";
   public static String NEW_EXPERIMENT_FROM_FILE_ACTION = "From File";
   public static String NEW_EXPERIMENT_FROM_UI_ACTION = "From User";
-  //  public static String NEW_SOCIETY_ACTION = "New Society";
   public static String NEW_RECIPE_ACTION = "New Recipe";
   public static String NEW_FOLDER_ACTION = "New Folder";
   public static String DELETE_EXPERIMENT_FROM_DATABASE_ACTION = 
@@ -67,64 +54,68 @@ public class ActionUtil {
     "Delete Recipe From Database";
   
   /**
-   * Return whether or not an action is allowed, based
-   * on the object selected.
-   * If the object selected is either root or a folder,
-   * then if the caller is setting up a pop-up menu,
-   * then the actions are specific to the selected object;
-   * if the caller is setting up the top-level menu
-   * or the buttons, then the actions are dependent on all the
-   * experiments and recipes contained under the root or folder.
-   * @param String action, as defined in this class
+   * Enable/disable an action, based on the object selected.
+   * @param action action to enable/disable
    * @param organizer used to get the selected object and children
-   * @param doPopup true if action will be used in popup menu
-   * @return boolean true if action allowed, else false
    */
-  public static boolean isActionAllowed(String action,
-                                        Organizer organizer,
-                                        boolean doPopup) {
+
+  public static void setActionAllowed(Action action,
+                                      Organizer organizer) {
+    String s = (String)action.getValue(Action.NAME);
+    DefaultMutableTreeNode selectedNode = organizer.getSelectedNode();
+
     // If nothing is selected, some things are still legitimate
-    if (organizer.getSelectedNode() == null) {
-      if (action.equals(DELETE_EXPERIMENT_FROM_DATABASE_ACTION) ||
-          action.equals(DELETE_RECIPE_FROM_DATABASE_ACTION)) {
-        return true;
+    if (selectedNode == null) {
+      if (s.equals(DELETE_EXPERIMENT_FROM_DATABASE_ACTION) ||
+          s.equals(DELETE_RECIPE_FROM_DATABASE_ACTION)) {
+        action.setEnabled(true);
+        return;
       } else {
-	return false;
+	action.setEnabled(false);
+        return;
       }
     }
 
-    // can't do anything with nodes in an experiment being edited
-    if (organizer.isNodeBeingEdited(organizer.getSelectedNode()))
-      return false; 
+    // can't do anything with nodes in an experiment being edited or run
+    if (organizer.isNodeInUse(selectedNode)) {
+      action.setEnabled(false);
+      return;
+    }
 
     // handle if selected object is root of workspace
-    if (organizer.getSelectedNode().isRoot()) {
-      if (action.equals(NEW_EXPERIMENT_ACTION) ||
-          action.equals(NEW_RECIPE_ACTION) ||
-          action.equals(NEW_FOLDER_ACTION) ||
-          action.equals(RENAME_ACTION) ||
-          action.equals(DELETE_EXPERIMENT_FROM_DATABASE_ACTION) ||
-          action.equals(DELETE_RECIPE_FROM_DATABASE_ACTION)) 
-        return true;
-      return false;
+    if (selectedNode.isRoot()) {
+      if (s.equals(NEW_EXPERIMENT_ACTION) ||
+          s.equals(NEW_RECIPE_ACTION) ||
+          s.equals(NEW_FOLDER_ACTION) ||
+          s.equals(RENAME_ACTION) ||
+          s.equals(DELETE_EXPERIMENT_FROM_DATABASE_ACTION) ||
+          s.equals(DELETE_RECIPE_FROM_DATABASE_ACTION)) {
+        action.setEnabled(true);
+        return;
+      }
+      action.setEnabled(false);
+      return;
     } // end handling root
 
-    Object selectedObject = organizer.getSelectedObject();
+    Object selectedObject = selectedNode.getUserObject();
 
     if (selectedObject instanceof String) 
-      return isActionAllowedOnFolder(action, organizer, 
-                                     organizer.getSelectedNode());
-    if (selectedObject instanceof Experiment)
-      return isActionAllowedOnExperiment(action, organizer,
-                                         (Experiment)selectedObject);
-    if (selectedObject instanceof SocietyComponent)
-      return isActionAllowedOnSociety(action, organizer,
-                                      (SocietyComponent)selectedObject);
-    if (selectedObject instanceof RecipeComponent)
-      return isActionAllowedOnRecipe(action, organizer,
-                                     (RecipeComponent)selectedObject);
-    System.out.println("Util: unhandled case: " + action);
-    return false;
+      action.setEnabled(isActionAllowedOnFolder(s, organizer, 
+                                                organizer.getSelectedNode()));
+    else if (selectedObject instanceof Experiment)
+      action.setEnabled(isActionAllowedOnExperiment(s, organizer,
+                                       (Experiment)selectedObject));
+    else if (selectedObject instanceof SocietyComponent)
+      action.setEnabled(isActionAllowedOnSociety(s, organizer,
+                                   (SocietyComponent)selectedObject));
+    else if (selectedObject instanceof RecipeComponent)
+      action.setEnabled(isActionAllowedOnRecipe(s, organizer,
+                            (RecipeComponent)selectedObject));
+    else {
+      System.out.println("ActionUtil: unhandled case: " + s);
+      action.setEnabled(false);
+    }
+    return;
   }
 
   /**
@@ -205,8 +196,9 @@ public class ActionUtil {
         action.equals(RENAME_ACTION))
       return (!CSMART.isSocietyInEditor(society));
     if (action.equals(CONFIGURE_ACTION) ||
-        action.equals(BUILD_ACTION))
-      return !organizer.isInUse(society) &&
+        action.equals(BUILD_ACTION) ||
+        action.equals(RUN_ACTION))
+      return !organizer.isComponentInUse(society) &&
         !CSMART.isSocietyInEditor(society);
     return false;
   }
@@ -233,7 +225,7 @@ public class ActionUtil {
         action.equals(RENAME_ACTION))
       return (!CSMART.isRecipeInEditor(recipe));
     if (action.equals(CONFIGURE_ACTION))
-      return !organizer.isInUse(recipe) &&
+      return !organizer.isComponentInUse(recipe) &&
         !CSMART.isRecipeInEditor(recipe);
     return false;
   }

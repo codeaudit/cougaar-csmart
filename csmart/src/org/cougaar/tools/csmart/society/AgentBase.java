@@ -29,9 +29,14 @@ import org.cougaar.tools.csmart.core.cdata.ComponentConnector;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
+import org.cougaar.tools.csmart.core.property.ComposableComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.PropertiesListener;
 import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.PropertyEvent;
+import org.cougaar.tools.csmart.core.property.PropertyListener;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.AssetComponent;
 import org.cougaar.tools.csmart.society.ContainerBase;
@@ -47,11 +52,12 @@ import org.cougaar.util.log.Logger;
  */
 public abstract class AgentBase
   extends ModifiableConfigurableComponent
-  implements AgentComponent {
+  implements AgentComponent, PropertiesListener {
 
   private transient Logger log;
   protected String name;
   protected String classname;
+  protected boolean modified = true;
 
   /** Agent Classname Property Definitions **/
   private static final String DEFAULT_CLASS = "org.cougaar.core.agent.ClusterImpl";
@@ -76,6 +82,7 @@ public abstract class AgentBase
     if(log.isDebugEnabled()) {
       log.debug("Creating Agent: " + name);
     }
+    installListeners();
   }
 
   public AgentBase(String name) {
@@ -204,10 +211,75 @@ public abstract class AgentBase
     return false;
   }
 
+  /**
+   * Has this agent been modified, such that a save would do something.
+   *
+   * @return a <code>boolean</code>, false if no save necessary
+   */
+  public boolean isModified() {
+    return modified;
+  }
+
+  /**
+   * Set the internal modified flag (returned by isModified)
+   * and fire a modification event.
+   */
+
+  public void fireModification() {
+    modified = true;
+    super.fireModification();
+  }
+
+  // agents listen on all properties, because subcomponents
+  // of agents don't have listeners on them
+
+  private void installListeners() {
+    addPropertiesListener(this);
+    for (Iterator i = getPropertyNames(); i.hasNext(); ) {
+      Property p = getProperty((CompositeName)i.next());
+      p.addPropertyListener(myPropertyListener);
+    }
+  }
+
+  public void propertyAdded(PropertyEvent e) {
+    Property addedProperty = e.getProperty();
+    setPropertyVisible(addedProperty, true);
+    addedProperty.addPropertyListener(myPropertyListener);
+    fireModification();
+  }
+
+  public void propertyRemoved(PropertyEvent e) {
+    e.getProperty().removePropertyListener(myPropertyListener);
+    fireModification();
+  }
+
+  PropertyListener myPropertyListener =
+    new PropertyListener() {
+        public void propertyValueChanged(PropertyEvent e) {
+          fireModification();
+        }
+
+        public void propertyOtherChanged(PropertyEvent e) {
+          fireModification();
+        }
+      };
+
+  public int addChild(ComposableComponent c) {
+    fireModification();
+    return super.addChild(c);
+  }
+
+  public void removeChild(ComposableComponent c) {
+    fireModification();
+    super.removeChild(c);
+  }
+
   private void readObject(ObjectInputStream ois)
     throws IOException, ClassNotFoundException
   {
     ois.defaultReadObject();
     createLogger();
+    modified = false;
+    installListeners();
   }
 } // end of AgentBase

@@ -29,7 +29,7 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 public class UniqueNameSet extends HashSet {
   private String prefix;
   private int nameCounter = 0;
-  private transient Logger log;
+  protected transient Logger log;
 
   /**
    * Construct an object which can generate unique names
