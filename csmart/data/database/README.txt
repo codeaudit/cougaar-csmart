@@ -9,7 +9,7 @@ After creating a database per the instructions referenced above, you load
 it with data from files contained here.
 For new databases, load the data in the Domain-MySQL.ZIP file.
 For new databases, those upgraded from 9.0, or those that you want
-to "clean", use ./scripts/mysql/load_1ad_mysql.sh 
+to "clean", use ./scripts/mysql/load_1ad_mysql.sh[bat] 
 (Run without arguments to see usage.)
 To edit the contents of these tables directly (not recommended), edit
 the csv files in ./csv
@@ -46,7 +46,7 @@ Sub-directories:
 
         Contains the subdirectory - 
            mysql/:
-                dump_1ad_mysql.sh - Shell script for generating a '.csv' file 
+                dump_1ad_mysql.sh[bat] - Script for generating a '.csv' file 
                                   in the csmart/data/database/csv directory
                                   for each assembly and cfw/lib table in the 
                                   configuration database.  The script will
@@ -56,15 +56,15 @@ Sub-directories:
                                   directory before proceeding.  
 
                                   The script calls the mysql script 
-                                  'dump_mysql_db.sql' as well as the 
-                                  'concat_header_data.sh' script.
+                                  'dump_db.sql' as well as the 
+                                  'concat_header_data.sh[bat]' script.
 
                                   NOTE: The database user must have the 'File'
                                   privilege in the mysql database in order to 
                                   run this script.  See csmart/doc/InstallandTest.html 
                                   for information on setting this privilege.
                 
-                dump_mysql_db.sql - SQL script that generates a '.csv' file
+                dump_db.sql - SQL script that generates a '.csv' file
                                   for each table in the configuration database.
                                   Called by the 'dump_1ad_mysql.sh' script.
                                   It should not be called directly by the user.
@@ -82,9 +82,10 @@ Sub-directories:
                                   directory.  The script will drop all existing configuration
                                   database tables before loading the new ones.
 
-                                  The script calls the mysql script load_db.sql'. This script is an easy way to "clean out" your configuration database.
+                                  The script calls the mysql script load_db.sql'. This script is an
+                                   easy way to "clean out" your configuration database.
 
-                load_db.sql - SQL script that loads the configuration database
+                load_db.sql -     SQL script that loads the configuration database
                                   from data contained in specified '.csv' files in the
                                   csmart/data/database/csv directory.  It should not be
                                   called directly by the user.
@@ -99,12 +100,12 @@ For developers:
 To edit the structure of any tables contained in the configuration database, a user may
 need to edit the following scripts to ensure their continued function:
 
-dump_mysql_db.sql
+dump_db.sql
 load_db.sql
 
 If modifying or eliminating columns for a given table,  the user should verify that the 
-respective header file contained in csmart/data/database/headers/ remains valid. Be sure to edit the corresponding .q files in configs/common, and possibly
-the code that uses them.
+respective header file contained in csmart/data/database/headers/ remains valid. Be sure to edit the 
+corresponding .q files in configs/common, and possibly the code that uses them.
 
 
 
