@@ -178,7 +178,7 @@ very similar for WinNT.
 
   <li>Download and install MySQL from 
     <a href="http://www.mysql.org/">http://www.mysql.org/</a>.
-    Version "3.2.3" will work. (For security reasons, be sure to change the default users' passwords.)</li><p>
+    Version "3.23" will work. But on Linux, be sure to use 3.23.45 or better. (For security reasons, be sure to change the default users' passwords.)</li><p>
 
   <li>There are two MySQL database snapshots available. One to support the military logistics domain plugins, and one for the CSMART configuration database. These instructions will help with both, but for further details on the plugin database, see the release <a href="../../doc/index.html">documentation</a> for details.  Load the 
     <a href="http://www.cougaar.org">Cougaar</a>
@@ -209,8 +209,10 @@ very similar for WinNT.
        mysql&gt; grant all on mycoug.* to myname@"localhost" identified by 'mypass';
        mysql&gt; exit;
       </pre>
-      You could instead create this user such that any machine in your domain can access it (with the security risks that entails), by doing: <pre>myname@"%.foo.com"</pre> instead.
-      </li><p>
+      You could instead create this user such that any machine in your
+      domain can access it (with the security risks that entails), by
+      doing: <pre>myname@"%.foo.com"</pre> instead.
+  </li><p>
 
   <li>You must now create a special table which CSMART requires when
   using MySQL. To create this table, do:
@@ -219,9 +221,11 @@ very similar for WinNT.
      [supply password 'mypass]
   </pre></li>       
 
-    <li>Once you have imported the CMT MySQL datafile, be sure to follow
+  <li>Once you have imported the CMT MySQL datafile, be sure to follow
   the same steps to import the Cougaar domain plugin MySQL database
-  (from CIP/dbms/mysql/mysqldump.8.6.txt).</li><p>
+  (from CIP/dbms/mysql/mysqldump.8.6.txt). Note that importing this
+  database requires loading 2 files at least, with separate files for
+  the "class 9" data.</li><p>
       
   <li>The database is now ready.  You must now create a "cougaar.rc"
     for the database users (<a href="http://www.cougaar.org">Cougaar</a>
@@ -552,7 +556,7 @@ installation using
     or you plan to run a society other than SMALL-135 or SMALL-135-TRANS, 
     then you must modify this file.  For
     example, one can alter the logging level by changing a property in the
-    "server.props".  See the "server.props" for details.</li><p>
+    "server.props".  See the "server.props" for details. (Note that you may use a name other than "server.props", in which case you must provide the server startup script with the relative path to your server properties file when you invoke the script.)</li><p>
 
   <li>(Optional) Developers may want to turn on the AppServer "verbose" 
     debugging option, which is set in the "Server" script.  See the "Server"
@@ -561,7 +565,7 @@ installation using
   <li>The server is now ready to run by using:
       <pre>
        cd server/bin
-       ./Server
+       ./Server [optional: server properties file name]
       </pre>
     You do not need to do this until CSMART first attempts to launch a
     Node.  For simplicity you can start the AppServer well in advance.
@@ -605,7 +609,17 @@ installation using
        <pre>
        xhost +localhost
        </pre>
-    Note that this must be done even if you're only using "localhost". On Windows machines, you may need to edit your local xhosts.txt file (see your server documentation).</li><p>
+    Note that this must be done even if you're only using
+    "localhost". On Windows machines, you may need to edit your local
+    xhosts.txt file (see your server documentation).</li><p>
+
+  <li>CSMART allows users to create Recipes, whose functionality is
+  driven by database queries. These user-defined queries can be copied
+  from those in "CIP/configs/common/PopulateDb.q". However, they
+  should be copied into a new user-local file, called
+  "recipeQueries.q". This file can be placed anywhere on the Cougaar
+  Configuration path. Typically, users put this in the same place as
+  their cougaar.rc file, CIP/configs/common.</li><p>
 
   <li>CSMART is now ready to run by using:
        <pre> 
@@ -645,16 +659,12 @@ installation using
 
     <li>Right-click, select "New Experiment", then select "From Database" to load a pre-configured experiment.</li><p>
 
-    <li>Select "SMALL 3ID WITH TRANSCOM".  You may be prompted to pick a unique name for your experiment. Then a UI to select "Threads &amp; Groups" will
-      popup.</li><p>
+    <li>Select an experiment, "TINY_1AD_TRANS_STUB" is a simple place to start.  You may be prompted to pick a unique name for your experiment. Then a UI to select "Threads &amp; Groups" will popup.</li><p>
 
-    <li>Configure the "Threads &amp; Groups".  NOTE: Although no
-    threads appear to be selected, the experiment will do something
-    interesting. MYSQL Note: Currently, MySQL users should always
-    click 'OK' in this window, <em>without</em> changing any thread
-    selections. In this screen, you may modify the set of threads
-    (military classes of supply) which the society will process.  For
-    a simple test, either select nothing, or select "class 1"
+    <li>Configure the "Threads &amp; Groups".  In this screen, you may
+    modify the set of threads (military classes of supply) which the
+    society will process.  Note however, that you <em>must</em> select
+    at least one thread.  For a simple test, select "class 1"
     (food).</li><p>
 
     <li>Select "Yes" to modify the experiment.  Give the modified
@@ -664,11 +674,14 @@ installation using
     </ol>
   </li><p>
 
-  <li>You may also add run-time performance metric collection to your society. (See section 5 of the User's Guide.) To (optionally) create a new metric for an experiment:
+  <li>You may also add run-time performance metric collection to your
+  society. (See section 5 of the User's Guide.) A metric is a kind of
+  Recipe. Recipes are rules for adding components to a society.  To
+  (optionally) create a new recipe for an experiment:
     <ol>
     <li>Select "Default Workspace".</li><p>
 
-    <li>Right-click, select "New Metric", select "Basic Metric", then
+    <li>Right-click, select "New Recipe", select "Built in", select "Basic Metric", then
       "OK".</li><p>
 
     <li>Give the metric a name -- "My Metric" is fine for this test.</li><p>
@@ -686,19 +699,19 @@ installation using
     <li>Click on "Experiment Builder".  A new "Configuration" UI will
       popup.</li><p>
 
-    <li>To (optionally) add a metric to this experiment:
+    <li>To (optionally) add a recipe to this experiment (like the metric you just created):
        <ol>
-       <li>Click on the "Properties" tab.  A folder for "Metrics" is
+       <li>Click on the "Properties" tab.  A folder for "Recipes" is
          displayed.</li><p>
 
        <li>Bring the original "CSMART" UI window to the front and select
-         your "My Metric" metric, as created in the "To create a new
-         metric for an Experiment" notes.</li><p>
+         your "My Metric" recipe, as created in the "To create a new
+         recipe for an Experiment" notes.</li><p>
 
-       <li>Drag the "My Metric" onto the "Metrics" folder of the
+       <li>Drag the "My Metric" onto the "Recipes" folder of the
          "Properties" panel.</li><p>
 
-       </li>The metric is now associated with the experiment.</li><p>
+       </li>The recipe is now associated with the experiment.</li><p>
        </ol>
      </li><p>
 
@@ -741,8 +754,18 @@ installation using
       multi-machine configuration then you would drag the Nodes onto
       multiple hosts.</li><p>
 
+    <li>At this point, you can set various properties on the Nodes or
+    Hosts. Most significantly, you can specify the run-time Java
+    properties with which the Nodes will run. To do so, right-click on
+    the Node you want to modify. From the pop-up menu, select the
+    "Command Line Argument" option. A new window appears, listing all
+    of the command line arguments which you can edit, or to which you
+    can add. Note: Be careful of editing the existing arguments unless
+    you know what you are doing.</li>  
+
     <li>On the top menu, select "File", then "Save".  The configuration
-      is saved to the database under the experiment name you provided, for later re-use.</li><p>
+      is saved to the database under the experiment name you provided,
+      for later re-use.</li><p>
 
     <li>On the top menu, select "File", then "Close".  The UI popup for
       configuration is closed.</li><p>
@@ -785,7 +808,10 @@ installation using
       window; one for each host.  Click on both to see the Node
       output.  These output panels can be streched to 80 columns to
       make viewing easier.  Log files of the output are written to
-      the "Select Results" directory that you specified. You can set notifications to monitor the Node output, filter that output, and many other things. See the on-line documentation or section 6 of the User's Guide for details.</li><p>
+      the "Select Results" directory that you specified. You can set
+      notifications to monitor the Node output, filter that output,
+      and many other things. See the on-line documentation or section
+      6 of the User's Guide for details.</li><p>
 
     <li>In the output panels you should see a "@NODE_CREATED" message,
       followed by the 
