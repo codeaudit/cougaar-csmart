@@ -1,4 +1,0 @@
-[ Registry ]
-address=##HOST_NAME##
-alias=AlpFDS
-port=##ADMIN_PORT##
