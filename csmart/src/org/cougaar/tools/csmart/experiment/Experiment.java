@@ -1005,6 +1005,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 
       // FIXME: What about other Node fields?
     }
+
     // reconcile hosts-nodes-agents
     AgentComponent[] nagents = experimentCopy.getAgents();
     NodeComponent nnode = null;
@@ -1028,6 +1029,10 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
               nnode.addAgent(nagents[y]);
       }
     }
+
+    // FIXME: What about if orig Experiment had Agents assigned to a Node
+    // that was not assigned to a host - is that mapping lost?
+
     // copy the results directory; results from the copied experiment
     // will be stored in this directory under the copied experiment name
     experimentCopy.setResultDirectory(getResultDirectory());
