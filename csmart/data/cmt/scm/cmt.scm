@@ -1289,7 +1289,8 @@
     (define (do-entry rs)
       (cond
        ((.next rs)
-	(.put ht (.getString rs "DESCRIPTION")(.getString rs "TRIAL_ID"))
+	(if (not (eq? #null (.getString rs "DESCRIPTION")))
+	    (.put ht (.getString rs "DESCRIPTION")(.getString rs "TRIAL_ID")))
 	(do-entry rs))))
     (with-query-jdbc (string-append 
 		      "select  trial_id,description from " asb-prefix "EXPT_TRIAL where expt_id=" (sqlQuote experiment_id))
