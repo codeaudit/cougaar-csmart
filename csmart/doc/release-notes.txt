@@ -1,5 +1,7 @@
 CSMART Release Notes
 
+- The CSMART required Cougaar 3rd party jar file: grappa1_2_bbn.jar has been changed to grappa1_2.jar.  
+
 Release 9.0:
 - Repackage and code cleanup for readability
 - Use Servlets instead of PSPs
