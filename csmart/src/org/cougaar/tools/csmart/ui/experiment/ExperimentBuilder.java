@@ -211,19 +211,13 @@ public class ExperimentBuilder extends JFrame {
     this.csmart = csmart;
     createLogger();
     setExperiment(experiment);
+    communityPanel = new CommunityPanel(experiment);
     JMenuBar menuBar = new JMenuBar();
     getRootPane().setJMenuBar(menuBar);
-    JMenu fileMenu = new JMenu(FILE_MENU);
-    fileMenu.setToolTipText("Save, export configuration, or quit");
-    communityMenu = new JMenu(COMMUNITY_MENU);
-    communityMenu.setToolTipText("Configure communities");
+
+    // Set up Configure menu
     configureMenu = new JMenu(CONFIGURE_MENU);
     configureMenu.setToolTipText("Configure hosts and nodes");
-    communityPanel = new CommunityPanel(experiment);
-    newCommunityMenuItem = new JMenuItem(communityPanel.newCommunityAction);
-    communityMenu.add(newCommunityMenuItem);
-    viewCommunityMenuItem = new JMenuItem(communityPanel.viewCommunityAction);
-    communityMenu.add(viewCommunityMenuItem);
     newHostMenuItem = 
       new JMenuItem(HostConfigurationBuilder.NEW_HOST_MENU_ITEM);
     newHostMenuItem.addActionListener(new ActionListener() {
@@ -231,6 +225,7 @@ public class ExperimentBuilder extends JFrame {
           hcb.createHost();
         }
       });
+    newHostMenuItem.setToolTipText("Add new Host to experiment");
     configureMenu.add(newHostMenuItem);
     describeHostMenuItem = 
       new JMenuItem(HostConfigurationBuilder.DESCRIBE_HOST_MENU_ITEM);
@@ -239,6 +234,7 @@ public class ExperimentBuilder extends JFrame {
           hcb.setHostDescription();
         }
       });
+    describeHostMenuItem.setToolTipText("Add user only host description");
     configureMenu.add(describeHostMenuItem);
     hostTypeMenuItem = 
       new JMenuItem(HostConfigurationBuilder.HOST_TYPE_MENU_ITEM);
@@ -247,6 +243,7 @@ public class ExperimentBuilder extends JFrame {
           hcb.setHostType();
         }
       });
+    hostTypeMenuItem.setToolTipText("Specify the host platform for user information");
     configureMenu.add(hostTypeMenuItem);
     hostLocationMenuItem = 
       new JMenuItem(HostConfigurationBuilder.HOST_LOCATION_MENU_ITEM);
@@ -255,6 +252,7 @@ public class ExperimentBuilder extends JFrame {
           hcb.setHostLocation();
         }
       });
+    hostLocationMenuItem.setToolTipText("Specify host location for user use");
     configureMenu.add(hostLocationMenuItem);
     deleteHostMenuItem = 
       new JMenuItem(HostConfigurationBuilder.DELETE_HOST_MENU_ITEM);
@@ -263,6 +261,7 @@ public class ExperimentBuilder extends JFrame {
           hcb.deleteHost();
         }
       });
+    deleteHostMenuItem.setToolTipText("Remove host from experiment");
     configureMenu.add(deleteHostMenuItem);
 
     configureMenu.addSeparator();
@@ -274,7 +273,9 @@ public class ExperimentBuilder extends JFrame {
           hcb.setGlobalCommandLine();
         }
       });
+    globalCommandLineMenuItem.setToolTipText("Specify Command Line Arguments common to all Nodes");
     configureMenu.add(globalCommandLineMenuItem);
+
     commandLineMenuItem = 
       new JMenuItem(HostConfigurationBuilder.NODE_COMMAND_LINE_MENU_ITEM);
     commandLineMenuItem.addActionListener(new ActionListener() {
@@ -282,12 +283,15 @@ public class ExperimentBuilder extends JFrame {
           hcb.setNodeCommandLine();
         }
       });
+    commandLineMenuItem.setToolTipText("Specify Command Line Arguments specific to this Node");
     configureMenu.add(commandLineMenuItem);
 
     configureMenu.addSeparator();
 
     newNodeMenu = new JMenu(HostConfigurationBuilder.NEW_NODE_MENU_ITEM);
+    newNodeMenu.setToolTipText("Create a new Node....");
     newUnassignedNodeMenuItem = new JMenuItem("Unassigned");
+    newUnassignedNodeMenuItem.setToolTipText("Create new Node in unassigned list");
     newUnassignedNodeMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           hcb.createUnassignedNode();
@@ -295,6 +299,7 @@ public class ExperimentBuilder extends JFrame {
       });
     newNodeMenu.add(newUnassignedNodeMenuItem);
     newAssignedNodeMenuItem = new JMenuItem("On Host");
+    newAssignedNodeMenuItem.setToolTipText("Create new Node assigned to this Host");
     newAssignedNodeMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           hcb.createAssignedNode();
@@ -309,6 +314,7 @@ public class ExperimentBuilder extends JFrame {
           hcb.setNodeDescription();
         }
       });
+    describeNodeMenuItem.setToolTipText("Add user readable description of the Node");
     configureMenu.add(describeNodeMenuItem);
     deleteNodeMenuItem = 
       new JMenuItem(HostConfigurationBuilder.DELETE_NODE_MENU_ITEM);
@@ -317,29 +323,58 @@ public class ExperimentBuilder extends JFrame {
           hcb.deleteNode();
         }
       });
+    deleteNodeMenuItem.setToolTipText("Remove this Node from the Experiment");
     configureMenu.add(deleteNodeMenuItem);
+
+    configureMenu.addSeparator();
+
+    // If these HNAs werent abstract actions, I'd set ToolTips on them
+    // However, the add method returns a menu item on which
+    // I can call setToolTipText
+    for (int i = 0; i < hnaActions.length; i++) {
+      configureMenu.add(hnaActions[i]).setToolTipText("Save and reuse host-node-agent mappings between experiments");
+    }
+
+    configureMenu.addMenuListener(myMenuListener);
+
+    // End of Configure menu setup. Now File Menu
+    
+    JMenu fileMenu = new JMenu(FILE_MENU);
+    fileMenu.setToolTipText("Save, export configuration, or quit");
+
     for (int i = 0; i < fileActions.length; i++) {
       fileMenu.add(fileActions[i]);
     }
-    configureMenu.addSeparator();
-    for (int i = 0; i < hnaActions.length; i++) {
-      configureMenu.add(hnaActions[i]);
-    }
-    
+
     fileMenu.addMenuListener(myMenuListener);
-    configureMenu.addMenuListener(myMenuListener);
+
+    // Now set up the Community menu
+
+    communityMenu = new JMenu(COMMUNITY_MENU);
+    communityMenu.setToolTipText("Configure communities");
+    newCommunityMenuItem = new JMenuItem(communityPanel.newCommunityAction);
+    newCommunityMenuItem.setToolTipText("Create new community for this Experiment");
+    communityMenu.add(newCommunityMenuItem);
+    viewCommunityMenuItem = new JMenuItem(communityPanel.viewCommunityAction);
+    viewCommunityMenuItem.setToolTipText("Display details for one community in the Experiment");
+    communityMenu.add(viewCommunityMenuItem);
     communityMenu.addMenuListener(myMenuListener);
+
+    // Now the Find Menu
+
     findMenu = new JMenu(FIND_MENU);
     findMenu.setToolTipText("Find a host, node, or agent.");
     for (int i = 0; i < findActions.length; i++) {
       findMenu.add(findActions[i]);
     }
     
+    // Finally the Help menu
     JMenu helpMenu = new JMenu(HELP_MENU);
     helpMenu.setToolTipText("Display documentation.");
     for (int i = 0; i < helpActions.length; i++) {
       helpMenu.add(helpActions[i]);
     }
+
     menuBar.add(fileMenu);
     menuBar.add(configureMenu);
     menuBar.add(findMenu);
