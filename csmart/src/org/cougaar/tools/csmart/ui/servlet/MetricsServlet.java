@@ -1,5 +1,5 @@
 /**
- * PSP to gather Metrics for CSMART
+ * Servlet to gather Metrics for CSMART
  *
  * <pre>
  *    number of tasks
@@ -10,25 +10,28 @@
 
 package org.cougaar.tools.csmart.ui.servlet;
 
-import java.io.ObjectOutputStream;
-import java.io.PrintStream;
-import java.net.URL;
-import java.util.*;
+import java.io.IOException;
+import java.io.PrintWriter;
 
-import java.io.*;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Iterator;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpUtils;
 
 import org.cougaar.core.servlet.ServletUtil;
 import org.cougaar.core.servlet.SimpleServletSupport;
 import org.cougaar.core.util.UID;
-import org.cougaar.planning.ldm.asset.*;
-import org.cougaar.planning.ldm.plan.*;
 import org.cougaar.util.UnaryPredicate;
+import org.cougaar.planning.ldm.plan.AllocationResult;
+import org.cougaar.planning.ldm.plan.PlanElement;
+import org.cougaar.planning.ldm.plan.Task;
 
 public class MetricsServlet 
   extends HttpServlet
@@ -128,7 +131,7 @@ public class MetricsServlet
       ArrayList list = collectData(support);
       out.print(list);
     } catch(Exception e) {
-      System.out.println("PSP_Metric Exception: " + e);
+      System.out.println("CSMART_MetricsServlet Exception: " + e);
       e.printStackTrace();
     }
     }
