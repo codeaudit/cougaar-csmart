@@ -49,7 +49,7 @@ public class Util {
       path = file.getCanonicalPath();
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
-        log.error("Could not find: " + filename, e);
+        log.error("Could not find: " + filename);
       }
     }
     return path;
