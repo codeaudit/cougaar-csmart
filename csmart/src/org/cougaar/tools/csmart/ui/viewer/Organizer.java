@@ -1213,8 +1213,6 @@ public class Organizer extends JScrollPane {
 	}
         for (int i = 0; i < societyAction.length; i++) {
             societyMenu.add(societyAction[i]);
-	    //	    if (societyAction[i].getValue(Action.NAME).equals("Copy"))
-	    //	      societyAction[i].setEnabled(false);
         }
         for (int i = 0; i < impactAction.length; i++) {
             impactMenu.add(impactAction[i]);
@@ -1224,8 +1222,6 @@ public class Organizer extends JScrollPane {
         }
         for (int i = 0; i < experimentAction.length; i++) {
             experimentMenu.add(experimentAction[i]);
-	    if (experimentAction[i].getValue(Action.NAME).equals("Copy"))
-	      experimentAction[i].setEnabled(false);
         }
         for (int i = 0; i < treeAction.length; i++) {
             treeMenu.add(treeAction[i]);
