@@ -23,6 +23,7 @@ package org.cougaar.tools.csmart.ui.servlet;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
@@ -82,17 +83,17 @@ public class PlanServlet
     pi.execute(request, response);  
   }
   
-  public void doPost(
+  
+  public void doPut(
 		     HttpServletRequest request,
 		     HttpServletResponse response) throws IOException, ServletException
   {
+    
     // create a new "PlanProvider" context per request
     PlanProvider pi = new PlanProvider(support);
     pi.execute(request, response);  
   }
   
-  
-
 
   /**
    * Captures the URL parameters.
@@ -114,14 +115,16 @@ public class PlanServlet
   private static class PlanProvider {
 
     
-    // flags set by the client to control what objects are returned
+    /* flags set by the client to control what objects are returned */
     static boolean ignorePlanElements = false;
     static boolean ignoreWorkflows = false;
     static boolean ignoreAssets = false;
+    
+    /* stream variables */
     static ServletInputStream in;
     ServletOutputStream out;
     
-    // limit on number of PropertyTrees to return; see javadocs above.
+    /* limit on number of PropertyTrees to return; see javadocs above */
     static int limit = Integer.MAX_VALUE;
  
     /* since "PlanProvider" is a static inner class, here
@@ -136,7 +139,6 @@ public class PlanServlet
       this.support = support;
     }
     
-
     /**
      * Our predicate for finding Blackboard objects.
      */
@@ -147,27 +149,27 @@ public class PlanServlet
 	      (o instanceof Task || 
 	       o instanceof PlanElement ||
 	       o instanceof Asset ||
-           o instanceof HappinessChangeEvent);
+	       o instanceof HappinessChangeEvent);
 	  }
 	};
     }
     
-
- /**
-   * This is the main Servlet method called by the infrastructure in response
-   * to receiving a request from a client.
-   * Get all the plan objects, ignoring those the client specifies,
-   * and return their properties to the client in a serialized PropertyTree.
-   */
-
-  public void execute(HttpServletRequest request, 
-		      HttpServletResponse response) throws IOException, ServletException 
-  {
-    this.out = response.getOutputStream();
-  
-    try{
-      parseParams(request);
     
+    /**
+     * This is the main Servlet method called by the infrastructure in response
+     * to receiving a request from a client.
+     * Get all the plan objects, ignoring those the client specifies,
+     * and return their properties to the client in a serialized PropertyTree.
+     */
+    
+    public void execute(HttpServletRequest request, 
+			HttpServletResponse response) throws IOException
+    {
+      this.out = response.getOutputStream();
+      
+      try{
+	parseParams(request);
+	
       List ret = getObjects();
       if (ret!=null)
 	{
@@ -175,18 +177,18 @@ public class PlanServlet
 	  p.writeObject(ret);
 	  System.out.println("Sent Objects");
 	}
-    } catch (Exception e) {
-      System.out.println("PlanServlet Exception: " + e);
-      e.printStackTrace(); 
+      } catch (Exception e) {
+	System.out.println("PlanServlet Exception: " + e);
+	e.printStackTrace(); 
+      }
     }
-  }
     
     
     /**
      * Returns a vector of PropertyTree for either a Task and
      * all its related objects (planelements, workflows, assets) or
      * for a HappinessChangeEvent.
-     * 
+     * @return List
      */
     private static List getObjects() {
       
@@ -279,25 +281,25 @@ public class PlanServlet
      * Determine either GET or POST methods, call with respective 
      * ServletUtil methods.
      *
-     * @see ParamVisitor inner-class defined at the end of this class
+     * @see ParamVisitor interface setParam method defined below
      */
-  public static void parseParams( 
-      HttpServletRequest req) throws IOException
-  {  
-    String meth = req.getMethod();
-    if (meth.equals("GET")) {
-      // check for no query params
-      if (req.getQueryString() != null) {
-        Map m = HttpUtils.parseQueryString(req.getQueryString());
-        parseParams(m);
+    public static void parseParams( 
+				   HttpServletRequest req) throws IOException
+    {  
+      String meth = req.getMethod();
+      if (meth.equals("GET")) {
+	// check for no query params
+	if (req.getQueryString() != null) {
+	  Map m = HttpUtils.parseQueryString(req.getQueryString());
+	  parseParams(m);
+	}
+      } else if (meth.equals("PUT")) {
+	int len = req.getContentLength();
+	in = req.getInputStream();
+	Map m = HttpUtils.parsePostData(len, in);
+	parseParams(m);
       }
-    } else if (meth.equals("POST")) {
-      int len = req.getContentLength();
-      in = req.getInputStream();
-      Map m = HttpUtils.parsePostData(len, in);
-      parseParams(m);
     }
-  }
 
   /**
    * Given a <code>Map</code> of (name, value) pairs, call back 
@@ -307,7 +309,7 @@ public class PlanServlet
    * @see ParamVisitor inner-class defined at the end of this class
    */
   public static void parseParams(
-      Map m) {
+				 Map m) {
     Iterator iter = m.entrySet().iterator();
     while (iter.hasNext()) {
       Map.Entry me = (Map.Entry)iter.next();
@@ -321,6 +323,8 @@ public class PlanServlet
     /**
      * Sets "objects to ignore" variables from
      * string in URL predicated with ?ignorePlanObjects
+     * @param name name of parameter
+     * @param value value of parameter
      */
     
     public static void setParams(String name, String value) {
