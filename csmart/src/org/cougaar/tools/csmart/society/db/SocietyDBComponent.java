@@ -78,6 +78,10 @@ public class SocietyDBComponent
       substitutions.put(":assemblyMatch", DBUtils.getListMatch(assemblyId));
       substitutions.put(":insertion_point", "Node.AgentManager.Agent");
 
+      // FIXME:
+      // It would be really nice to be able to handle Binders and other non-Agent
+      // top-level things
+
       try {
 	Connection conn = DBUtils.getConnection();
 	try {
