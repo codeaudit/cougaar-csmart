@@ -44,8 +44,6 @@ import java.util.Iterator;
  *
  * Created: Thu Feb 21 15:57:03 2002
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version 1.0
  */
 public class PropGroupBase 
   extends ModifiableConfigurableComponent 

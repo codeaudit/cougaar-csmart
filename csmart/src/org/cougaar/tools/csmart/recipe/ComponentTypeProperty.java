@@ -41,8 +41,6 @@ import java.util.Set;
  *
  * Created: Wed Jan 16 15:41:11 2002
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version 1.0
  */
 
 public class ComponentTypeProperty extends ConfigurableComponentProperty {

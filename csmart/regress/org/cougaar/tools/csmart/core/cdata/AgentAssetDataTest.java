@@ -34,7 +34,6 @@ import java.util.Iterator;
  *
  * Created: Tue Jan 15 13:04:34 2002
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
  */
 public class AgentAssetDataTest extends TestCase {
 

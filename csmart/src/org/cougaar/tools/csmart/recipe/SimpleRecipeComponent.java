@@ -33,8 +33,6 @@ package org.cougaar.tools.csmart.recipe;
  *
  * Created: Thu Jun 20 09:51:53 2002
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version 1.0
  */
 
 public interface SimpleRecipeComponent extends RecipeComponent {

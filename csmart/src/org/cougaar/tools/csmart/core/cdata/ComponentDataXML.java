@@ -48,8 +48,6 @@ import java.util.Iterator;
  *
  * Created: Wed Jun  5 11:20:07 2002
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version 1.0
  */
 
 public class ComponentDataXML extends XMLUtils {

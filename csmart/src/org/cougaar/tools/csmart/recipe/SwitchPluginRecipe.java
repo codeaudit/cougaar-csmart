@@ -41,8 +41,6 @@ import java.net.URL;
  *
  * Created: Wed Mar 27 09:48:41 2002
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version 1.0
  */
 public class SwitchPluginRecipe extends RecipeBase 
   implements Serializable {

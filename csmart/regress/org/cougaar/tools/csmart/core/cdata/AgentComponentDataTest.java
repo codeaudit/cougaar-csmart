@@ -31,8 +31,6 @@ package org.cougaar.tools.csmart.core.cdata;
  *
  * Created: Thu Jan 31 15:30:17 2002
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version 1.0
  */
 
 import junit.framework.*;

@@ -47,8 +47,6 @@ import java.util.regex.Pattern;
  *
  * Created: Wed Mar 13 09:45:18 2002
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version 1.0
  */
 public class FileParseUtil {
 

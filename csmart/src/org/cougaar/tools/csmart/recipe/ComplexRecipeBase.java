@@ -74,8 +74,6 @@ import java.util.Map;
  *
  * Created: Thu Jun 20 13:52:13 2002
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version 1.0
  */
 public class ComplexRecipeBase extends RecipeBase 
   implements ComplexRecipeComponent, Serializable {

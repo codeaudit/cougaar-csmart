@@ -59,8 +59,6 @@ import java.util.Vector;
  *
  * Created: Thu Feb 21 13:36:49 2002
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version 1.0
  */
 public class PrototypeParser {
 

@@ -30,7 +30,6 @@ package org.cougaar.tools.csmart.util;
  * Create a new object to hold a location name and position, as a
  * <code>LatLonPoint</code>
  *
- * @author <a href="mailto:ahelsing@bbn.com">Aaron Helsinger</a>
  * @see NamedLocation
  * @see LatLonPoint
  */

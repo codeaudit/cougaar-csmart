@@ -42,7 +42,6 @@ import java.util.Set;
  *
  * Created: Wed May 15 14:17:33 2002
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
  */
 public class PriorityProperty extends ConfigurableComponentProperty {
   public PriorityProperty (ConfigurableComponent c, String name, Object value){

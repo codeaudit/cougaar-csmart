@@ -34,8 +34,6 @@ import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
  *
  * Created: Fri Feb 22 12:59:37 2002
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version 1.0
  */
 
 public class ContainerBase 

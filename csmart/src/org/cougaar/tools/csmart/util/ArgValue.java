@@ -35,8 +35,6 @@ import java.io.Serializable;
  * which separates the Arg and the Value.
  * Note that the argument cannot be null, and in this case the value is a String
  *
- * @author <a href="mailto:ahelsing@bbn.com">Aaron Helsinger</a>
- * @version 1.0
  * @see Serializable
  */
 public class ArgValue implements Serializable {

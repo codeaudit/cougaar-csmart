@@ -33,8 +33,6 @@ import org.cougaar.tools.csmart.util.DebugUtils;
  *
  * Created: Wed Jun  5 11:55:51 2002
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version 1.0
  */
 
 public class CDataDebugUtils extends DebugUtils {

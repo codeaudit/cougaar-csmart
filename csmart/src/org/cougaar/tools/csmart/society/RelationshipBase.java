@@ -43,8 +43,6 @@ import java.util.Date;
  *
  * Created: Fri Feb 22 12:32:59 2002
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version 1.0
  */
 
 public class RelationshipBase 

@@ -33,8 +33,6 @@ import org.cougaar.util.log.Logger;
  *
  * Created: Tue May  7 14:46:47 2002
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version 1.0
  */
 
 public class DebugUtils {

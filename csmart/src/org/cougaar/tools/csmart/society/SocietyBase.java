@@ -46,7 +46,6 @@ import java.util.Iterator;
 /**
  * Implements generic methods required by all societies.
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
  */
 public abstract class SocietyBase 
   extends ModifiableConfigurableComponent

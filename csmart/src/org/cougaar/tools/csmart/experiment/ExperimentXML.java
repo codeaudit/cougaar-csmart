@@ -41,8 +41,6 @@ import java.io.IOException;
  *
  * Created: Wed Jun  5 11:38:56 2002
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version 1.0
  */
 
 public class ExperimentXML extends ComponentDataXML {

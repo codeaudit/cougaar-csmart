@@ -43,8 +43,6 @@ import org.cougaar.tools.csmart.society.SocietyComponent;
  *
  * Created: Fri Mar 22 13:30:26 2002
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version
  */
 public class ExperimentTest extends TestCase {
 

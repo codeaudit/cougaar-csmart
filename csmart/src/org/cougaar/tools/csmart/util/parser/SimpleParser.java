@@ -34,7 +34,6 @@ import java.util.StringTokenizer;
  * A Simple Parser that parses comma delimited files.
  * The parser has no knowledge of the contents of the file.
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
  */ 
 public class SimpleParser extends GenericParser {
   

@@ -30,7 +30,6 @@ import org.cougaar.planning.ldm.plan.Location;
 /**
  * A <code>Location</code> with a name and a position, as a <code>LatLonPoint</code>
  *
- * @author <a href="mailto:ahelsing@bbn.com">Aaron Helsinger</a>
  * @see Location
  */
 public interface NamedLocation extends Location {

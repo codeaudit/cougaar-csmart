@@ -51,8 +51,6 @@ import java.util.Vector;
  *
  * Created: Wed Feb 20 09:40:54 2002
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version 1.0
  * @see ComponentData
  * @see org.cougaar.core.component.ComponentDescription
  */

@@ -39,7 +39,6 @@ package org.cougaar.tools.csmart.util;
  * Some routines taken from <a href="http://www.cougaar.org">Cougaar</a>
  * and the class <code>org.cougaar.glm.util.GeoUtils</code><br>
  *
- * @author <a href="mailto:ahelsing@bbn.com">Aaron Helsinger</a>
  */
 public final class EarthConstants {
   // From com.bbn.openmap.proj.MoreMath

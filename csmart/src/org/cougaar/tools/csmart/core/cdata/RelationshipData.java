@@ -45,8 +45,6 @@ import java.io.Serializable;
  * Where the fields are: <br>
  * <Type> <ItemId> <TypeId> <Supported Cluster> <Start Time> <Stop Time>
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version 1.0
  */
 public class RelationshipData implements Serializable {
   

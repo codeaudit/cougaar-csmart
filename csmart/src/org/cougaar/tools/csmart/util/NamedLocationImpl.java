@@ -33,7 +33,6 @@ package org.cougaar.tools.csmart.util;
  * Multiple constructors are available.
  * Utility functions to find the distance from this location to another
  *
- * @author <a href="mailto:ahelsing@bbn.com">Aaron Helsinger</a>
  * @see NewNamedLocation
  * @see LatLonPoint
  */

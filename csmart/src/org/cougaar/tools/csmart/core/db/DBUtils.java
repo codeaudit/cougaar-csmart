@@ -43,7 +43,6 @@ import java.util.*;
  * Static methods for accessing the CSMART configuration database
  * and manipulating the results.
  *
- * @author <a href="mailto:ahelsing@bbn.com">Aaron Helsinger</a>
  */
 public class DBUtils {
 

@@ -54,8 +54,6 @@ import java.util.List;
  * <br><br>
  * Created: Fri Mar  8 12:40:31 2002
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version 1.0
  */
 
 public class AssetDataCallbackImpl implements AssetDataCallback {

@@ -45,8 +45,6 @@ import java.util.Iterator;
  *
  * Created: Thu Mar 28 11:35:40 2002
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version 1.0
  */
 public class SocietyComponentCreator {
 

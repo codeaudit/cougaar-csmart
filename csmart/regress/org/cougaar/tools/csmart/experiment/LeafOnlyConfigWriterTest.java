@@ -38,8 +38,6 @@ import java.util.Iterator;
  *
  * Created: Wed Jan 30 11:46:38 2002
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version 1.0
  */
 
 public class LeafOnlyConfigWriterTest extends TestCase {

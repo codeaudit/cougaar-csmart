@@ -43,7 +43,6 @@ import java.util.Iterator;
 /**
  * Holds basic recipe functionality
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
  */
 public abstract class RecipeBase 
   extends ModifiableConfigurableComponent 

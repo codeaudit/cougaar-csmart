@@ -33,7 +33,6 @@ package org.cougaar.tools.csmart.recipe;
  *
  * Created: Wed Mar 27 10:37:01 2002
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
  */
 public class RecipeList {
 

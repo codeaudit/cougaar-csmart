@@ -44,8 +44,6 @@ import java.util.Set;
  *
  * Created: Wed May 22 10:22:54 2002
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version 1.0
  */
 public class AdaptivitySupportRecipe extends RecipeBase implements Serializable {
 

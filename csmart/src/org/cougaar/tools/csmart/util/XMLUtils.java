@@ -50,8 +50,6 @@ import java.io.FileNotFoundException;
  *
  * Created: Wed Jun  5 10:41:48 2002
  *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version 1.0
  */
 public class XMLUtils {
   private static Logger log = CSMART.createLogger("org.coguaar.tools.csmart.util.XMLUtils");
