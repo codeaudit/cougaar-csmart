@@ -31,6 +31,25 @@ fall integration not available in time for the 9.4 release.
   "NCA". Follow the instructions in the comment. Note however that you
   must have previously saved your Experiment to the database. Again,
   this functionality is not fully supported.
+- Upgraded to latest version of JCChart library (renaming jar file to
+  jcchart.jar)
+- Note that since, as of 9.4, Agent Insertion Recipes always include
+  an OrgAsset, that if you import such a recipe from a prior release,
+  you will see some errors when you load it from the database:
+11:48:17,870 ERROR [AgentInsertionRecipe] - Unknown property: Include Item
+Identification PG=true in component AGG-Agent
+11:48:17,877 ERROR [AgentInsertionRecipe] - Unknown property: Include Org
+Asset=true in component AGG-Agent
+  You should ignore these errors. But you should then edit your
+  recipe, to fill in all the attributes of the Agent and its new
+  OrgAsset (bug 1594).
+- Bug 1596: OrgAssets created using the AgentInsertionRecipe were
+  missing the ClusterPG and ItemIdentificationPG, resulting in runtime
+  Exceptions.
+- Added a Community Plugin recipe to base experiments. By including
+  this recipe, all Agents and Node Agents will get the Community
+  Plugin, allowing full Community and ABA support in all Agents and
+  Nodes by default (bug 1587).
 
 Release 9.4:
 This release constitues the last major Cougaar release for this
