@@ -128,12 +128,6 @@ public abstract class CSMARTPlugin
     getBlackboardService().publishAdd(o);
   }
 
-  /**
-   * Equivalent to
-   *   <tt>publishAddAfter(o, 0, pred)</tt>.
-   *
-   * @see #publishAddAfter(Object,long,UnaryPredicate)
-   */
   protected final void publishAdd(Object o, UnaryPredicate pred) {
     if ((pred == null) ||
         (pred.execute(o))) {
