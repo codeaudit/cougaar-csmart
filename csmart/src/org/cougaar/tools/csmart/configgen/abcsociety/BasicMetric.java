@@ -23,11 +23,16 @@ package org.cougaar.tools.csmart.configgen.abcsociety;
 import java.io.FileFilter;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.List;
 
 import org.cougaar.tools.server.ConfigurationWriter;
 
 import org.cougaar.tools.csmart.scalability.ScalabilityMetricsFileFilter;
+
+import org.cougaar.tools.csmart.ui.experiment.Experiment;
+
 import org.cougaar.tools.csmart.ui.component.AgentComponent;
+import org.cougaar.tools.csmart.ui.component.AgentComponentData;
 import org.cougaar.tools.csmart.ui.component.ComponentData;
 import org.cougaar.tools.csmart.ui.component.ConfigurableComponentPropertyAdapter;
 import org.cougaar.tools.csmart.ui.component.MetricComponent;
@@ -36,6 +41,8 @@ import org.cougaar.tools.csmart.ui.component.NodeComponent;
 import org.cougaar.tools.csmart.ui.component.Property;
 import org.cougaar.tools.csmart.ui.component.PropertyEvent;
 import org.cougaar.tools.csmart.ui.component.PropertiesListener;
+import org.cougaar.tools.csmart.ui.component.RelationshipTimePhasedData;
+import org.cougaar.tools.csmart.ui.component.GenericComponentData;
 import org.cougaar.tools.csmart.ui.viewer.Organizer;
 
 /**
@@ -75,6 +82,7 @@ public class BasicMetric extends ModifiableConfigurableComponent
     "org.cougaar.tools.csmart.plugin.MetricsPlugin";
   private static final String MetricsInitializerPlugIn_name =
     "org.cougaar.tools.csmart.plugin.MetricsInitializerPlugin";
+  private static final String MetricControl_Role = "MetricsControlProvider";
 
   private boolean editable = true;
 
@@ -137,7 +145,7 @@ public class BasicMetric extends ModifiableConfigurableComponent
    * @return file filter to get metrics files for this experiment
    */
   public FileFilter getResultFileFilter() {
-    // Fixme: Make this more specific?
+    // FIXME: Make this more specific?
     return metricsFileFilter;
   }
 
@@ -163,6 +171,10 @@ public class BasicMetric extends ModifiableConfigurableComponent
     return null;
   }
 
+  private transient int numAgents = 0; // numAgents collecting stats
+  private transient RelationshipTimePhasedData metricRelate = null; // name of agent doing controling
+  private transient int numAgs2 = 0;
+  
   public ComponentData addComponentData(ComponentData data) {
     // The Basic Metric needs to add its plugin to each Agent in the society.
     // Plus, it should pick one agent in the society, and add the initializer to that agent
@@ -170,12 +182,117 @@ public class BasicMetric extends ModifiableConfigurableComponent
     // Finally, it needs to add a relationship to every agent in the society with
     // that initializer
     // FIXME!!!
+
+    // Find the Experiment.
+    // From it, get a count of the Agents in the Society & set the numAgents
+    if (numAgents == 0 && data.getOwner() instanceof Experiment) {
+      Experiment exp = (Experiment)data.getOwner();
+      List ags = exp.getAgentsList();
+      if (ags != null)
+	numAgents = ags.size();
+      else
+	numAgents = 0;
+    }
+    // recurse down from the top, finding all of the AgentComponents
+    // save the name of the first I find
+    if (data.getType().equals(ComponentData.AGENT)) {
+      numAgs2++;
+      if (metricRelate == null) {
+	metricRelate = new RelationshipTimePhasedData();
+	metricRelate.setRole(MetricControl_Role);
+	metricRelate.setItem(data.getName()); // name
+	metricRelate.setType(data.getName().substring(data.getName().lastIndexOf(".") + 1));
+	metricRelate.setCluster(data.getName()); // name
+	// and to the first, add the MetricsInitializerPlugIn
+	addInitPICD(data);
+      }
+      // for each Agent, add the MetricsPlugIn & the relationship
+      addCollectorCD(data);
+      addRelationship((AgentComponentData)data);
+    } else if (data.childCount() > 0) {
+      // for each child, call this same method.
+      ComponentData[] children = data.getChildren();
+      for (int i = 0; i < data.childCount(); i++) {
+	data = this.addComponentData(children[i]);
+      }
+    }
     return data;
   }
 
+  private void addInitPICD(ComponentData data) {
+    GenericComponentData plugin = new GenericComponentData();
+    plugin.setType(ComponentData.PLUGIN);
+    plugin.setName("MetricInitializerPlugin");
+    plugin.setClassName(MetricsInitializerPlugIn_name);
+    plugin.addParameter(new Integer(numAgents)); // numProviders
+    plugin.addParameter(getProperty(PROP_SAMPLEINTERVAL).getValue()); // sampleInterval
+    plugin.addParameter(getProperty(PROP_STARTDELAY).getValue()); // startDelay
+    plugin.addParameter(getProperty(PROP_MAXNUMBSAMPLES).getValue()); // maxSamples
+    plugin.setParent(data);
+    plugin.setOwner(this);
+    data.addChild(plugin);
+  }
+
+  private void addCollectorCD(ComponentData data) {
+    //Only add this if its not there already
+    ComponentData[] children = data.getChildren();
+    for (int i = 0; i < data.childCount(); i++) {
+      if (children[i].getClassName().equals(MetricsPlugIn_name))
+	return;
+    }
+    GenericComponentData plugin = new GenericComponentData();
+    plugin.setType(ComponentData.PLUGIN);
+    plugin.setName("MetricPlugin");
+    plugin.setClassName(MetricsPlugIn_name);
+    // Could add the directory to save results in as a parameter
+    plugin.setParent(data);
+    plugin.setOwner(this);
+    data.addChild(plugin);
+  }
+
+  private void addRelationship(AgentComponentData data) {
+    if (metricRelate == null) 
+      return;
+    // Only add the relationship if its not already there
+    RelationshipTimePhasedData[] relats = data.getRelationshipData();
+    for (int i = 0; i < relats.length; i++) {
+      if (relats[i].equals(metricRelate))
+	return;
+    }
+    data.addRelationship(metricRelate);
+  }
+  
   public ComponentData modifyComponentData(ComponentData data) {
-    // FIXME!!!
+    // Just do the addComponentData thing again. That method
+    // is careful not to do things twice.
+    // This ensures that everything is set up.
+    // However, the numProviders may not be correct.
+    numAgs2 = 0;
+    data = addComponentData(data);
+
+    // OK, now set numAgs2 val in the numProviders slot
+    // First, find the MetricsInitializer Plugin
+    ComponentData init = findInitializer(data);
+    if (init == null) {
+      // couldn't find the initializer plugin. Big problem
+      System.err.println("BasicMetric: Could not insert initializer?");
+      return data;
+    }
+    
+    // Then, reset the value of the first parameter
+    init.setParameter(0, new Integer(numAgs2));
+
     return data;
+  }
+
+  private ComponentData findInitializer(ComponentData data) {
+    // Find the plugin with the Metrics initializer plugin
+    ComponentData[] children = data.getChildren();
+    for (int i = 0; i < data.childCount(); i++) {
+      if (children[i].getClassName().equals(MetricsInitializerPlugIn_name))
+	return children[i];
+    }
+    return null;
   }
 
   ///////////////////////////////////////////
@@ -225,4 +342,3 @@ public class BasicMetric extends ModifiableConfigurableComponent
     this.editable = editable;
   }
 } // end of BasicMetric.java
-
