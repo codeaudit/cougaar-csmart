@@ -13,6 +13,21 @@ InstallAndTest.html)
 - Add support for adding arbitrary components to agents
 - Move to JDK1.4
 - Bug fixes
+- Known issue: CSMART is slow - multiple minutes to load & start a Full-1AD
+  society. Improvements for this will be added for a 9.2.1 patch
+  release in mid-May. See bug # 1226
+- Known issue: Society Monitor fails to contact all Agents. You get an error
+  message listing the agents it fails to contact. This includes every
+  Node Agent, but also Agents that have working CSMART servlets.
+  See bug # 1241
+- Known issue: Copying an Agent Insertion Recipe causes NPE. See bug # 1240
+- Known issue: If you hit "Connect" in the GLS Init Window in the console
+  too early, the servlet will not update after you publish the OPLAN. To
+  get around this, wait until the society has quiesced before hitting the
+  Connect button. If you have already done so, use the stand-alone
+  GLS UI in CIP/bin/GLSInit.[bat/sh]  See bug# 1215
+
+
 
 Release 9.0:
 - The CSMART required Cougaar 3rd party jar file: grappa1_2_bbn.jar has been changed 
