@@ -1596,6 +1596,15 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 	if (log.isErrorEnabled()) {
 	  log.error("Saving experiment " + getExperimentName() + " with exptID " + getExperimentID() + " containing society " + sc.getSocietyName() + " but society has now Assembly! Caller trace: ", new Throwable());
 	}
+
+	// Try to save the society that somehow
+	// was not previously saved
+	if (! sc.saveToDatabase()) {
+	  if (log.isErrorEnabled()) {
+	    log.error("Failed to save society " + sc.getSocietyName() + " so going to give up.");
+	  }
+	  return;
+	}
       }
 
       pdb =
