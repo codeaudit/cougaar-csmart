@@ -28,15 +28,35 @@ import org.cougaar.tools.csmart.core.property.ModifiableComponent;
  */
 public interface AssetComponent extends ModifiableComponent {
   /** Some default Property Definitions **/
+
+  /** Property Type Definition **/
   String PROP_TYPE = "Asset Type";
+
+  /** Property Type Description Definition **/
   String PROP_TYPE_DESC = "Type of Asset";
+
+  /** Property Class Definition **/
   String PROP_CLASS = "Asset Class";
+
+  /** Property Class Description Definition **/
   String PROP_CLASS_DESC = "Class of the Asset";
+
+  /** Property UID Definition **/
   String PROP_UID = "UID";
+
+  /** Property UID Description Definition **/
   String PROP_UID_DESC = "UID of the Asset";
+
+  /** Property Unitname Definition **/
   String PROP_UNITNAME = "Unit Name";
+
+  /** Property Unitname Description **/
   String PROP_UNITNAME_DESC = "Unit Name of the Asset";
+
+  /** Property UIC Definition **/
   String PROP_UIC = "UIC";
+
+  /** Property UIC Description Definition **/
   String PROP_UIC_DESC = "UIC of the Asset";
 
 }
