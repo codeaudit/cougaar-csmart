@@ -166,6 +166,9 @@ public class ULPlanNode implements NodeObject {
       label = "workflow";
       // workflow points to its tasks
       String s = (String)properties.get(PropertyNames.WORKFLOW_TASK_UIDS);
+      if (s == null) {
+	s = "";
+      }
       StringTokenizer st = new StringTokenizer(s, ",");
       outgoingLinks = new Vector(st.countTokens());
       while (st.hasMoreTokens()) {
