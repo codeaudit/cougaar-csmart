@@ -62,7 +62,6 @@ import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
 import org.cougaar.tools.csmart.ui.util.ClientServletUtil;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.server.*;
-import org.cougaar.tools.server.rmi.ClientCommunityController;
 import org.cougaar.util.Parameters;
 import org.cougaar.util.log.Logger;
 
@@ -73,7 +72,7 @@ public class CSMARTConsole extends JFrame {
   private static final int DEFAULT_VIEW_SIZE = 50000;
   CSMART csmart; // top level viewer, gives access to save method, etc.
   HostConfigurationBuilder hostConfiguration;
-  CommunityServesClient communitySupport;
+  RemoteHostRegistry remoteHostRegistry;
   SocietyComponent societyComponent;
   Experiment experiment;
   int currentTrial; // index of currently running trial in experiment
@@ -85,7 +84,7 @@ public class CSMARTConsole extends JFrame {
   boolean userStoppedTrials = false;
   boolean stopping = false; // user is stopping the experiment
   //  boolean aborting = false;
-  Hashtable runningNodes; // maps NodeComponents to NodeServesClient
+  Hashtable runningNodes; // maps NodeComponents to RemoteProcesses
   Object runningNodesLock = new Object();
   ArrayList oldNodes; // node components to destroy before running again
   NodeComponent[] nodesToRun; // node components that contain agents to run
@@ -183,7 +182,7 @@ public class CSMARTConsole extends JFrame {
    * Set the society component for which to display information and run.
    */
   private void setSocietyComponent(SocietyComponent cc) {
-    communitySupport = new ClientCommunityController();
+    remoteHostRegistry = RemoteHostRegistry.getInstance();
     runningNodes = new Hashtable();
     oldNodes = new ArrayList();
     nodeListeners = new Hashtable();
@@ -928,8 +927,8 @@ public class CSMARTConsole extends JFrame {
   }
 
   /**
-   * Abort all nodes, (using NodeServesClient interface which is
-   * returned by createNode).
+   * Abort all nodes, (using the RemoteProcesses interface which is
+   * returned by the app-server's "createRemoteProcess(..)").
    */
   private void abortButton_actionPerformed() {
     //    aborting = true;
@@ -980,20 +979,20 @@ public class CSMARTConsole extends JFrame {
     while (nodeComponents.hasMoreElements()) {
       NodeComponent nodeComponent = 
         (NodeComponent)nodeComponents.nextElement();
-      NodeServesClient nsc;
+      RemoteProcess remoteNode;
       synchronized (runningNodesLock) {
-        nsc = (NodeServesClient)runningNodes.get(nodeComponent);
+        remoteNode = (RemoteProcess)runningNodes.get(nodeComponent);
       } // end synchronized
       String nodeName = nodeComponent.getShortName();
-      if (nsc == null) {
+      if (remoteNode == null) {
         if(log.isErrorEnabled()) {
           log.error("Unknown node name: " + nodeName);
         }
         continue;
       }
       try {
-        nsc.flushNodeEvents();
-        nsc.destroy();
+        remoteNode.getRemoteListenable().flushOutput();
+        remoteNode.destroy();
       } catch (Exception ex) {
         if(log.isErrorEnabled()) {
           log.error("Unable to destroy node, assuming it's dead: ", ex);
@@ -1189,20 +1188,31 @@ public class CSMARTConsole extends JFrame {
       if (pname.equals(COMMAND_ARGUMENTS)) continue;
       result.put(pname, props.getProperty(pname));
     }
+    // make sure that the classname is "Node"
+    //
+    // this can be removed once the CMT and all "node.props"
+    // are sure to have this property.
+    result.put(
+        "java.class.name", 
+        "org.cougaar.core.node.Node");
     return result;
   }
 
-  private String[] getNodeArguments(NodeComponent nc) {
+  private java.util.List getNodeArguments(NodeComponent nc) {
     Properties props = nc.getArguments();
     String commandArguments =
       props.getProperty(COMMAND_ARGUMENTS);
-    if (commandArguments == null) return emptyStringArray;
-    StringTokenizer tokens = new StringTokenizer(commandArguments.trim(), "\n");
+    if (commandArguments == null) {
+      return Collections.EMPTY_LIST;
+    }
+    StringTokenizer tokens = 
+      new StringTokenizer(commandArguments.trim(), "\n");
     String[] result = new String[tokens.countTokens()];
     for (int i = 0; i < result.length; i++) {
       result[i] = tokens.nextToken();
     }
-    return result;
+    java.util.List l = Arrays.asList(result);
+    return l;
   }
 
   /**
@@ -1232,7 +1242,7 @@ public class CSMARTConsole extends JFrame {
       // note that these properties augment any properties that
       // are passed to the server in a properties file on startup
       Properties properties = getNodeMinusD(nodeComponent);
-      String[] args = getNodeArguments(nodeComponent);
+      java.util.List args = getNodeArguments(nodeComponent);
 
       // TODO: experiment.getTrialID can return null
       // if not connected to database
@@ -1256,7 +1266,7 @@ public class CSMARTConsole extends JFrame {
       JScrollPane scrollPane = new JScrollPane(textPane);
 
       // create a node event listener to get events from the node
-      NodeEventListener listener;
+      OutputListener listener;
       String logFileName = getLogFileName(nodeName);
       try {
         listener = new ConsoleNodeListener(this,
@@ -1281,19 +1291,42 @@ public class CSMARTConsole extends JFrame {
       nodeListeners.put(nodeName, listener);
       nodePanes.put(nodeName, textPane);
 
-      NodeEventFilter filter = new NodeEventFilter(10);
+      OutputPolicy outputPolicy = new OutputPolicy(10);
       Iterator fileIter = experiment.getConfigFiles(nodesToRun);
 
-      HostServesClient hsc = null;
+      int remotePort = getAppServerPort(properties);
+      RemoteHost remoteAppServer;
       try {
-        hsc = communitySupport.getHost(hostName, getAppServerPort(properties));
+        remoteAppServer = 
+          remoteHostRegistry.lookupRemoteHost(
+              hostName, remotePort, true);
       } catch (Exception e) {
         if(log.isErrorEnabled()) {
-          log.error("CSMARTConsole: cannot create node: " + nodeName, e);
+          log.error(
+              "CSMARTConsole: unable to contact app-server on " + 
+              hostName + " : " + remotePort, e);
         }
 
         JOptionPane.showMessageDialog(this,
-                                      "Cannot create node on: " + hostName +
+                                      "Unable to contact app-server on " +
+                                      hostName + " : " + remotePort +
+                                      "; check that server is running");
+        continue;
+      }
+
+      RemoteFileSystem remoteFS;
+      try {
+        remoteFS = remoteAppServer.getRemoteFileSystem();
+      } catch (Exception e) {
+        if(log.isErrorEnabled()) {
+          log.error(
+              "CSMARTConsole: unable to access app-server file system on " + 
+              hostName + " : " + remotePort, e);
+        }
+
+        JOptionPane.showMessageDialog(this,
+                                      "Unable to access app-server file system on " + 
+                                      hostName + " : " + remotePort +
                                       "; check that server is running");
         continue;
       }
@@ -1302,11 +1335,13 @@ public class CSMARTConsole extends JFrame {
         String filename = (String)fileIter.next();
         OutputStream out = null;
         try {
-          out = hsc.write(filename);
+          out = remoteFS.write(filename);
           experiment.writeContents(filename, out);
         } catch(Exception e) {
           if(log.isErrorEnabled()) {
-            log.error("Caught an Exception writing leaf", e);
+            log.error(
+                "Caught an Exception writing leaf on " +
+                hostName + " : " + remotePort, e);
           }
         } finally {
           try {
@@ -1320,8 +1355,9 @@ public class CSMARTConsole extends JFrame {
       }
 
       NodeCreationInfo nci =
-        new NodeCreationInfo(hsc, uniqueNodeName, properties, args,
-                             listener, filter, 
+        new NodeCreationInfo(remoteAppServer, uniqueNodeName, 
+                             properties, args,
+                             listener, outputPolicy, 
                              nodeName, hostName,
                              nodeComponent, scrollPane, statusButton,
                              logFileName);
@@ -1352,15 +1388,26 @@ public class CSMARTConsole extends JFrame {
         break;
       final NodeCreationInfo nci = 
         (NodeCreationInfo)nodeCreationInfoList.get(i);
-      final NodeServesClient nsc;
+      final RemoteProcess remoteNode;
       try {
-        nsc = nci.hsc.createNode(experiment.getExperimentName() + "-" +
-                                 nci.uniqueNodeName, 
-                                 nci.properties, 
-                                 nci.args,
-                                 nci.listener, 
-                                 nci.filter, 
-                                 null);
+        String procName =
+            experiment.getExperimentName() + "-" +
+            nci.uniqueNodeName;
+        String groupName = "csmart";
+        ProcessDescription desc =
+          new ProcessDescription(
+              procName,
+              groupName,
+              nci.properties,
+              nci.args);
+        RemoteListenableConfig conf =
+          new RemoteListenableConfig(
+              nci.listener, 
+              nci.outputPolicy);
+        remoteNode = 
+          nci.remoteAppServer.createRemoteProcess(
+              desc,
+              conf);
       } catch (Exception e) {
         if (log.isErrorEnabled()) {
           log.error("CSMARTConsole: cannot create node: " + 
@@ -1373,7 +1420,7 @@ public class CSMARTConsole extends JFrame {
         continue;
       }
       synchronized (runningNodesLock) {
-        runningNodes.put(nci.nodeComponent, nsc);
+        runningNodes.put(nci.nodeComponent, remoteNode);
       } // end synchronized
       SwingUtilities.invokeLater(new Runnable() {
           public void run() {
@@ -1386,7 +1433,7 @@ public class CSMARTConsole extends JFrame {
                                  nci.scrollPane,
                                  nci.statusButton,
                                  nci.logFileName,
-                                 nsc,
+                                 remoteNode,
                                  console);
             updateExperimentControls(experiment, true);
           }
@@ -1411,15 +1458,15 @@ public class CSMARTConsole extends JFrame {
       abortButton_actionPerformed();
       return;
     }
-    NodeServesClient nsc;
+    RemoteProcess remoteNode;
     synchronized (runningNodesLock) {
-      nsc = (NodeServesClient)runningNodes.get(node);
+      remoteNode = (RemoteProcess)runningNodes.get(node);
     } // end synchronized
-    if (nsc == null)
+    if (remoteNode == null)
       return;
     try {
-      nsc.flushNodeEvents();
-      nsc.destroy();
+      remoteNode.getRemoteListenable().flushOutput();
+      remoteNode.destroy();
     } catch (Exception ex) {
       if(log.isErrorEnabled()) {
         log.error("Unable to destroy node, assuming it's dead: ", ex);
@@ -1438,7 +1485,7 @@ public class CSMARTConsole extends JFrame {
    * as selecting the Run button on the console.
    */
 
-  public NodeServesClient restartNode(NodeComponent nodeComponent) {
+  public RemoteProcess restartNode(NodeComponent nodeComponent) {
     boolean doRun = false;
     synchronized (runningNodes) {
       if (oldNodes.size() + runningNodes.size() == 1)
@@ -1448,11 +1495,10 @@ public class CSMARTConsole extends JFrame {
       runButton_actionPerformed();
       return null; // it doesn't matter what we return, the caller is going away
     }
-    CommunityServesClient communitySupport = new ClientCommunityController();
-    HostServesClient hostServer = null;
+    RemoteHost remoteAppServer = null;
     Properties properties = getNodeMinusD(nodeComponent);
     properties.remove("org.cougaar.core.persistence.clear");
-    String[] args = getNodeArguments(nodeComponent);
+    java.util.List args = getNodeArguments(nodeComponent);
     // get host component by searching hosts for one with this node.
     String hostName = null;
     HostComponent[] hosts = experiment.getHosts();
@@ -1465,9 +1511,11 @@ public class CSMARTConsole extends JFrame {
         }
       }
     }
+    int remotePort = getAppServerPort(properties);
     try {
-      hostServer = 
-        communitySupport.getHost(hostName, getAppServerPort(properties));
+      remoteAppServer = 
+        remoteHostRegistry.lookupRemoteHost(
+            hostName, remotePort, true);
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
         log.error("Exception getting Host Server", e);
@@ -1499,15 +1547,29 @@ public class CSMARTConsole extends JFrame {
       listener.setFilter(displayFilter);
     nodeListeners.put(nodeName, listener);
 
-    NodeServesClient nsc = null;
+    RemoteProcess remoteNode = null;
     try {
-      nsc = hostServer.createNode(experiment.getExperimentName() + "-" + 
-                                  nodeName, 
-                                  properties, args,
-                                  listener, new NodeEventFilter(10), null);
-      if (nsc != null) {
+      String procName =
+          experiment.getExperimentName() + "-" +
+          nodeName;
+      String groupName = "csmart";
+      ProcessDescription desc =
+        new ProcessDescription(
+            procName,
+            groupName,
+            properties,
+            args);
+      RemoteListenableConfig conf =
+        new RemoteListenableConfig(
+            listener, 
+            new OutputPolicy(10));
+      remoteNode = 
+        remoteAppServer.createRemoteProcess(
+            desc,
+            conf);
+      if (remoteNode != null) {
         synchronized (runningNodesLock) {
-          runningNodes.put(nodeComponent, nsc);
+          runningNodes.put(nodeComponent, remoteNode);
         } // end synchronized
       }
     } catch (Exception e) {
@@ -1515,7 +1577,7 @@ public class CSMARTConsole extends JFrame {
         log.error("Exception", e);
       }
     }
-    return nsc;
+    return remoteNode;
   }
 
   private void startTimers() {
@@ -1558,17 +1620,17 @@ public class CSMARTConsole extends JFrame {
   /**
    * Read remote files and copy to directory specified by experiment.
    */
-  private void copyResultFiles(HostServesClient hostInfo,
+  private void copyResultFiles(RemoteFileSystem remoteFS,
 				String dirname) {
     char[] cbuf = new char[1000];
     try {
-      String[] filenames = hostInfo.list("./");
+      String[] filenames = remoteFS.list("./");
       for (int i = 0; i < filenames.length; i++) {
 	if (!isResultFile(filenames[i]))
 	  continue;
 	File newResultFile = 
 	  new File(dirname + File.separator + filenames[i]);
-	InputStream is = hostInfo.open(filenames[i]);
+	InputStream is = remoteFS.read(filenames[i]);
 	BufferedReader reader = 
 	  new BufferedReader(new InputStreamReader(is), 1000);
 	BufferedWriter writer =
@@ -1640,10 +1702,12 @@ public class CSMARTConsole extends JFrame {
       NodeComponent[] nodes = hosts[i].getNodes();
       if (nodes.length != 0) 
         properties = getNodeMinusD(nodes[0]);
-      HostServesClient hostInfo = null;
+      int remotePort = getAppServerPort(properties);
+      RemoteHost remoteAppServer;
       try {
-	hostInfo = 
-          communitySupport.getHost(hostName, getAppServerPort(properties));
+	remoteAppServer = 
+          remoteHostRegistry.lookupRemoteHost(
+              hostName, remotePort, true);
       } catch (java.rmi.UnknownHostException uhe) {
 	JOptionPane.showMessageDialog(this,
 				      "Unknown host: " + hostName,
@@ -1654,13 +1718,27 @@ public class CSMARTConsole extends JFrame {
 	// This happens if you listed random hosts which you don't
 	// really intend to talk to
 	JOptionPane.showMessageDialog(this,
-				      "Cannot save results.  No response from: " + hostName +
+				      "Cannot save results.  No response from: " + 
+                                      hostName + " : " + remotePort +
 				      "; check that server is running.",
 				      "No Response From Server",
 				      JOptionPane.WARNING_MESSAGE);
 	continue;
       }
-      copyResultFiles(hostInfo, dirname);
+      RemoteFileSystem remoteFS;
+      try {
+        remoteFS = remoteAppServer.getRemoteFileSystem();
+      } catch (Exception e) {
+	JOptionPane.showMessageDialog(this,
+				      "Cannot save results.  Unable to access " +
+                                      " filesystem for " + 
+                                      hostName + " : " + remotePort +
+				      ".",
+				      "Unable to access file system",
+				      JOptionPane.WARNING_MESSAGE);
+	continue;
+      }
+      copyResultFiles(remoteFS, dirname);
     }
   }
   
@@ -2021,12 +2099,12 @@ public class CSMARTConsole extends JFrame {
    */
 
   class NodeCreationInfo {
-    HostServesClient hsc;
+    RemoteHost remoteAppServer;
     String uniqueNodeName;
     Properties properties;
-    String[] args;
-    NodeEventListener listener;
-    NodeEventFilter filter;
+    java.util.List args;
+    OutputListener listener;
+    OutputPolicy outputPolicy;
     String nodeName;
     String hostName;
     NodeComponent nodeComponent;
@@ -2034,24 +2112,24 @@ public class CSMARTConsole extends JFrame {
     NodeStatusButton statusButton;
     String logFileName;
 
-    public NodeCreationInfo(HostServesClient hsc,
+    public NodeCreationInfo(RemoteHost remoteAppServer,
                             String uniqueNodeName,
                             Properties properties,
-                            String[] args,
-                            NodeEventListener listener,
-                            NodeEventFilter filter,
+                            java.util.List args,
+                            OutputListener listener,
+                            OutputPolicy outputPolicy,
                             String nodeName,
                             String hostName,
                             NodeComponent nodeComponent,
                             JScrollPane scrollPane,
                             NodeStatusButton statusButton,
                             String logFileName) {
-      this.hsc = hsc;
+      this.remoteAppServer = remoteAppServer;
       this.uniqueNodeName = uniqueNodeName;
       this.properties = properties;
       this.args = args;
       this.listener = listener;
-      this.filter = filter;
+      this.outputPolicy = outputPolicy;
       this.nodeName = nodeName;
       this.hostName = hostName;
       this.nodeComponent = nodeComponent;

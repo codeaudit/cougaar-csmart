@@ -49,7 +49,7 @@ import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.ui.experiment.HostConfigurationBuilder;
 
-import org.cougaar.tools.server.NodeServesClient;
+import org.cougaar.tools.server.RemoteProcess;
 import org.cougaar.tools.server.system.ProcessStatus;
 
 import org.cougaar.util.log.Logger;
@@ -104,7 +104,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private JRadioButton statusButton;
   private String logFileName;
   private ConsoleNodeOutputFilter filter;
-  private NodeServesClient nodeServer;
+  private RemoteProcess remoteNode;
   private CSMARTConsole console;
   private Experiment experiment;
 
@@ -115,7 +115,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
                               JScrollPane pane,
                               JRadioButton statusButton,
                               String logFileName,
-                              NodeServesClient nodeServer,
+                              RemoteProcess remoteNode,
                               CSMARTConsole console) {
     super("",   // title
           true, //resizable
@@ -126,7 +126,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
     this.listener = listener;
     this.statusButton = statusButton;
     this.logFileName = logFileName;
-    this.nodeServer = nodeServer;
+    this.remoteNode = remoteNode;
     this.console = console;
 
     createLogger();
@@ -600,7 +600,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
 
   private void totalCPUUsage_actionPerformed() {
     try {
-      displayProcessInfo(nodeServer.listProcesses(true));
+      displayProcessInfo(remoteNode.listProcesses(true));
     } catch (Exception e) {
       JOptionPane.showConfirmDialog(this, 
                          "This information is not available for this node.", 
@@ -611,7 +611,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
 
   private void nodeCPUUsage_actionPerformed() {
     try {
-      displayProcessInfo(nodeServer.listProcesses(false));
+      displayProcessInfo(remoteNode.listProcesses(false));
     } catch (Exception e) {
       JOptionPane.showConfirmDialog(this, 
                          "This information is not available for this node.", 
@@ -751,9 +751,9 @@ public class ConsoleInternalFrame extends JInternalFrame {
 
   private void restart_actionPerformed() {
     startAction.setEnabled(false);
-    NodeServesClient newNodeServer = console.restartNode(node);
-    if (newNodeServer != null) {
-      nodeServer = newNodeServer;
+    RemoteProcess newRemoteNode = console.restartNode(node);
+    if (newRemoteNode != null) {
+      remoteNode = newRemoteNode;
       stopAction.setEnabled(true);
     }
   }
@@ -765,7 +765,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
 
   private void trace_actionPerformed() {
     try {
-      nodeServer.dumpThreads();
+      remoteNode.dumpThreads();
     } catch (Exception e) {
       JOptionPane.showConfirmDialog(this, 
                          "This operation is not available for this node.", 

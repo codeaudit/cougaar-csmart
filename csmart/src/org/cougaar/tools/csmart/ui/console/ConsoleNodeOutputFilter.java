@@ -34,7 +34,6 @@ public class ConsoleNodeOutputFilter extends JDialog {
   private static final String ERRORMSGS = "Standard Error";
   private static final String NODECREATION = "Node Created";
   private static final String NODEDESTROYED = "Node Destroyed";
-  private static final String CLUSTERADD = "Agent Added";
   private static final String IDLENESS = "Idle";
   private static final String HEARTBEAT = "Heartbeat";
   private final String OFF = "Off";
@@ -49,7 +48,6 @@ public class ConsoleNodeOutputFilter extends JDialog {
   private JCheckBox errorCB;
   private JCheckBox createCB;
   private JCheckBox destroyCB;
-  private JCheckBox clusterAddCB;
   private JCheckBox idlenessCB;
   private JCheckBox heartbeatCB;
   boolean[] msgArray = { false, false, false, false, false, false, false };
@@ -70,9 +68,8 @@ public class ConsoleNodeOutputFilter extends JDialog {
         if (!allSelected) {
           msgArray[NodeEvent.STANDARD_OUT] = standardCB.isSelected();
           msgArray[NodeEvent.STANDARD_ERR] = errorCB.isSelected();
-          msgArray[NodeEvent.NODE_CREATED] = createCB.isSelected();
-          msgArray[NodeEvent.NODE_DESTROYED] = destroyCB.isSelected();
-          msgArray[NodeEvent.CLUSTER_ADDED] = clusterAddCB.isSelected();
+          msgArray[NodeEvent.PROCESS_CREATED] = createCB.isSelected();
+          msgArray[NodeEvent.PROCESS_DESTROYED] = destroyCB.isSelected();
           msgArray[NodeEvent.IDLE_UPDATE] = idlenessCB.isSelected();
           msgArray[NodeEvent.HEARTBEAT] = heartbeatCB.isSelected();
         }
@@ -111,8 +108,6 @@ public class ConsoleNodeOutputFilter extends JDialog {
     createCB.addActionListener(unselectAllCB);
     destroyCB = new JCheckBox(NODEDESTROYED);
     destroyCB.addActionListener(unselectAllCB);
-    clusterAddCB = new JCheckBox(CLUSTERADD);
-    clusterAddCB.addActionListener(unselectAllCB);
     idlenessCB = new JCheckBox(IDLENESS);
     idlenessCB.addActionListener(unselectAllCB);
     heartbeatCB = new JCheckBox(HEARTBEAT);
@@ -144,18 +139,13 @@ public class ConsoleNodeOutputFilter extends JDialog {
 					  GridBagConstraints.WEST,
 					  GridBagConstraints.HORIZONTAL,
 					  new Insets(0, 0, 0, 0), 0, 0));
-    msgTypesPanel.add(clusterAddCB,
-		   new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
-					  GridBagConstraints.WEST,
-					  GridBagConstraints.HORIZONTAL,
-					  new Insets(0, 0, 0, 0), 0, 0));
     msgTypesPanel.add(idlenessCB,
-		   new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
+		   new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
 					  GridBagConstraints.WEST,
 					  GridBagConstraints.HORIZONTAL,
 					  new Insets(0, 0, 0, 0), 0, 0));
     msgTypesPanel.add(heartbeatCB,
-		   new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+		   new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
 					  GridBagConstraints.WEST,
 					  GridBagConstraints.HORIZONTAL,
 					  new Insets(0, 0, 0, 0), 0, 0));
@@ -169,9 +159,8 @@ public class ConsoleNodeOutputFilter extends JDialog {
       msgArray = initialValues;
       standardCB.setSelected(msgArray[NodeEvent.STANDARD_OUT]);
       errorCB.setSelected(msgArray[NodeEvent.STANDARD_ERR]);
-      createCB.setSelected(msgArray[NodeEvent.NODE_CREATED]);
-      destroyCB.setSelected(msgArray[NodeEvent.NODE_DESTROYED]);
-      clusterAddCB.setSelected(msgArray[NodeEvent.CLUSTER_ADDED]);
+      createCB.setSelected(msgArray[NodeEvent.PROCESS_CREATED]);
+      destroyCB.setSelected(msgArray[NodeEvent.PROCESS_DESTROYED]);
       idlenessCB.setSelected(msgArray[NodeEvent.IDLE_UPDATE]);
       heartbeatCB.setSelected(msgArray[NodeEvent.HEARTBEAT]);
     }
@@ -224,7 +213,6 @@ public class ConsoleNodeOutputFilter extends JDialog {
         errorCB.setSelected(false);
         createCB.setSelected(false);
         destroyCB.setSelected(false);
-        clusterAddCB.setSelected(false);
         idlenessCB.setSelected(false);
         heartbeatCB.setSelected(false); 
       }

@@ -30,9 +30,10 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
 import org.cougaar.tools.csmart.experiment.NodeComponent;
+
 import org.cougaar.tools.server.NodeEvent;
-import org.cougaar.tools.server.NodeEventListener;
-import org.cougaar.tools.server.NodeServesClient;
+import org.cougaar.tools.server.OutputBundle;
+import org.cougaar.tools.server.OutputListener;
 
 import com.klg.jclass.chart.JCChart;
 import com.klg.jclass.chart.ChartDataModel;
@@ -43,7 +44,7 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
  * Listener for "pushed" Node activities.
  */
 
-public class ConsoleNodeListener implements NodeEventListener {
+public class ConsoleNodeListener implements OutputListener {
   private CSMARTConsole console;
   private NodeComponent nodeComponent;
   private String nodeName;
@@ -166,74 +167,18 @@ public class ConsoleNodeListener implements NodeEventListener {
     return ret;
   }
   
-  /**
-   * Get stdout, stderr, and any other messages from the node event;
-   * write these to the log file and display these in the GUI.
-   * TODO: rewrite this so that handle and handleAll don't repeat the same code
-   */
-
-  public void handle(NodeServesClient nsc, NodeEvent nodeEvent) {
-    final NodeEvent myNodeEvent = nodeEvent; // for swing utilities
-    final int nodeEventType = nodeEvent.getType();
-    final String nodeEventDescription = getNodeEventDescription(nodeEvent);
-
-    synchronized (logFileLock) {
-      // write stdout/stderr/etc to log file
-      try {
-        logFile.write(nodeEventDescription);
-        nLogEvents++;
-        if (nLogEvents > 100) {
-          logFile.flush();
-          nLogEvents = 0;
-        }
-      } catch (Exception e) {
-        if(log.isErrorEnabled()) {
-          log.error("Exception writing to log file: ", e);
-        }
-      }
-    }
-
-    // ignore events user isn't interested in
-    //    if (filter != null && !filter.includeEventInDisplay(nodeEvent))
-    //      return;
-
-    final SimpleAttributeSet style = getNodeEventStyle(nodeEventType);
-    double nodeEventValue = 0;
-    long nodeTimestamp = 0;
-    if (nodeEventType == NodeEvent.IDLE_UPDATE) {
-      String s = nodeEvent.getMessage();
-      nodeEventValue = getIdleness(s);
-      nodeTimestamp = getTimestamp(s);
-    }
-    final double idleTime = nodeEventValue;
-    final long timestamp = nodeTimestamp;
-
-    // must use swing "invokeLater" to be thread-safe
-    try {
-      SwingUtilities.invokeLater(new Runnable() {
-	public void run() {
-          if (nodeEventType == NodeEvent.IDLE_UPDATE) 
-            handleIdleUpdate(idleTime, timestamp);
-          else {
-            updateStatus(myNodeEvent);
-            // don't append events user isn't interested in
-            if (filter != null && !filter.includeEventInDisplay(myNodeEvent))
-              return;
-            doc.appendString(nodeEventDescription, style);
-          }
-	}
-      });
-    } catch (RuntimeException e) {
-    }
+  public void handleOutputBundle(OutputBundle outputBundle) {
+    // see the app-server example "GuiConsole"
+    java.util.List l = 
+      org.cougaar.tools.server.NodeEventTranslator.toNodeEvents(outputBundle);  // fix to use the new app-server APIs
+    handleAll(l);
   }
 
   /**
    * Handle the specified list of node events (List of NodeEvent)
    * from a node. Same as handle, but for a list of events.
    */
-
-  public void handleAll(final NodeServesClient nsc, 
-			final java.util.List nodeEvents) {
+  private void handleAll(final java.util.List nodeEvents) {
     final int n = nodeEvents.size();
     if (n <= 0) {
       return;
@@ -381,9 +326,9 @@ public class ConsoleNodeListener implements NodeEventListener {
 
   private void updateStatus(NodeEvent nodeEvent) {
     int nodeEventType = nodeEvent.getType();
-      if (nodeEventType == NodeEvent.NODE_CREATED) 
+      if (nodeEventType == NodeEvent.PROCESS_CREATED) 
         statusButton.setStatus(NodeStatusButton.STATUS_NODE_CREATED);
-      else if (nodeEventType == NodeEvent.NODE_DESTROYED) {
+      else if (nodeEventType == NodeEvent.PROCESS_DESTROYED) {
         statusButton.setStatus(NodeStatusButton.STATUS_NODE_DESTROYED);
         console.nodeStopped(nodeComponent);
       } else if (nodeEventType == NodeEvent.STANDARD_ERR) {

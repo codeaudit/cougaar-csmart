@@ -35,7 +35,7 @@ import javax.swing.*;
 import javax.swing.event.InternalFrameListener;
 
 import org.cougaar.tools.csmart.experiment.NodeComponent;
-import org.cougaar.tools.server.NodeServesClient;
+import org.cougaar.tools.server.RemoteProcess;
 
 public class ConsoleDesktop extends JDesktopPane {
   private static final int M = 20;
@@ -69,11 +69,11 @@ public class ConsoleDesktop extends JDesktopPane {
                            JScrollPane pane,
                            JRadioButton statusButton,
                            String logFileName,
-                           NodeServesClient nsc,
+                           RemoteProcess remoteNode,
                            CSMARTConsole console) {
     JInternalFrame frame = 
       new ConsoleInternalFrame(node, listener, pane,
-                               statusButton, logFileName, nsc, console);
+                               statusButton, logFileName, remoteNode, console);
     //Set the window's location.
     frameCount++;
     Insets insets = this.getInsets();

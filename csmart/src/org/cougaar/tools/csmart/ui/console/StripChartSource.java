@@ -33,8 +33,8 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * StripChartSource is a Chart Data Source that 
- * gets the values from a NodeEvent and updates arrays of values 
- * that are charted.
+ * displays a chart of (value, timestamp) points and allows
+ * the client to append additional (value, timestamp) points.
  */
 
 public class StripChartSource extends JCDefaultDataSource implements Runnable {
