@@ -513,7 +513,6 @@ public class PDbBase {
    *
    * @param rc RecipeComponent to store values
    * @param targets Values to store
-   * @return a <code>boolean</code> value
    */
   public static void saveTargetOverrides(RecipeComponent rc, Map targets) throws SQLException, IOException {
     PDbBase pdb = new PDbBase();
